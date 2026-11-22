@@ -1,0 +1,27 @@
+No,Category,PartName,Store,Code,Qty,UnitPrice_JPY_TaxInc,Subtotal_JPY,EstMass_g,EngineeringRole
+1,MCU,"AE-RP2040 (Dual-Core 133MHz, 264KB RAM, PIOx8, USB-C)",Akizuki,117542,1,700,700,12.0,Core0 DSP/PID + Core1 TinyML/SLAM
+2,Suction Motor,"RS-385PH-4045 (6V, 12100rpm, 9.5W, 5-slot)",Akizuki,106439,1,300,300,72.0,Drives Ø78mm Al-can spiral impeller
+3,Drive Motors,Minebea PWN10EB12CB (Low-speed high-torque DC),Akizuki,110024,2,100,200,38.0,30:1 magnetic-preload friction rim drive
+4,Motor Driver,AE-TC78H653FTG (Toshiba Dual H-Bridge 2Ax2),Akizuki,114746,1,200,200,4.0,Left+Right differential drive + phase-shifted PWM
+5,Turbine FET,2SK4017(Q) (Toshiba 60V 5A 70mOhm N-MOSFET),Akizuki,107597,1,30,30,1.5,25kHz ultrasonic PWM turbine control
+6,Gate Driver,DTC114EL (Resistor-equipped NPN transistor),Akizuki,112467,1,10,10,0.3,6V full gate level-shift for 2SK4017
+7,Flyback Diode,SB340LS (40V 3A Schottky Barrier Diode),Akizuki,107788,1,30,30,1.2,RS-385PH inductive spike clamping
+8,Isolation Diode,1S4 (40V 1A Schottky Diode),Akizuki,100127,1,20,20,0.5,Isolates MCU cap bank from motor sag
+9,Fuse,MF-R300 (3A Hold / 6A Trip PolySwitch),Akizuki,112630,1,40,40,1.0,Auto-resetting overcurrent protection
+10,3.3V LDO,LP2950L-33-T92 (3.3V 100mA 30V-in LDO TO-92),Akizuki,108749,1,30,30,0.4,Clean 3.3V rail for RP2040 & analog op-amp
+11,Bulk Caps,470uF 16V Electrolytic (Rubycon WXA),Akizuki,108426,2,10,20,3.0,Motor surge + MCU sag holdup
+12,Ceramic Caps,1uF 50V X7R MLCC (Radial),Akizuki,108150,2,20,40,0.4,Op-amp AC-coupling & LDO decoupling
+13,Dual Op-Amp,MCP6002-E/P (Rail-to-Rail CMOS DIP8),Akizuki,130011,1,80,80,0.6,CH1: 1-Shunt Ripple Amp / CH2: Piezo Dirt Amp
+14,Shunt Resistor,MPC74 0.33 Ohm 5W Low-Inductance Metal Plate,Akizuki,110699,1,50,50,4.0,Single-shunt TDM left/right ripple & stall sense
+15,Dirt Sensor,PKM13EPYH4000-A0 (Murata 13mm Piezo Sounder),Akizuki,104118,1,30,30,1.8,Acoustic Dirt Detect inside cyclone inlet
+16,Optical Sensors,OSR5JA3Z74A (3mm Red LED),Akizuki,111577,4,10,40,1.2,4ch LED-as-Photodiode wall & cliff ranging
+17,PCB,AE-DB1 (D-Type 47x36mm Breadboard Universal PCB),Akizuki,108242,1,50,50,6.0,Main controller PCB (KiCad Gerber also provided)
+18,Resistors,RD25S 10K (1/4W 10kOhm 100-pack),Akizuki,125103,1,100,100,3.0,E1 Single-Value Resistor Synthesis Network
+19,Power Switch,SS-12D00G3 (SPDT Slide Switch),Akizuki,115707,1,20,20,1.0,Master power cutoff switch
+20,Batteries,Seria VOLCANO NZ AA NiMH (1.2V 1300mAh),Seria,4902993,5,110,550,108.0,6.0V (6.8V full) high-drain rechargeable pack
+21,Body Sheet,Daiso PP Sheet 0.75mm (390x550mm Milky White),Daiso,4549131311280,1,110,110,118.0,Origami Reuleaux-D monocoque + volute + wheels
+22,Fine Filter,Daiso Fine Non-Woven Drain Net (30+ pcs),Daiso,DAISO-NET,1,110,110,3.0,Post-cyclone fine dust secondary filter
+23,4-in-1 Donor,Daiso USB Wired Optical Mouse (110 JPY),Daiso,4550480354552,1,110,110,24.0,Optical Flow Odometry + 3x MicroSW + 1.2m 4-wire harness
+24,Magnets,Daiso Neodymium Magnets (4 pcs),Daiso,DAISO-NEO,1,110,110,12.0,Friction-drive constant preload + magnetic dustbin latch
+25,Upcycled Scrap,Empty 500ml PET Bottle + 350ml Al Can + Rubber Bands + Old Toothbrush + PET Caps,Zero-Yen Scrap,UPCYCLE-0,1,0,0,78.0,Transparent cyclone + high-rigidity Al impeller + PTO belts/brushes
+TOTAL,,Suga Roomba II Complete BOM,Akizuki+100Yen+Scrap,,,,2980,494.9,"STRICTLY UNDER 3,000 JPY!"

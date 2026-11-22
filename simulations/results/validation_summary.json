@@ -1,0 +1,221 @@
+{
+  "bom_total_jpy_tax_inc": 2980,
+  "bom_under_3000_jpy": true,
+  "estimated_total_mass_g": 494.9,
+  "impeller_optimum": {
+    "D2_mm": 78.0,
+    "D1_mm": 28.0,
+    "b2_mm": 7.5,
+    "blades_Z": 9,
+    "beta2_deg": 28
+  },
+  "suction_eco": {
+    "V_supply": 4.6,
+    "D2_mm": 78.0,
+    "beta2_deg": 28,
+    "rpm": 7471.194676171323,
+    "rpm_shutoff": 8687.042705597214,
+    "Q_Ls": 3.3168788405360363,
+    "dP_operating_Pa": 639.6186527395661,
+    "dP_shutoff_Pa": 970.5919820599753,
+    "v_nozzle_ms": 14.42121235015668,
+    "v_cyclone_in_ms": 9.871663215881059,
+    "I_motor_A": 1.5597331622119455,
+    "V_motor_term_V": 4.2100667094470134,
+    "P_elec_W": 7.174772546174949,
+    "P_air_W": 2.1215375752840337,
+    "eta_fan": 0.6095814221174904,
+    "eta_overall": 0.29569405324424936
+  },
+  "suction_standard_6V": {
+    "V_supply": 6.0,
+    "D2_mm": 78.0,
+    "beta2_deg": 28,
+    "rpm": 9489.531515213383,
+    "rpm_shutoff": 11447.033988576553,
+    "Q_Ls": 4.251792467394206,
+    "dP_operating_Pa": 1030.5641324858825,
+    "dP_shutoff_Pa": 1685.4063105880584,
+    "v_nozzle_ms": 18.486054206061763,
+    "v_cyclone_in_ms": 12.65414424819704,
+    "I_motor_A": 2.2231151887655023,
+    "V_motor_term_V": 5.444221202808625,
+    "P_elec_W": 13.338691132593013,
+    "P_air_W": 4.381744815670119,
+    "eta_fan": 0.6139934097209644,
+    "eta_overall": 0.3284988588545507
+  },
+  "suction_turbo_6_8V": {
+    "V_supply": 6.8,
+    "D2_mm": 78.0,
+    "beta2_deg": 28,
+    "rpm": 10581.752101739825,
+    "rpm_shutoff": 13010.148669671496,
+    "Q_Ls": 4.757834542965717,
+    "dP_operating_Pa": 1280.8150374135196,
+    "dP_shutoff_Pa": 2177.1731845224967,
+    "v_nozzle_ms": 20.6862371433292,
+    "v_cyclone_in_ms": 14.16022185406463,
+    "I_motor_A": 2.647321524869053,
+    "V_motor_term_V": 6.138169618782737,
+    "P_elec_W": 18.00178636910956,
+    "P_air_W": 6.09390602815597,
+    "eta_fan": 0.6158888096809676,
+    "eta_overall": 0.3385167395727404
+  },
+  "cyclone_and_debris": {
+    "d50_um": 4.06,
+    "eff_10um_pct": 85.86,
+    "eff_25um_pct": 97.43,
+    "eff_50um_pct": 99.35,
+    "debris": [
+      {
+        "name": "House Dust (50 um)",
+        "v_terminal_ms": 0.51,
+        "v_pickup_ms": 0.64,
+        "margin_std": 28.98,
+        "margin_turbo": 32.43,
+        "cyclone_capture_pct": 99.35,
+        "can_pickup": true
+      },
+      {
+        "name": "Human Hair (coil)",
+        "v_terminal_ms": 0.97,
+        "v_pickup_ms": 1.21,
+        "margin_std": 15.25,
+        "margin_turbo": 17.07,
+        "cyclone_capture_pct": 99.89,
+        "can_pickup": true
+      },
+      {
+        "name": "Fine Sand (0.5 mm)",
+        "v_terminal_ms": 4.7,
+        "v_pickup_ms": 5.88,
+        "margin_std": 3.14,
+        "margin_turbo": 3.52,
+        "cyclone_capture_pct": 99.99,
+        "can_pickup": true
+      },
+      {
+        "name": "Coarse Sand (1.2 mm)",
+        "v_terminal_ms": 8.31,
+        "v_pickup_ms": 10.39,
+        "margin_std": 1.78,
+        "margin_turbo": 1.99,
+        "cyclone_capture_pct": 100.0,
+        "can_pickup": true
+      },
+      {
+        "name": "Paper Scrap (5 mm)",
+        "v_terminal_ms": 3.88,
+        "v_pickup_ms": 4.86,
+        "margin_std": 3.81,
+        "margin_turbo": 4.26,
+        "cyclone_capture_pct": 100.0,
+        "can_pickup": true
+      },
+      {
+        "name": "Rice Grain (3 mm eq)",
+        "v_terminal_ms": 9.26,
+        "v_pickup_ms": 11.58,
+        "margin_std": 1.6,
+        "margin_turbo": 1.79,
+        "cyclone_capture_pct": 100.0,
+        "can_pickup": true
+      }
+    ]
+  },
+  "body_geometry_comparison": [
+    {
+      "name": "Circular (Standard)",
+      "corner_dead_cm2": 23.66,
+      "nozzle_width_mm": 96.0,
+      "nozzle_ratio": 0.457,
+      "spin_radius_ratio": 1.0,
+      "area_cm2": 346.4,
+      "rear_wall_clearance": "Zero overhang",
+      "overall_mech_score": 68.5
+    },
+    {
+      "name": "Classic D-Shape",
+      "corner_dead_cm2": 1.68,
+      "nozzle_width_mm": 136.0,
+      "nozzle_ratio": 0.648,
+      "spin_radius_ratio": 1.239,
+      "area_cm2": 358.8,
+      "rear_wall_clearance": "High front-corner jam",
+      "overall_mech_score": 81.2
+    },
+    {
+      "name": "Reuleaux Triangle",
+      "corner_dead_cm2": 1.24,
+      "nozzle_width_mm": 102.0,
+      "nozzle_ratio": 0.486,
+      "spin_radius_ratio": 1.155,
+      "area_cm2": 310.8,
+      "rear_wall_clearance": "Low packaging volume",
+      "overall_mech_score": 83.8
+    },
+    {
+      "name": "Suga II Reuleaux-D Hybrid",
+      "corner_dead_cm2": 1.24,
+      "nozzle_width_mm": 128.0,
+      "nozzle_ratio": 0.61,
+      "spin_radius_ratio": 1.145,
+      "area_cm2": 328.5,
+      "rear_wall_clearance": "Zero rear overhang + low jam",
+      "overall_mech_score": 95.6
+    }
+  ],
+  "drivetrain_friction_30to1": {
+    "gear_ratio": 32.5,
+    "wheel_dia_mm": 78.0,
+    "wheel_rpm_cruise": 74.9,
+    "cruise_speed_ms": 0.306,
+    "wheel_stall_torque_mNm": 93.6,
+    "magnetic_slip_limit_mNm": 144.1,
+    "slip_safety_ratio": 1.54,
+    "robot_mass_g": 495,
+    "max_tractive_force_N": 4.47,
+    "max_step_climb_mm": 9.7,
+    "max_slope_deg": 43.3,
+    "drive_current_2ch_A": 0.195
+  },
+  "helmholtz_muffler": {
+    "target_bpf_Hz": 1423.4,
+    "cavity_volume_cm3": 9.5,
+    "neck_dia_mm": 9.4,
+    "neck_length_mm": 3.0,
+    "peak_attenuation_dB": 15.0,
+    "bandwidth_6dB_Hz": 342.4
+  },
+  "structural_fem": {
+    "stiffness_gain_ratio": 18565.0,
+    "flat_max_deflection_mm": 303.27,
+    "monocoque_max_deflection_mm": 0.0163,
+    "flat_max_stress_MPa": 70.83,
+    "monocoque_max_stress_MPa": 0.285,
+    "monocoque_safety_factor_25N": 115.8,
+    "wall_impact_force_N": 15.16,
+    "wall_impact_stress_MPa": 0.18,
+    "wall_impact_safety_factor": 182.9
+  },
+  "power_and_thermal": {
+    "battery_Wh": 7.8,
+    "I_eco_A": 1.8,
+    "I_std_A": 2.46,
+    "I_turbo_A": 2.88,
+    "I_adaptive_avg_A": 2.1,
+    "runtime_eco_min": 39.9,
+    "runtime_std_min": 27.9,
+    "runtime_adaptive_min": 33.4,
+    "cleaned_area_m2_per_charge": 58.8,
+    "cleaned_tatami_mats": 36.3,
+    "P_mosfet_W": 0.536,
+    "Tj_mosfet_C": 42.1,
+    "Tj_driver_C": 26.4,
+    "Tj_ldo_C": 46.5,
+    "P_shunt_W": 0.083,
+    "all_thermal_safe": true
+  }
+}

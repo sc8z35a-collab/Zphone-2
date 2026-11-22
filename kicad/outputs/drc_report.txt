@@ -1,0 +1,85 @@
+** Drc report for /home/antigravity/sc8z35a-collab/Zphone-2/kicad/suga_roomba_ii.kicad_pcb **
+** Created on 2026-11-22 08:43:10 **
+
+** Found 25 DRC violations **
+[lib_footprint_issues]: The current configuration does not include the library 'SugaII'.
+    Local override; Severity: warning
+    @(105.0800 mm, 105.0800 mm): Footprint J1
+[lib_footprint_issues]: The current configuration does not include the library 'SugaII'.
+    Local override; Severity: warning
+    @(111.4300 mm, 105.0800 mm): Footprint SW1
+[lib_footprint_issues]: The current configuration does not include the library 'SugaII'.
+    Local override; Severity: warning
+    @(119.0500 mm, 105.0800 mm): Footprint F1
+[lib_footprint_issues]: The current configuration does not include the library 'SugaII'.
+    Local override; Severity: warning
+    @(129.2100 mm, 105.0800 mm): Footprint C1
+[lib_footprint_issues]: The current configuration does not include the library 'SugaII'.
+    Local override; Severity: warning
+    @(139.3700 mm, 105.0800 mm): Footprint D1
+[lib_footprint_issues]: The current configuration does not include the library 'SugaII'.
+    Local override; Severity: warning
+    @(152.0700 mm, 105.0800 mm): Footprint J2
+[lib_footprint_issues]: The current configuration does not include the library 'SugaII'.
+    Local override; Severity: warning
+    @(105.0800 mm, 112.7000 mm): Footprint D2
+[lib_footprint_issues]: The current configuration does not include the library 'SugaII'.
+    Local override; Severity: warning
+    @(115.2400 mm, 112.7000 mm): Footprint C2
+[lib_footprint_issues]: The current configuration does not include the library 'SugaII'.
+    Local override; Severity: warning
+    @(124.1300 mm, 112.7000 mm): Footprint U4
+[lib_footprint_issues]: The current configuration does not include the library 'SugaII'.
+    Local override; Severity: warning
+    @(136.8300 mm, 112.7000 mm): Footprint Q2
+[lib_footprint_issues]: The current configuration does not include the library 'SugaII'.
+    Local override; Severity: warning
+    @(149.5300 mm, 112.7000 mm): Footprint Q1
+[lib_footprint_issues]: The current configuration does not include the library 'SugaII'.
+    Local override; Severity: warning
+    @(160.9600 mm, 107.6200 mm): Footprint R1
+[lib_footprint_issues]: The current configuration does not include the library 'SugaII'.
+    Local override; Severity: warning
+    @(105.0800 mm, 120.3200 mm): Footprint U1
+[lib_footprint_issues]: The current configuration does not include the library 'SugaII'.
+    Local override; Severity: warning
+    @(129.2100 mm, 120.3200 mm): Footprint U2
+[lib_footprint_issues]: The current configuration does not include the library 'SugaII'.
+    Local override; Severity: warning
+    @(145.7200 mm, 120.3200 mm): Footprint R17
+[lib_footprint_issues]: The current configuration does not include the library 'SugaII'.
+    Local override; Severity: warning
+    @(160.9600 mm, 120.3200 mm): Footprint J3
+[lib_footprint_issues]: The current configuration does not include the library 'SugaII'.
+    Local override; Severity: warning
+    @(160.9600 mm, 127.9400 mm): Footprint J4
+[lib_footprint_issues]: The current configuration does not include the library 'SugaII'.
+    Local override; Severity: warning
+    @(145.7200 mm, 127.9400 mm): Footprint U3
+[lib_footprint_issues]: The current configuration does not include the library 'SugaII'.
+    Local override; Severity: warning
+    @(160.9600 mm, 135.5600 mm): Footprint BZ1
+[lib_footprint_issues]: The current configuration does not include the library 'SugaII'.
+    Local override; Severity: warning
+    @(134.2900 mm, 141.9100 mm): Footprint R15
+[lib_footprint_issues]: The current configuration does not include the library 'SugaII'.
+    Local override; Severity: warning
+    @(105.0800 mm, 148.2600 mm): Footprint J5
+[lib_footprint_issues]: The current configuration does not include the library 'SugaII'.
+    Local override; Severity: warning
+    @(127.9400 mm, 148.2600 mm): Footprint R3
+[lib_footprint_issues]: The current configuration does not include the library 'SugaII'.
+    Local override; Severity: warning
+    @(138.1000 mm, 148.2600 mm): Footprint R6
+[lib_footprint_issues]: The current configuration does not include the library 'SugaII'.
+    Local override; Severity: warning
+    @(148.2600 mm, 148.2600 mm): Footprint R9
+[lib_footprint_issues]: The current configuration does not include the library 'SugaII'.
+    Local override; Severity: warning
+    @(158.4200 mm, 148.2600 mm): Footprint R10
+
+** Found 0 unconnected pads **
+
+** Found 0 Footprint errors **
+
+** End of Report **

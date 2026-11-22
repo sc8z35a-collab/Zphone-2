@@ -1,0 +1,55 @@
+* Suga Roomba II - SPICE Verification 1:
+* Power Sag Isolation (1S4 + 470uF + LP2950L-33) & 6V-Boosted 2SK4017 Turbine PWM Drive
+* Note: Uses E1 single-value 10k resistor synthesis (two 10k in parallel = 5k, etc.)
+
+.model D_SB340 D(IS=2e-6 N=1.08 RS=0.05 BV=40 CJO=180p)
+.model D_1S4   D(IS=1e-6 N=1.05 RS=0.08 BV=40 CJO=90p)
+.model Q_NPN   NPN(IS=1e-14 BF=200 VAF=80)
+.model M_2SK4017 NMOS(LEVEL=1 VTO=1.8 KP=12.0 RD=0.032 RS=0.032 CBD=200p CBS=250p)
+
+* 5S NiMH Battery (6.0V nominal, internal R = 0.175 ohm + PolySwitch 0.045 ohm)
+V_BATT n_batt_int 0 DC 6.0
+R_BATT n_batt_int vbat 0.22
+
+* Bulk motor capacitor (470uF 16V Rubycon WXA)
+C_BULK vbat 0 470u IC=6.0
+
+* --- MCU Power Isolation Rail (1S4 Schottky + 470uF Holdup + LP2950L-33 Model) ---
+D_ISO vbat v_ldo_in D_1S4
+C_HOLD v_ldo_in 0 470u IC=5.65
+* Behavioral LP2950L-33 LDO (3.30V regulated down to Vin=3.75V, 40mA RP2040 load)
+B_LDO v3v3 0 V = min(3.30, max(0, v(v_ldo_in) - 0.42))
+C_3V3 v3v3 0 1u IC=3.30
+R_MCU v3v3 0 82.5
+
+* --- Turbine Motor RS-385PH-4045 Model (Ra=0.40 ohm, La=0.35mH, Back-EMF ramps up) ---
+* At t=1ms, turbine switches ON at 25kHz PWM (85% duty) causing massive inrush sag on vbat!
+V_PWM pwm_in 0 PULSE(0 3.3 1m 100n 100n 34u 40u)
+
+* DTC114EL (NPN with built-in 10k base + 10k B-E resistor) level-shifts 3.3V PWM to 6V gate
+* Note: Firmware drives inverted PWM so GPIO=0/HiZ during boot keeps MOSFET safely OFF via R_PD?
+* Here we simulate active-low drive stage: PWM_INV pulls gate low; R_PU (10k||10k = 5k) pulls to VBAT
+R_B1 pwm_in q_base 10k
+R_BE q_base 0 10k
+Q_DRV v_gate q_base 0 Q_NPN
+R_PU1 vbat v_gate 10k
+R_PU2 vbat v_gate 10k
+
+* Main Turbine Switch 2SK4017(Q)
+M_FET v_drain v_gate 0 0 M_2SK4017
+
+* RS-385PH Motor RL + Back-EMF (ramps from 0V stall to 4.1V spinning over 6ms)
+R_MOT vbat n_m1 0.40
+L_MOT n_m1 n_m2 350u IC=0
+V_BEMF n_m2 v_drain PWL(0 0 1m 0 8m 4.1 12m 4.1)
+
+* Flyback Schottky Diode SB340LS
+D_FLY v_drain vbat D_SB340
+
+.tran 2u 10m 0 2u uic
+.control
+run
+wrdata simulations/results/spice_power.txt v(vbat) v(v_ldo_in) v(v3v3) v(v_drain) i(V_BATT)
+quit
+.endc
+.end

@@ -1,0 +1,928 @@
+<!DOCTYPE html>
+<html lang="und">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title></title>
+<style>
+  :root {
+    --studio-top: #f7f9fc;
+    --studio-bot: #e6ecf4;
+    --glass-bg: rgba(255, 255, 255, 0.78);
+    --glass-border: rgba(15, 23, 42, 0.10);
+    --glass-shadow: 0 10px 30px rgba(15, 23, 42, 0.08), 0 2px 6px rgba(15, 23, 42, 0.04);
+    --ink: #1e293b;
+    --ink-muted: #64748b;
+    --accent: #0f766e;
+    --accent-soft: rgba(15, 118, 110, 0.14);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; -webkit-user-select: none; }
+  html, body {
+    width: 100%; height: 100%; overflow: hidden;
+    background: radial-gradient(circle at 50% 42%, var(--studio-top) 0%, var(--studio-bot) 100%);
+    font-size: 0; line-height: 0;
+  }
+  #gl {
+    position: fixed; inset: 0; width: 100%; height: 100%; display: block;
+    cursor: grab; touch-action: none;
+  }
+  #gl:active { cursor: grabbing; }
+
+  /* Floating minimalist tactile glass panels — strictly ZERO text */
+  .dock {
+    position: fixed; display: flex; align-items: center; gap: 6px;
+    background: var(--glass-bg);
+    backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+    border: 1px solid var(--glass-border);
+    box-shadow: var(--glass-shadow);
+    border-radius: 999px; padding: 6px 10px;
+    z-index: 10;
+  }
+  .dock-top-left { top: 18px; left: 18px; }
+  .dock-top-right { top: 18px; right: 18px; }
+  .dock-left {
+    left: 18px; top: 50%; transform: translateY(-50%);
+    flex-direction: column; padding: 10px 7px; gap: 7px;
+  }
+  .dock-bottom {
+    bottom: 20px; left: 50%; transform: translateX(-50%);
+    padding: 8px 16px; gap: 14px; max-width: calc(100vw - 36px);
+  }
+
+  .btn {
+    width: 34px; height: 34px; border-radius: 50%;
+    border: 1px solid transparent; background: transparent;
+    color: var(--ink); cursor: pointer;
+    display: inline-flex; align-items: center; justify-content: center;
+    transition: background 0.18s ease, transform 0.15s ease, color 0.18s ease, border-color 0.18s ease;
+    outline: none;
+  }
+  .btn:hover { background: rgba(15, 23, 42, 0.06); transform: translateY(-1px); }
+  .btn:active { transform: scale(0.94); }
+  .btn.active {
+    background: var(--accent); color: #ffffff;
+    box-shadow: 0 4px 12px rgba(15, 118, 110, 0.30);
+  }
+  .btn svg { width: 18px; height: 18px; stroke: currentColor; fill: none; stroke-width: 1.85; stroke-linecap: round; stroke-linejoin: round; }
+
+  .sep { width: 1px; height: 22px; background: rgba(15, 23, 42, 0.12); flex-shrink: 0; }
+
+  .slider-wrap { display: flex; align-items: center; gap: 8px; }
+  .slider-ico { width: 18px; height: 18px; color: var(--ink-muted); flex-shrink: 0; display: inline-flex; align-items: center; justify-content: center; }
+  .slider-ico svg { width: 18px; height: 18px; stroke: currentColor; fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+
+  input[type="range"] {
+    -webkit-appearance: none; appearance: none;
+    width: 104px; height: 5px; border-radius: 999px;
+    background: rgba(15, 23, 42, 0.14); outline: none; cursor: pointer;
+  }
+  input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none; appearance: none;
+    width: 16px; height: 16px; border-radius: 50%;
+    background: var(--accent); border: 2.5px solid #ffffff;
+    box-shadow: 0 2px 6px rgba(15, 23, 42, 0.25);
+    transition: transform 0.15s ease;
+  }
+  input[type="range"]::-webkit-slider-thumb:hover { transform: scale(1.16); }
+  input[type="range"]::-moz-range-thumb {
+    width: 16px; height: 16px; border-radius: 50%;
+    background: var(--accent); border: 2.5px solid #ffffff;
+    box-shadow: 0 2px 6px rgba(15, 23, 42, 0.25);
+  }
+
+  /* 12 Part Swatch Dots */
+  .part-dot {
+    width: 18px; height: 18px; border-radius: 50%; border: 2px solid #ffffff;
+    box-shadow: 0 1px 4px rgba(15, 23, 42, 0.22);
+    cursor: pointer; transition: transform 0.18s ease, box-shadow 0.18s ease, opacity 0.18s ease;
+    position: relative;
+  }
+  .part-dot:hover { transform: scale(1.26); }
+  .part-dot.selected {
+    transform: scale(1.32);
+    box-shadow: 0 0 0 2.5px var(--accent), 0 3px 10px rgba(15, 23, 42, 0.28);
+  }
+  .part-dot.dimmed { opacity: 0.28; }
+
+  /* Assembly Step Progress Dots */
+  .step-dots { display: flex; align-items: center; gap: 4px; }
+  .sdot {
+    width: 7px; height: 7px; border-radius: 50%;
+    background: rgba(15, 23, 42, 0.16); cursor: pointer;
+    transition: transform 0.18s ease, background 0.18s ease;
+  }
+  .sdot.done { background: var(--accent); }
+  .sdot.curr { background: #ea580c; transform: scale(1.45); }
+
+  @media (max-width: 780px) {
+    .dock-bottom { flex-wrap: wrap; border-radius: 24px; justify-content: center; gap: 8px; padding: 8px 12px; }
+    input[type="range"] { width: 78px; }
+    .dock-left { left: 10px; padding: 7px 5px; gap: 5px; }
+    .part-dot { width: 14px; height: 14px; }
+  }
+</style>
+</head>
+<body>
+<canvas id="gl"></canvas>
+
+<!-- Top-Left: 5 Geometric Camera Projection Presets (Iso, Top, Front, Side, Bottom) -->
+<div class="dock dock-top-left">
+  <button class="btn active" id="vIso"><svg viewBox="0 0 24 24"><polygon points="12 3 20 7.5 20 16.5 12 21 4 16.5 4 7.5"/><polyline points="4 7.5 12 12 20 7.5"/><line x1="12" y1="12" x2="12" y2="21"/></svg></button>
+  <button class="btn" id="vTop"><svg viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="4"/><circle cx="12" cy="12" r="3.5"/></svg></button>
+  <button class="btn" id="vFront"><svg viewBox="0 0 24 24"><path d="M4 15h16v3a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-3z"/><path d="M6 15l2-6h8l2 6"/><circle cx="8" cy="17.5" r="1"/><circle cx="16" cy="17.5" r="1"/></svg></button>
+  <button class="btn" id="vSide"><svg viewBox="0 0 24 24"><path d="M3 15h18l-2-5H7z"/><circle cx="11" cy="16.5" r="3"/><circle cx="18.5" cy="17.5" r="1.5"/></svg></button>
+  <button class="btn" id="vBot"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><line x1="7.5" y1="9" x2="16.5" y2="9"/><rect x="5" y="12" width="2.5" height="5" rx="1"/><rect x="16.5" y="12" width="2.5" height="5" rx="1"/></svg></button>
+</div>
+
+<!-- Top-Right: X-Ray, Cyclone Airflow, Turntable Spin, Reset -->
+<div class="dock dock-top-right">
+  <button class="btn" id="bXray"><svg viewBox="0 0 24 24"><polygon points="12 3 20 7.5 20 16.5 12 21 4 16.5 4 7.5" stroke-dasharray="2.5 2"/><circle cx="12" cy="12" r="3"/></svg></button>
+  <button class="btn active" id="bFlow"><svg viewBox="0 0 24 24"><path d="M4 10c3-4 8-4 11 0s5 2 6-1"/><path d="M3 15c4-3 9-3 12 0s4 1 6-2"/><path d="M12 5a4 4 0 1 1-3 6.5"/></svg></button>
+  <button class="btn" id="bSpin"><svg viewBox="0 0 24 24"><path d="M20 12a8 8 0 1 1-2.3-5.6"/><polyline points="20 4 20 9 15 9"/></svg></button>
+  <button class="btn" id="bReset"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="7"/><circle cx="12" cy="12" r="2"/><line x1="12" y1="2" x2="12" y2="5"/><line x1="12" y1="19" x2="12" y2="22"/><line x1="2" y1="12" x2="5" y2="12"/><line x1="19" y1="12" x2="22" y2="12"/></svg></button>
+</div>
+
+<!-- Left Rail: 12 Color-Coded Subsystem Swatches (populated via JS with ZERO text) -->
+<div class="dock dock-left" id="partRail"></div>
+
+<!-- Bottom Dock: Explode Slider | Section-Cut Slider | Step-by-Step Assembly Player -->
+<div class="dock dock-bottom">
+  <!-- Explode Slider -->
+  <div class="slider-wrap">
+    <span class="slider-ico"><svg viewBox="0 0 24 24"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg></span>
+    <input type="range" id="sExplode" min="0" max="100" value="0">
+  </div>
+  <div class="sep"></div>
+  <!-- Cross-Section Cut Slider -->
+  <div class="slider-wrap">
+    <span class="slider-ico"><svg viewBox="0 0 24 24"><line x1="4" y1="20" x2="20" y2="4"/><path d="M7 7h10v10" stroke-dasharray="2.5 2"/><rect x="5" y="13" width="6" height="6" rx="1"/></svg></span>
+    <input type="range" id="sCut" min="0" max="100" value="0">
+  </div>
+  <div class="sep"></div>
+  <!-- Visual Assembly Step Player -->
+  <div class="slider-wrap">
+    <button class="btn" id="bPrev"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></button>
+    <button class="btn" id="bPlay"><svg id="playIco" viewBox="0 0 24 24"><polygon points="8 5 19 12 8 19" fill="currentColor"/></svg></button>
+    <button class="btn" id="bNext"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></button>
+    <div class="step-dots" id="stepDots"></div>
+  </div>
+</div>
+
+<script src="stl_bundle.js"></script>
+<script>
+(() => {
+  "use strict";
+
+  const canvas = document.getElementById("gl");
+  const gl = canvas.getContext("webgl2", { antialias: true, alpha: true, preserveDrawingBuffer: true });
+  if (!gl) return;
+
+  // ---------------------------------------------------------------------------
+  // Compact 4x4 Column-Major Matrix Utilities (Z-Up Engineering CAD Frame)
+  // ---------------------------------------------------------------------------
+  const M4 = {
+    ident: () => new Float32Array([1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1]),
+    mul(a, b) {
+      const o = new Float32Array(16);
+      for (let c = 0; c < 4; c++) {
+        for (let r = 0; r < 4; r++) {
+          o[c*4+r] = a[r]*b[c*4] + a[4+r]*b[c*4+1] + a[8+r]*b[c*4+2] + a[12+r]*b[c*4+3];
+        }
+      }
+      return o;
+    },
+    persp(fovY, aspect, near, far) {
+      const f = 1.0 / Math.tan(fovY * 0.5), nf = 1.0 / (near - far);
+      return new Float32Array([
+        f/aspect, 0, 0, 0,
+        0, f, 0, 0,
+        0, 0, (far+near)*nf, -1,
+        0, 0, 2*far*near*nf, 0
+      ]);
+    },
+    lookAt(eye, ctr, up) {
+      let fx = ctr[0]-eye[0], fy = ctr[1]-eye[1], fz = ctr[2]-eye[2];
+      let fl = Math.hypot(fx, fy, fz) || 1; fx/=fl; fy/=fl; fz/=fl;
+      let sx = fy*up[2]-fz*up[1], sy = fz*up[0]-fx*up[2], sz = fx*up[1]-fy*up[0];
+      let sl = Math.hypot(sx, sy, sz) || 1; sx/=sl; sy/=sl; sz/=sl;
+      let ux = sy*fz-sz*fy, uy = sz*fx-sx*fz, uz = sx*fy-sy*fx;
+      return new Float32Array([
+        sx, ux, -fx, 0,
+        sy, uy, -fy, 0,
+        sz, uz, -fz, 0,
+        -(sx*eye[0]+sy*eye[1]+sz*eye[2]),
+        -(ux*eye[0]+uy*eye[1]+uz*eye[2]),
+         (fx*eye[0]+fy*eye[1]+fz*eye[2]), 1
+      ]);
+    },
+    translate(x, y, z) {
+      const m = M4.ident(); m[12]=x; m[13]=y; m[14]=z; return m;
+    },
+    rotZAround(ang, px, py) {
+      const c = Math.cos(ang), s = Math.sin(ang);
+      const t1 = M4.translate(px, py, 0);
+      const r  = new Float32Array([c,s,0,0, -s,c,0,0, 0,0,1,0, 0,0,0,1]);
+      const t2 = M4.translate(-px, -py, 0);
+      return M4.mul(M4.mul(t1, r), t2);
+    }
+  };
+
+  function hexToRgb(h) {
+    const v = parseInt(h.replace("#",""), 16);
+    return [((v>>16)&255)/255, ((v>>8)&255)/255, (v&255)/255];
+  }
+
+  function decodeF32(b64) {
+    const bin = atob(b64);
+    const bytes = new Uint8Array(bin.length);
+    for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+    return new Float32Array(bytes.buffer);
+  }
+
+  function compileShader(type, src) {
+    const s = gl.createShader(type);
+    gl.shaderSource(s, src);
+    gl.compileShader(s);
+    if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) throw new Error(gl.getShaderInfoLog(s));
+    return s;
+  }
+  function createProg(vs, fs) {
+    const p = gl.createProgram();
+    gl.attachShader(p, compileShader(gl.VERTEX_SHADER, vs));
+    gl.attachShader(p, compileShader(gl.FRAGMENT_SHADER, fs));
+    gl.linkProgram(p);
+    if (!gl.getProgramParameter(p, gl.LINK_STATUS)) throw new Error(gl.getProgramInfoLog(p));
+    return p;
+  }
+
+  // ---------------------------------------------------------------------------
+  // 1. Industrial Studio PBR + Real-Time Section-Cut Shader (WebGL2)
+  // ---------------------------------------------------------------------------
+  const cadProg = createProg(
+    `#version 300 es
+    precision highp float;
+    layout(location=0) in vec3 aPos;
+    layout(location=1) in vec3 aNrm;
+    uniform mat4 uVP;
+    uniform mat4 uModel;
+    out vec3 vWorldPos;
+    out vec3 vWorldNrm;
+    void main() {
+      vec4 wp = uModel * vec4(aPos, 1.0);
+      vWorldPos = wp.xyz;
+      vWorldNrm = normalize(mat3(uModel) * aNrm);
+      gl_Position = uVP * wp;
+    }`,
+    `#version 300 es
+    precision highp float;
+    in vec3 vWorldPos;
+    in vec3 vWorldNrm;
+    uniform vec3 uCamPos;
+    uniform vec3 uColor;
+    uniform float uAlpha;
+    uniform float uMetal;
+    uniform float uRough;
+    uniform float uHighlight;
+    uniform float uClipX; // clip everything with vWorldPos.x > uClipX
+    out vec4 fragColor;
+
+    void main() {
+      if (vWorldPos.x > uClipX) discard;
+
+      vec3 N = normalize(vWorldNrm);
+      if (!gl_FrontFacing) N = -N;
+      vec3 V = normalize(uCamPos - vWorldPos);
+
+      // Soft 3-point industrial studio lighting (Z-up)
+      vec3 L1 = normalize(vec3(0.62, 0.52, 0.85));  // warm studio key
+      vec3 L2 = normalize(vec3(-0.75, -0.35, 0.45)); // cool fill
+      vec3 L3 = normalize(vec3(-0.20, 0.85, -0.35)); // ground bounce rim
+
+      float ndl1 = max(dot(N, L1), 0.0);
+      float ndl2 = max(dot(N, L2), 0.0);
+      float ndl3 = max(dot(N, L3), 0.0);
+
+      // Hemisphere ambient + subtle height AO near floor z=0
+      float hemi = 0.5 + 0.5 * N.z;
+      vec3 ambCol = mix(vec3(0.68, 0.72, 0.78), vec3(0.96, 0.98, 1.0), hemi);
+      float floorAO = smoothstep(-6.0, 26.0, vWorldPos.z) * 0.22 + 0.78;
+
+      // Blinn-Phong / GGX-inspired specular response
+      vec3 H1 = normalize(L1 + V);
+      vec3 H2 = normalize(L2 + V);
+      float shin = mix(96.0, 12.0, uRough);
+      float spec1 = pow(max(dot(N, H1), 0.0), shin) * mix(0.35, 1.05, uMetal);
+      float spec2 = pow(max(dot(N, H2), 0.0), shin * 0.6) * 0.22;
+
+      float fresnel = pow(1.0 - max(dot(N, V), 0.0), 3.0);
+      vec3 base = uColor;
+      vec3 diff = base * (ambCol * 0.46 * floorAO + vec3(1.0, 0.98, 0.95) * ndl1 * 0.68 + vec3(0.76, 0.86, 1.0) * ndl2 * 0.28 + vec3(0.85, 0.90, 0.95) * ndl3 * 0.14);
+      vec3 specCol = mix(vec3(1.0), base * 1.15 + 0.25, uMetal);
+      vec3 col = diff + specCol * (spec1 + spec2) + vec3(0.88, 0.94, 1.0) * fresnel * (0.14 + 0.28 * uMetal);
+
+      // Highlight glow on selected part or exposed interior cut face
+      if (!gl_FrontFacing) {
+        col = mix(col, vec3(0.95, 0.44, 0.16), 0.38);
+      }
+      float cutBand = smoothstep(2.2, 0.0, abs(uClipX - vWorldPos.x));
+      col = mix(col, vec3(0.96, 0.48, 0.12), cutBand * 0.85);
+      col += vec3(0.08, 0.24, 0.22) * uHighlight;
+
+      // Gentle filmic tone curve
+      col = col / (col + vec3(0.28)) * 1.24;
+      fragColor = vec4(clamp(col, 0.0, 1.0), uAlpha);
+    }`
+  );
+
+  // ---------------------------------------------------------------------------
+  // 2. Ground Studio Shadow / Engineering Radial Ring Shader
+  // ---------------------------------------------------------------------------
+  const floorProg = createProg(
+    `#version 300 es
+    precision highp float;
+    layout(location=0) in vec3 aPos;
+    uniform mat4 uVP;
+    out vec2 vXY;
+    void main() {
+      vXY = aPos.xy;
+      gl_Position = uVP * vec4(aPos, 1.0);
+    }`,
+    `#version 300 es
+    precision highp float;
+    in vec2 vXY;
+    out vec4 fragColor;
+    void main() {
+      float r = length(vXY);
+      // Soft ambient contact shadow beneath the 210x198mm Reuleaux-D body
+      float shadow = exp(-dot(vXY * vec2(1.0/112.0, 1.0/108.0), vXY * vec2(1.0/112.0, 1.0/108.0))) * 0.24;
+      // Subtle engineering calibration rings (no text!)
+      float ring1 = smoothstep(1.1, 0.0, abs(r - 115.0)) * 0.14;
+      float ring2 = smoothstep(1.1, 0.0, abs(r - 165.0)) * 0.09;
+      float crossX = smoothstep(0.7, 0.0, abs(vXY.x)) * smoothstep(170.0, 115.0, r) * 0.08;
+      float crossY = smoothstep(0.7, 0.0, abs(vXY.y)) * smoothstep(170.0, 115.0, r) * 0.08;
+      float fade = smoothstep(220.0, 145.0, r);
+      float a = clamp((shadow + ring1 + ring2 + crossX + crossY) * fade, 0.0, 0.45);
+      vec3 c = mix(vec3(0.10, 0.16, 0.26), vec3(0.06, 0.46, 0.43), (ring1 + ring2) * 3.5);
+      fragColor = vec4(c, a);
+    }`
+  );
+
+  // ---------------------------------------------------------------------------
+  // 3. 3D Cyclone Airflow & Debris Particle Streamline Shader
+  // ---------------------------------------------------------------------------
+  const ptProg = createProg(
+    `#version 300 es
+    precision highp float;
+    layout(location=0) in vec3 aPos;
+    layout(location=1) in vec4 aCol;
+    layout(location=2) in float aSize;
+    uniform mat4 uVP;
+    out vec4 vCol;
+    void main() {
+      vCol = aCol;
+      vec4 clip = uVP * vec4(aPos, 1.0);
+      gl_Position = clip;
+      gl_PointSize = clamp(aSize * 460.0 / max(clip.w, 10.0), 2.5, 13.0);
+    }`,
+    `#version 300 es
+    precision highp float;
+    in vec4 vCol;
+    out vec4 fragColor;
+    void main() {
+      vec2 p = gl_PointCoord * 2.0 - 1.0;
+      float d = dot(p, p);
+      if (d > 1.0) discard;
+      float soft = pow(1.0 - d, 1.6);
+      fragColor = vec4(vCol.rgb, vCol.a * soft);
+    }`
+  );
+
+  // Build studio floor quad at z = -0.3mm
+  const floorVao = gl.createVertexArray();
+  gl.bindVertexArray(floorVao);
+  const fBuf = gl.createBuffer();
+  gl.bindBuffer(gl.ARRAY_BUFFER, fBuf);
+  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([
+    -230,-230,-0.3,  230,-230,-0.3,  230,230,-0.3,
+    -230,-230,-0.3,  230, 230,-0.3, -230,230,-0.3
+  ]), gl.STATIC_DRAW);
+  gl.enableVertexAttribArray(0);
+  gl.vertexAttribPointer(0, 3, gl.FLOAT, false, 0, 0);
+  gl.bindVertexArray(null);
+
+  // Load real compiled OpenSCAD STL meshes from stl_bundle.js
+  const bundle = window.SUGA_CAD_BUNDLE || { parts: [] };
+  const meshes = bundle.parts.map((p) => {
+    const pos = decodeF32(p.posB64);
+    const nrm = decodeF32(p.nrmB64);
+    const vao = gl.createVertexArray();
+    gl.bindVertexArray(vao);
+
+    const pb = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, pb);
+    gl.bufferData(gl.ARRAY_BUFFER, pos, gl.STATIC_DRAW);
+    gl.enableVertexAttribArray(0);
+    gl.vertexAttribPointer(0, 3, gl.FLOAT, false, 0, 0);
+
+    const nb = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, nb);
+    gl.bufferData(gl.ARRAY_BUFFER, nrm, gl.STATIC_DRAW);
+    gl.enableVertexAttribArray(1);
+    gl.vertexAttribPointer(1, 3, gl.FLOAT, false, 0, 0);
+
+    gl.bindVertexArray(null);
+    return {
+      step: p.step,
+      id: p.id,
+      color: hexToRgb(p.color),
+      hex: p.color,
+      opacity: p.opacity,
+      metal: p.metalness,
+      rough: p.roughness,
+      explode: p.explode,
+      vertCount: pos.length / 3,
+      vao
+    };
+  });
+
+  // ---------------------------------------------------------------------------
+  // 3D Aerodynamic Streamline Particles (Nozzle -> PET Cyclone -> Impeller -> Muffler)
+  // ---------------------------------------------------------------------------
+  const N_PARTICLES = 380;
+  const ptSeeds = Array.from({ length: N_PARTICLES }, (_, i) => ({
+    phase: (i / N_PARTICLES) + Math.random() * 0.02,
+    lane: (Math.random() - 0.5) * 2.0,
+    isDebris: (i % 5 === 0),
+    speed: 0.22 + Math.random() * 0.08
+  }));
+  const ptPosData = new Float32Array(N_PARTICLES * 3);
+  const ptColData = new Float32Array(N_PARTICLES * 4);
+  const ptSzData  = new Float32Array(N_PARTICLES);
+
+  const ptVao = gl.createVertexArray();
+  gl.bindVertexArray(ptVao);
+  const ptPosBuf = gl.createBuffer();
+  gl.bindBuffer(gl.ARRAY_BUFFER, ptPosBuf);
+  gl.bufferData(gl.ARRAY_BUFFER, ptPosData.byteLength, gl.DYNAMIC_DRAW);
+  gl.enableVertexAttribArray(0);
+  gl.vertexAttribPointer(0, 3, gl.FLOAT, false, 0, 0);
+
+  const ptColBuf = gl.createBuffer();
+  gl.bindBuffer(gl.ARRAY_BUFFER, ptColBuf);
+  gl.bufferData(gl.ARRAY_BUFFER, ptColData.byteLength, gl.DYNAMIC_DRAW);
+  gl.enableVertexAttribArray(1);
+  gl.vertexAttribPointer(1, 4, gl.FLOAT, false, 0, 0);
+
+  const ptSzBuf = gl.createBuffer();
+  gl.bindBuffer(gl.ARRAY_BUFFER, ptSzBuf);
+  gl.bufferData(gl.ARRAY_BUFFER, ptSzData.byteLength, gl.DYNAMIC_DRAW);
+  gl.enableVertexAttribArray(2);
+  gl.vertexAttribPointer(2, 1, gl.FLOAT, false, 0, 0);
+  gl.bindVertexArray(null);
+
+  function updateParticles(tSec) {
+    for (let i = 0; i < N_PARTICLES; i++) {
+      const s = ptSeeds[i];
+      const u = (s.phase + tSec * s.speed) % 1.0;
+      let x = 0, y = 0, z = 0, r = 0.06, g = 0.68, b = 0.85, a = 0.85, sz = 4.2;
+
+      if (u < 0.20) {
+        // Stage 1: Floor sweep -> Bernoulli nozzle (y: +92 -> +66, z: 3 -> 16)
+        const f = u / 0.20;
+        x = s.lane * 52.0 * (1.0 - 0.65 * f) + (s.lane > 0 ? 12 * (1 - f) : 0);
+        y = 92.0 - 28.0 * f;
+        z = 3.0 + 14.0 * f * f;
+        if (s.isDebris) { r = 0.92; g = 0.45; b = 0.12; sz = 5.6; }
+      } else if (u < 0.34) {
+        // Stage 2: Tangential intake chute -> PET Cyclone (-26, +24)
+        const f = (u - 0.20) / 0.14;
+        x = (1 - f) * (s.lane * 16.0) + f * (-26.0 + 27.0);
+        y = (1 - f) * 64.0 + f * (24.0 + 12.0);
+        z = 17.0 + 18.0 * f;
+        if (s.isDebris) { r = 0.95; g = 0.50; b = 0.14; sz = 5.5; }
+      } else if (u < 0.66) {
+        // Stage 3: High-speed helical vortex inside Ø65mm PET Cyclone (-26, 24)
+        const f = (u - 0.34) / 0.32;
+        const turns = f * Math.PI * 6.5;
+        if (s.isDebris) {
+          // Heavy dust centrifuges to outer wall & drops into lower bin!
+          const rad = 28.5;
+          x = -26.0 + rad * Math.cos(turns);
+          y =  24.0 + rad * Math.sin(turns);
+          z = 36.0 - 24.0 * f;
+          r = 0.94; g = 0.46; b = 0.10; sz = 5.4; a = 0.92 * (1.0 - 0.4 * f);
+        } else {
+          // Clean air spirals down outer wall then shoots UP central vortex finder!
+          const rad = f < 0.55 ? (26.0 - 10.0 * (f / 0.55)) : (10.0 * (1.0 - (f - 0.55) / 0.45));
+          x = -26.0 + rad * Math.cos(turns);
+          y =  24.0 + rad * Math.sin(turns);
+          z = f < 0.55 ? (36.0 - 14.0 * (f / 0.55)) : (22.0 + 22.0 * ((f - 0.55) / 0.45));
+          r = 0.08; g = 0.72; b = 0.88; sz = 4.2;
+        }
+      } else if (u < 0.84) {
+        // Stage 4: Transfer duct -> Ø78mm 9-blade impeller (+34, +18, z=20)
+        const f = (u - 0.66) / 0.18;
+        if (s.isDebris) {
+          // Settled peacefully in bottom dust bin
+          const ang = s.phase * 30.0 + tSec * 0.4;
+          x = -26.0 + 18.0 * Math.cos(ang);
+          y =  24.0 + 18.0 * Math.sin(ang);
+          z = 11.0;
+          r = 0.85; g = 0.44; b = 0.14; a = 0.45 * (1.0 - f); sz = 4.2;
+        } else if (f < 0.45) {
+          const g2 = f / 0.45;
+          x = -26.0 + 60.0 * g2;
+          y =  24.0 - 6.0 * g2;
+          z = 42.0 - 22.0 * g2;
+          r = 0.10; g = 0.76; b = 0.72; sz = 4.2;
+        } else {
+          const g2 = (f - 0.45) / 0.55;
+          const ang = g2 * Math.PI * 3.0;
+          const rad = 14.0 + 25.0 * g2;
+          x = 34.0 + rad * Math.cos(ang);
+          y = 18.0 + rad * Math.sin(ang);
+          z = 21.0 + s.lane * 2.5;
+          r = 0.12; g = 0.82; b = 0.64; sz = 4.6;
+        }
+      } else {
+        // Stage 5: Rear tangential diffuser -> Helmholtz exhaust muffler (y: -20 -> -118)
+        const f = (u - 0.84) / 0.16;
+        if (s.isDebris) {
+          x = -26; y = 24; z = 11; a = 0.0; sz = 0.0;
+        } else {
+          x = 46.0 * (1.0 - f) + (s.lane * 22.0) * f;
+          y = -20.0 - 98.0 * f;
+          z = 22.0 + 22.0 * f;
+          r = 0.16; g = 0.78; b = 0.58; a = 0.82 * (1.0 - f); sz = 4.8;
+        }
+      }
+
+      ptPosData[i*3]   = x;
+      ptPosData[i*3+1] = y;
+      ptPosData[i*3+2] = z;
+      ptColData[i*4]   = r;
+      ptColData[i*4+1] = g;
+      ptColData[i*4+2] = b;
+      ptColData[i*4+3] = a;
+      ptSzData[i]      = sz;
+    }
+    gl.bindBuffer(gl.ARRAY_BUFFER, ptPosBuf);
+    gl.bufferSubData(gl.ARRAY_BUFFER, 0, ptPosData);
+    gl.bindBuffer(gl.ARRAY_BUFFER, ptColBuf);
+    gl.bufferSubData(gl.ARRAY_BUFFER, 0, ptColData);
+    gl.bindBuffer(gl.ARRAY_BUFFER, ptSzBuf);
+    gl.bufferSubData(gl.ARRAY_BUFFER, 0, ptSzData);
+  }
+
+  // ---------------------------------------------------------------------------
+  // Interactive CAD State & Smooth Animation Targets
+  // ---------------------------------------------------------------------------
+  const state = {
+    theta: 0.68, phi: 0.46, dist: 395, target: [0, -2, 28],
+    tTheta: 0.68, tPhi: 0.46, tDist: 395, tTarget: [0, -2, 28],
+    explode: 0.0, tExplode: 0.0,
+    cut: 0.0, tCut: 0.0,
+    xray: false,
+    flow: true,
+    spin: false,
+    selectedPart: -1, // -1 = all
+    assemblyStep: 12, // 1..12
+    playing: false,
+    playTimer: 0.0,
+    stepDropAnim: new Float32Array(12).fill(1.0)
+  };
+
+  // Populate Left Part Swatch Rail & Bottom Assembly Step Dots (ZERO text!)
+  const partRail = document.getElementById("partRail");
+  const stepDots = document.getElementById("stepDots");
+  const partDotEls = [];
+  const stepDotEls = [];
+
+  meshes.forEach((m, idx) => {
+    const dot = document.createElement("button");
+    dot.className = "part-dot";
+    dot.style.background = m.hex;
+    dot.addEventListener("click", () => {
+      state.selectedPart = (state.selectedPart === idx) ? -1 : idx;
+      if (state.selectedPart >= 0 && state.assemblyStep < idx + 1) {
+        state.assemblyStep = idx + 1;
+        syncStepDots();
+      }
+      syncPartDots();
+    });
+    partRail.appendChild(dot);
+    partDotEls.push(dot);
+
+    const sdot = document.createElement("span");
+    sdot.className = "sdot done";
+    sdot.addEventListener("click", () => {
+      state.playing = false;
+      updatePlayIcon();
+      state.assemblyStep = idx + 1;
+      state.selectedPart = -1;
+      syncPartDots();
+      syncStepDots();
+    });
+    stepDots.appendChild(sdot);
+    stepDotEls.push(sdot);
+  });
+
+  function syncPartDots() {
+    partDotEls.forEach((el, i) => {
+      el.classList.toggle("selected", state.selectedPart === i);
+      el.classList.toggle("dimmed", state.selectedPart !== -1 && state.selectedPart !== i);
+    });
+  }
+  function syncStepDots() {
+    stepDotEls.forEach((el, i) => {
+      el.classList.toggle("done", i < state.assemblyStep);
+      el.classList.toggle("curr", i === state.assemblyStep - 1 && state.assemblyStep < 12);
+    });
+  }
+  syncStepDots();
+
+  // Camera View Presets
+  const viewBtns = {
+    vIso:   [0.68,  0.46, 335, [0, -2, 28]],
+    vTop:   [-Math.PI/2, 1.52, 340, [0, -4, 24]],
+    vFront: [Math.PI/2, 0.08, 300, [0, 0, 30]],
+    vSide:  [0.0,   0.08, 305, [0, -4, 30]],
+    vBot:   [-Math.PI/2, -1.52, 335, [0, -4, 18]],
+  };
+  function clearViewActives() {
+    Object.keys(viewBtns).forEach(k => document.getElementById(k).classList.remove("active"));
+  }
+  Object.entries(viewBtns).forEach(([id, [th, ph, ds, tg]]) => {
+    document.getElementById(id).addEventListener("click", () => {
+      clearViewActives();
+      document.getElementById(id).classList.add("active");
+      state.spin = false;
+      document.getElementById("bSpin").classList.remove("active");
+      state.tTheta = th; state.tPhi = ph; state.tDist = ds; state.tTarget = [...tg];
+    });
+  });
+
+  // Top-right toggles
+  const bXray = document.getElementById("bXray");
+  const bFlow = document.getElementById("bFlow");
+  const bSpin = document.getElementById("bSpin");
+  const bReset = document.getElementById("bReset");
+
+  bXray.addEventListener("click", () => { state.xray = !state.xray; bXray.classList.toggle("active", state.xray); });
+  bFlow.addEventListener("click", () => { state.flow = !state.flow; bFlow.classList.toggle("active", state.flow); });
+  bSpin.addEventListener("click", () => { state.spin = !state.spin; bSpin.classList.toggle("active", state.spin); });
+  bReset.addEventListener("click", () => {
+    state.tTheta = 0.68; state.tPhi = 0.46; state.tDist = 335; state.tTarget = [0, -2, 28];
+    state.tExplode = 0; state.tCut = 0; state.xray = false; state.flow = true; state.spin = false;
+    state.selectedPart = -1; state.assemblyStep = 12; state.playing = false;
+    document.getElementById("sExplode").value = 0;
+    document.getElementById("sCut").value = 0;
+    bXray.classList.remove("active"); bFlow.classList.add("active"); bSpin.classList.remove("active");
+    clearViewActives(); document.getElementById("vIso").classList.add("active");
+    updatePlayIcon(); syncPartDots(); syncStepDots();
+  });
+
+  // Bottom sliders & player
+  document.getElementById("sExplode").addEventListener("input", (e) => {
+    state.tExplode = Number(e.target.value) / 100.0;
+  });
+  document.getElementById("sCut").addEventListener("input", (e) => {
+    state.tCut = Number(e.target.value) / 100.0;
+  });
+
+  function updatePlayIcon() {
+    const ico = document.getElementById("playIco");
+    const btn = document.getElementById("bPlay");
+    btn.classList.toggle("active", state.playing);
+    ico.innerHTML = state.playing
+      ? '<rect x="6" y="5" width="4" height="14" rx="1" fill="currentColor"/><rect x="14" y="5" width="4" height="14" rx="1" fill="currentColor"/>'
+      : '<polygon points="8 5 19 12 8 19" fill="currentColor"/>';
+  }
+  document.getElementById("bPlay").addEventListener("click", () => {
+    state.playing = !state.playing;
+    if (state.playing) {
+      if (state.assemblyStep >= 12) state.assemblyStep = 1;
+      state.selectedPart = -1;
+      state.playTimer = 0.0;
+      syncPartDots(); syncStepDots();
+    }
+    updatePlayIcon();
+  });
+  document.getElementById("bPrev").addEventListener("click", () => {
+    state.playing = false; updatePlayIcon();
+    state.assemblyStep = Math.max(1, state.assemblyStep - 1);
+    syncStepDots();
+  });
+  document.getElementById("bNext").addEventListener("click", () => {
+    state.playing = false; updatePlayIcon();
+    state.assemblyStep = Math.min(12, state.assemblyStep + 1);
+    syncStepDots();
+  });
+
+  // Pointer Orbit / Pan / Zoom
+  let dragMode = 0, lastX = 0, lastY = 0;
+  canvas.addEventListener("pointerdown", (e) => {
+    canvas.setPointerCapture(e.pointerId);
+    dragMode = (e.button === 2 || e.shiftKey) ? 2 : 1;
+    lastX = e.clientX; lastY = e.clientY;
+    state.spin = false; bSpin.classList.remove("active");
+    clearViewActives();
+  });
+  canvas.addEventListener("pointermove", (e) => {
+    if (!dragMode) return;
+    const dx = e.clientX - lastX, dy = e.clientY - lastY;
+    lastX = e.clientX; lastY = e.clientY;
+    if (dragMode === 1) {
+      state.tTheta -= dx * 0.008;
+      state.tPhi = Math.max(-1.53, Math.min(1.53, state.tPhi + dy * 0.008));
+    } else {
+      const s = state.dist * 0.0014;
+      const rx = -Math.sin(state.theta), ry = Math.cos(state.theta);
+      state.tTarget[0] -= rx * dx * s;
+      state.tTarget[1] -= ry * dx * s;
+      state.tTarget[2] += dy * s;
+    }
+  });
+  canvas.addEventListener("pointerup", () => { dragMode = 0; });
+  canvas.addEventListener("contextmenu", (e) => e.preventDefault());
+  canvas.addEventListener("wheel", (e) => {
+    e.preventDefault();
+    state.tDist = Math.max(140, Math.min(640, state.tDist * Math.exp(e.deltaY * 0.0011)));
+  }, { passive: false });
+
+  // Expose deterministic programmatic hook for automated screenshot & geometry verification
+  let pausedLoop = false;
+  let drawFrameFn = null;
+  window.__SUGA_CAD_API__ = {
+    setState(opts) {
+      if (opts.theta !== undefined) state.theta = state.tTheta = opts.theta;
+      if (opts.phi !== undefined) state.phi = state.tPhi = opts.phi;
+      if (opts.dist !== undefined) state.dist = state.tDist = opts.dist;
+      if (opts.explode !== undefined) { state.explode = state.tExplode = opts.explode; document.getElementById("sExplode").value = Math.round(opts.explode * 100); }
+      if (opts.cut !== undefined) { state.cut = state.tCut = opts.cut; document.getElementById("sCut").value = Math.round(opts.cut * 100); }
+      if (opts.xray !== undefined) { state.xray = opts.xray; bXray.classList.toggle("active", opts.xray); }
+      if (opts.flow !== undefined) { state.flow = opts.flow; bFlow.classList.toggle("active", opts.flow); }
+      if (opts.step !== undefined) { state.assemblyStep = opts.step; state.stepDropAnim.fill(1.0); syncStepDots(); }
+      if (opts.selectedPart !== undefined) { state.selectedPart = opts.selectedPart; syncPartDots(); }
+      if (opts.pause !== undefined) pausedLoop = !!opts.pause;
+      if (drawFrameFn) drawFrameFn(opts.tSec !== undefined ? opts.tSec : 1.85);
+    }
+  };
+
+  function resize() {
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    const w = Math.floor(window.innerWidth * dpr);
+    const h = Math.floor(window.innerHeight * dpr);
+    if (canvas.width !== w || canvas.height !== h) {
+      canvas.width = w; canvas.height = h;
+      gl.viewport(0, 0, w, h);
+    }
+  }
+  window.addEventListener("resize", resize);
+  resize();
+
+  // Cached uniform locations
+  const uCad = {
+    vp: gl.getUniformLocation(cadProg, "uVP"),
+    model: gl.getUniformLocation(cadProg, "uModel"),
+    camPos: gl.getUniformLocation(cadProg, "uCamPos"),
+    color: gl.getUniformLocation(cadProg, "uColor"),
+    alpha: gl.getUniformLocation(cadProg, "uAlpha"),
+    metal: gl.getUniformLocation(cadProg, "uMetal"),
+    rough: gl.getUniformLocation(cadProg, "uRough"),
+    hl: gl.getUniformLocation(cadProg, "uHighlight"),
+    clipX: gl.getUniformLocation(cadProg, "uClipX"),
+  };
+  const uFloorVP = gl.getUniformLocation(floorProg, "uVP");
+  const uPtVP    = gl.getUniformLocation(ptProg, "uVP");
+
+  let prevMs = performance.now();
+  function drawScene(dt, tSec) {
+    resize();
+
+    if (state.spin) state.tTheta += dt * 0.45;
+    if (state.playing) {
+      state.playTimer += dt;
+      if (state.playTimer > 1.15) {
+        state.playTimer = 0.0;
+        if (state.assemblyStep < 12) {
+          state.assemblyStep++;
+          state.stepDropAnim[state.assemblyStep - 1] = 0.0;
+          syncStepDots();
+        } else {
+          state.playing = false;
+          updatePlayIcon();
+        }
+      }
+    }
+
+    const k = dt > 0 ? (1.0 - Math.exp(-dt * 11.0)) : 1.0;
+    state.theta += (state.tTheta - state.theta) * k;
+    state.phi   += (state.tPhi   - state.phi)   * k;
+    state.dist  += (state.tDist  - state.dist)  * k;
+    for (let i = 0; i < 3; i++) state.target[i] += (state.tTarget[i] - state.target[i]) * k;
+    state.explode += (state.tExplode - state.explode) * k;
+    state.cut     += (state.tCut     - state.cut)     * k;
+
+    for (let i = 0; i < meshes.length; i++) {
+      const tgt = (i < state.assemblyStep) ? 1.0 : 0.0;
+      state.stepDropAnim[i] += (tgt - state.stepDropAnim[i]) * (dt > 0 ? Math.min(1.0, dt * 8.0) : 1.0);
+    }
+
+    const eye = [
+      state.target[0] + state.dist * Math.cos(state.phi) * Math.cos(state.theta),
+      state.target[1] + state.dist * Math.cos(state.phi) * Math.sin(state.theta),
+      state.target[2] + state.dist * Math.sin(state.phi)
+    ];
+    const proj = M4.persp(0.58, canvas.width / Math.max(1, canvas.height), 4.0, 2400.0);
+    const view = M4.lookAt(eye, state.target, [0, 0, 1]);
+    const vp   = M4.mul(proj, view);
+
+    gl.clearColor(0, 0, 0, 0);
+    gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+    gl.enable(gl.DEPTH_TEST);
+    gl.enable(gl.BLEND);
+    // Preserve destination alpha cleanly so translucent PET glass / X-ray never blow out white!
+    gl.blendFuncSeparate(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA, gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
+
+    // 1. Studio Ground Contact Shadow & Rings
+    gl.depthMask(false);
+    gl.useProgram(floorProg);
+    gl.uniformMatrix4fv(uFloorVP, false, vp);
+    gl.bindVertexArray(floorVao);
+    gl.drawArrays(gl.TRIANGLES, 0, 6);
+    gl.depthMask(true);
+
+    // 2. Render 12 OpenSCAD Solid & Translucent Subsystems
+    const clipX = (state.cut <= 0.005) ? 999.0 : (112.0 - state.cut * 204.0);
+    gl.useProgram(cadProg);
+    gl.uniformMatrix4fv(uCad.vp, false, vp);
+    gl.uniform3fv(uCad.camPos, eye);
+    gl.uniform1f(uCad.clipX, clipX);
+
+    const opaquePass = [];
+    const transPass  = [];
+
+    meshes.forEach((m, idx) => {
+      if (idx >= state.assemblyStep && state.stepDropAnim[idx] < 0.02) return;
+      let alpha = m.opacity;
+      if (m.id === "05_pet_cyclone_chamber") alpha = 0.38;
+      if (state.xray && (idx === 0 || idx === 1 || idx === 2)) alpha = Math.min(alpha, 0.22);
+      if (state.selectedPart !== -1 && state.selectedPart !== idx) alpha = Math.min(alpha, 0.14);
+      const entry = { m, idx, alpha };
+      if (alpha < 0.99) transPass.push(entry); else opaquePass.push(entry);
+    });
+
+    function drawEntry({ m, idx, alpha }) {
+      const drop = (1.0 - state.stepDropAnim[idx]) * 65.0;
+      const ex = m.explode[0] * state.explode;
+      const ey = m.explode[1] * state.explode;
+      const ez = m.explode[2] * state.explode + drop;
+      let model = M4.translate(ex, ey, ez);
+
+      if (m.id === "04_logarithmic_impeller" && state.flow) {
+        model = M4.mul(model, M4.rotZAround(-tSec * 14.0, 34.0, 18.0));
+      }
+
+      const drawCol = (m.id === "05_pet_cyclone_chamber") ? [0.08, 0.56, 0.82] : m.color;
+      gl.uniformMatrix4fv(uCad.model, false, model);
+      gl.uniform3fv(uCad.color, drawCol);
+      gl.uniform1f(uCad.alpha, alpha);
+      gl.uniform1f(uCad.metal, m.metal);
+      gl.uniform1f(uCad.rough, m.rough);
+      gl.uniform1f(uCad.hl, (state.selectedPart === idx) ? 0.55 : 0.0);
+      gl.bindVertexArray(m.vao);
+      gl.drawArrays(gl.TRIANGLES, 0, m.vertCount);
+    }
+
+    gl.depthMask(true);
+    opaquePass.forEach(drawEntry);
+
+    gl.depthMask(false);
+    transPass.forEach(drawEntry);
+
+    // 3. Live 3D Cyclone Airflow & Debris Streamlines
+    if (state.flow && state.assemblyStep >= 5) {
+      updateParticles(tSec);
+      gl.useProgram(ptProg);
+      gl.uniformMatrix4fv(uPtVP, false, vp);
+      gl.bindVertexArray(ptVao);
+      gl.drawArrays(gl.POINTS, 0, N_PARTICLES);
+    }
+    gl.depthMask(true);
+    gl.bindVertexArray(null);
+  }
+  drawFrameFn = (tSec) => drawScene(0.0, tSec);
+
+  function render(nowMs) {
+    requestAnimationFrame(render);
+    if (pausedLoop) return;
+    const dt = Math.min(0.05, (nowMs - prevMs) * 0.001);
+    prevMs = nowMs;
+    drawScene(dt, nowMs * 0.001);
+  }
+  requestAnimationFrame(render);
+})();
+</script>
+</body>
+</html>

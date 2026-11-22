@@ -1,0 +1,26 @@
+{
+  "power_isolation": {
+    "vbat_min_sag_V": 4.42,
+    "v3v3_min_V": 3.3,
+    "v3v3_max_V": 3.3,
+    "mcu_zero_brownout_pass": true,
+    "vdrain_flyback_clamped_max_V": 6.47,
+    "mosfet_vds_60V_margin_x": 9.3
+  },
+  "single_shunt_ripple_amp": {
+    "cruise_adc_mean_V": 0.629,
+    "commutator_ripple_pp_mV": 230.7,
+    "wall_stall_adc_mean_V": 1.456,
+    "stall_step_ratio": 2.32
+  },
+  "piezo_dirt_detect": {
+    "midrail_bias_V": 1.65,
+    "peak_impact_swing_V": 0.712,
+    "adc_saturation_free": true
+  },
+  "led_as_photodiode": {
+    "wall_present_discharge_us": 142.2,
+    "cliff_open_air_discharge_us_min": 1520.2,
+    "contrast_ratio_x": 10.7
+  }
+}

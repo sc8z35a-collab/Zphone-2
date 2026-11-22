@@ -1,0 +1,43 @@
+* Suga Roomba II - SPICE Verification 2:
+* Single-Shunt (0.33 ohm MPC74) Commutator Ripple & Wall-Stall Sense Amplifier (MCP6002 CH1)
+* E1 Single-Value Resistor Network (10kOhm only: R1=10k, Rf=10k+10k+10k+10k+10k? No: Rf=100k via series/parallel or 3-resistor T-network!)
+* GENIUS E1 TRICK: 20x Gain using ONLY 10k resistors via Feedback T-Network or 10k||10k=5k + 10k*10?
+* Even cleaner: Non-inverting amp with R_g = 10k||10k||10k = 3.33k, R_f = 10k+10k+10k = 30k -> Gain = 1 + 30/3.33 = 10.0x!
+* At I_stall = 0.49A (2ch) -> V_shunt = 0.162V -> V_out = 1.62V (perfect mid-range of 3.3V ADC!)
+* At I_cruise = 0.20A + 30mA commutator ripple (240Hz) -> V_shunt = 66mV +/- 10mV -> V_out = 0.66V +/- 100mV (crystal clear!)
+
+V_3V3 v3v3 0 DC 3.3
+
+* Simulated combined Left/Right PWN10EB12CB motor current through 0.33 ohm MPC74 shunt:
+* 0-25ms: Normal cruise (0.19A DC + 35mA 240Hz commutator ripple)
+* 25-50ms: Wall collision stall! (jumps to 0.44A DC, ripple frequency collapses to 30Hz)
+I_MOT 0 n_shunt SIN(0.19 0.035 240 0 0)
+I_STALL 0 n_shunt PULSE(0 0.25 25m 0.5m 0.5m 30m 60m)
+R_SHUNT n_shunt 0 0.33
+
+* Anti-aliasing RC low-pass filter (10k + 0.01uF? We use 1uF/10 or 10k + 1uF -> fc=15.9Hz? No, we want ripple up to 500Hz!)
+* Use pure direct input to MCP6002 non-inverting pin (RP2040 ADC samples at 20kHz + digital FIR)
+* MCP6002 Rail-to-Rail CMOS Op-Amp behavioral macro (GBW=1MHz, rail clamped 0.02V..3.28V)
+R_IN n_shunt n_plus 10k
+
+* E1 10k-only Gain = 10.0x network: R_g = 3x 10k in parallel (3.333k), R_f = 3x 10k in series (30k)
+R_G1 n_minus 0 10k
+R_G2 n_minus 0 10k
+R_G3 n_minus 0 10k
+R_F1 v_adc n_f1 10k
+R_F2 n_f1 n_f2 10k
+R_F3 n_f2 n_minus 10k
+
+* Op-amp gain stage with dominant pole at 100Hz (GBW = 1MHz -> A0=1e4)
+G_OP 0 n_int n_plus n_minus 1e-2
+R_OP n_int 0 1Meg
+C_OP n_int 0 15.9n
+B_OUT v_adc 0 V = min(3.28, max(0.02, v(n_int)))
+
+.tran 50u 50m 0 50u
+.control
+run
+wrdata simulations/results/spice_shunt.txt v(n_shunt) v(v_adc)
+quit
+.endc
+.end

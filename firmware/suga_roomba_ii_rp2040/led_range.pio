@@ -1,0 +1,39 @@
+; =============================================================================
+; 菅ルンバ II (Suga Roomba II) — RP2040 PIO Program: LED-as-Photodiode Ranging
+; Turns four 10-JPY 3mm Red LEDs (OSR5JA3Z74A) into nanosecond-accurate
+; wall & stair-cliff proximity sensors (10.7x floor/cliff contrast in ngspice!)
+;
+; Wiring: LED Cathode -> GP14..GP17, LED Anode -> GND (or vice versa via invert)
+; Protocol per measurement:
+;   1. Drive pin HIGH (3.3V reverse-bias charges ~30pF junction capacitance)
+;   2. Switch pin direction to floating INPUT
+;   3. Decrement X register until reflected red photocurrent discharges pin LOW
+;   4. Push remaining X count to RX FIFO (smaller decay cycles = closer surface!)
+; =============================================================================
+
+.program led_range
+
+.wrap_target
+    ; Wait for Core0 to push timeout value (e.g. 200000 cycles = ~1.6ms @ 125MHz)
+    pull block
+    mov x, osr
+
+    ; Step 1: Reverse-bias charge LED junction capacitance (set pin HIGH output)
+    set pindirs, 1
+    set pins, 1       [15]     ; Hold 16 cycles (~128ns) to fully charge junction
+
+    ; Step 2: Release pin to high-Z INPUT (photocurrent discharges LED junction)
+    set pindirs, 0
+
+    ; Step 3: Count clock cycles while pin stays logic HIGH (> ~1.6V threshold)
+discharge_loop:
+    jmp pin, still_high
+    jmp done
+still_high:
+    jmp x--, discharge_loop
+
+done:
+    ; Push remaining X to Core0: elapsed_cycles = timeout - X
+    mov isr, x
+    push noblock
+.wrap

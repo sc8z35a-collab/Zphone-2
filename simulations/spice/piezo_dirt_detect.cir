@@ -1,0 +1,43 @@
+* Suga Roomba II - SPICE Verification 3:
+* Murata PKM13EPYH4000-A0 Piezo Acoustic Dirt Detect Amplifier (MCP6002 CH2)
+* Uses ONLY 10k resistors + 1uF MLCC + MCP6002 (zero extra BOM parts!)
+
+V_3V3 v3v3 0 DC 3.3
+
+* Mid-rail 1.65V virtual ground bias via two 10k resistors + 1uF bypass cap
+R_B1 v3v3 v_mid 10k
+R_B2 v_mid 0 10k
+C_MID v_mid 0 1u IC=1.65
+
+* Piezo equivalent circuit: Cp = 5.5nF (from Akizuki [104118] datasheet: 0.0055uF!)
+* Simulates 3 sand/rice particle impacts at t=3ms, 8ms, 13ms (damped 4kHz bursts, 60-150mV)
+V_IMP1 n_p0 n_p1 SIN(0 0.09 4000 3m 1200)
+V_IMP2 n_p1 n_p2 SIN(0 0.16 4200 8m 1000)
+V_IMP3 n_p2 v_mid SIN(0 0.06 3800 13m 1400)
+C_PIEZO n_p0 n_pz_out 5.5n
+
+* High-impedance bias path (3x 10k series = 30k to v_mid -> hp corner ~960Hz, cleanly rejects 150Hz motor hum!)
+R_P1 n_pz_out n_p_m1 10k
+R_P2 n_p_m1 n_p_m2 10k
+R_P3 n_p_m2 v_mid 10k
+
+* Non-inverting AC amp around v_mid: Gain = 1 + (20k / 5k) = 5.0x using only 10k resistors!
+R_AG1 n_inv n_ac_c 10k
+R_AG2 n_inv n_ac_c 10k
+C_AC n_ac_c v_mid 1u IC=0
+R_AF1 v_dirt_adc n_af1 10k
+R_AF2 n_af1 n_inv 10k
+
+* MCP6002 CH2 Rail-to-Rail Op-Amp (GBW = 1MHz)
+G_OP2 0 n_int2 n_pz_out n_inv 1e-2
+R_OP2 n_int2 0 1Meg
+C_OP2 n_int2 0 15.9n
+B_OUT2 v_dirt_adc 0 V = min(3.28, max(0.02, v(n_int2)))
+
+.tran 10u 18m 0 10u uic
+.control
+run
+wrdata simulations/results/spice_piezo.txt v(n_pz_out) v(v_dirt_adc) v(v_mid)
+quit
+.endc
+.end
