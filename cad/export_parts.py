@@ -1,12 +1,13 @@
 #!/usr/bin/env python3
 """
-菅ルンバ II (Suga Roomba II) — OpenSCAD STL Compiler, Trimesh CoG/Mass Verifier,
-and Compact Binary-Base64 WebGL Mesh Packager.
+菅ルンバ II Rev 3.0 (Omega-Efficiency Edition) — OpenSCAD STL Compiler,
+Trimesh CoG/Mass Verifier, and Compact Binary-Base64 WebGL Mesh Packager.
 
-Compiles all 12 parametric CAD subsystems + full assembly via real OpenSCAD,
-verifies watertightness, bounding envelope, mass budget (494.9g), static Center of
-Gravity (CoG) stability triangle & drive-wheel traction fraction, and packages
-exact compiled triangle geometry for the zero-text WebGL 3D CAD Viewer.
+Compiles all 12 parametric Rev 3.0 CAD subsystems + full assembly via real OpenSCAD,
+verifies watertightness, all-flush bounding envelope (210 x 198 x 58.0 mm),
+exact BOM mass budget (457.6 g), 100% centerline bilateral CoG symmetry (X ~ 0 mm),
+static stability triangle & drive-wheel traction fraction, and packages exact
+compiled triangle geometry for the zero-text WebGL 3D CAD Viewer.
 """
 
 import base64
@@ -25,20 +26,21 @@ VIEWER_DIR = os.path.join(ROOT, "cad-viewer")
 os.makedirs(STL_DIR, exist_ok=True)
 os.makedirs(VIEWER_DIR, exist_ok=True)
 
-# 12 Modular Subsystems: (id, real BOM mass [g], PBR hex color, opacity, metalness, roughness, explode_vec [mm])
+# 12 Modular Subsystems (Rev 3.0 exact 457.6g BOM accounting):
+# (id, real BOM mass [g], PBR hex color, opacity, metalness, roughness, explode_vec [mm])
 PARTS = [
-    ("01_lower_monocoque_chassis", 68.0, "#e8edf2", 1.00, 0.05, 0.55, [0.0,   0.0, -32.0]),
-    ("02_upper_aero_shell",        46.0, "#1f3247", 1.00, 0.12, 0.38, [0.0,   0.0,  78.0]),
-    ("03_volute_blower_housing",   82.0, "#3b82c4", 1.00, 0.35, 0.35, [28.0,  6.0,  34.0]),
-    ("04_logarithmic_impeller",     6.5, "#d7dce2", 1.00, 0.88, 0.22, [28.0,  6.0,  64.0]),
-    ("05_pet_cyclone_chamber",     28.0, "#7dd3fc", 0.52, 0.05, 0.12, [-34.0, 14.0, 52.0]),
-    ("06_friction_drive_wheels",   64.0, "#ea580c", 1.00, 0.25, 0.45, [0.0,   0.0, -10.0]),
-    ("07_pto_brush_system",        22.0, "#eab308", 1.00, 0.15, 0.50, [0.0,  34.0, -28.0]),
-    ("08_battery_pack_5aa",       130.0, "#15803d", 1.00, 0.40, 0.35, [0.0, -18.0,  16.0]),
-    ("09_main_pcb_assembly",       24.4, "#0f766e", 1.00, 0.25, 0.42, [0.0, -34.0,  56.0]),
-    ("10_sensor_array",            11.0, "#dc2626", 1.00, 0.20, 0.35, [0.0,  22.0, -16.0]),
-    ("11_front_bumper_skirt",       9.0, "#334155", 1.00, 0.08, 0.55, [0.0,  50.0,  -6.0]),
-    ("12_rear_caster_skid",         4.0, "#94a3b8", 1.00, 0.50, 0.25, [0.0, -36.0, -34.0]),
+    ("01_lower_monocoque_chassis",  48.0, "#e8edf2", 1.00, 0.05, 0.55, [0.0,   0.0, -24.0]),
+    ("02_upper_aero_shell",         34.0, "#1e293b", 1.00, 0.14, 0.36, [0.0,   0.0,  72.0]),
+    ("03_volute_blower_housing",    81.5, "#2563eb", 1.00, 0.38, 0.32, [0.0, -10.0,  24.0]),
+    ("04_logarithmic_impeller",      5.0, "#e2e8f0", 1.00, 0.90, 0.20, [0.0, -10.0,  52.0]),
+    ("05_pet_cyclone_chamber",      30.5, "#38bdf8", 0.52, 0.05, 0.12, [0.0,  18.0,  46.0]),
+    ("06_friction_drive_wheels",    63.0, "#ea580c", 1.00, 0.25, 0.45, [0.0,   0.0, -10.0]),
+    ("07_pto_brush_system",          6.0, "#eab308", 1.00, 0.15, 0.50, [0.0,  32.0, -24.0]),
+    ("08_battery_pack_5aa",        131.0, "#15803d", 1.00, 0.40, 0.35, [0.0, -26.0,  14.0]),
+    ("09_main_pcb_assembly",        27.7, "#0f766e", 1.00, 0.28, 0.40, [0.0, -32.0,  54.0]),
+    ("10_sensor_array",             14.9, "#dc2626", 1.00, 0.22, 0.35, [0.0,  18.0, -12.0]),
+    ("11_front_bumper_skirt",       12.0, "#334155", 1.00, 0.08, 0.55, [0.0,  46.0,  -6.0]),
+    ("12_rear_caster_skid",          4.0, "#94a3b8", 1.00, 0.50, 0.25, [0.0, -30.0, -30.0]),
 ]
 
 
@@ -121,13 +123,13 @@ def main():
     cog = weighted_cog / total_mass
     overall_dims = overall_max - overall_min
 
-    # Static wheel-traction & stability triangle check
-    # Drive wheels at (±86, 0), rear caster at (0, -82).
-    # Moment balance about rear caster (y = -82): F_wheels / W = (y_cog - (-82)) / (0 - (-82))
-    y_caster = -82.0
-    y_wheels = 0.0
+    # Static wheel-traction & stability triangle check (Rev 3.0)
+    # All-Flush Ø56mm drive wheels at (±84, -4), rear caster at (0, -84).
+    # Moment balance about rear caster (y = -84): F_wheels / W = (y_cog - (-84)) / (-4 - (-84))
+    y_caster = -84.0
+    y_wheels = -4.0
     wheel_load_frac = float(np.clip((cog[1] - y_caster) / (y_wheels - y_caster), 0.0, 1.0))
-    inside_triangle = (abs(cog[0]) < 25.0) and (y_caster + 10.0 < cog[1] < 20.0)
+    inside_triangle = (abs(cog[0]) < 15.0) and (y_caster + 10.0 < cog[1] < 20.0)
 
     summary = {
         "envelope_mm": {

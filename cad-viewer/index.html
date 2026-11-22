@@ -448,12 +448,13 @@
   // ---------------------------------------------------------------------------
   // 3D Aerodynamic Streamline Particles (Nozzle -> PET Cyclone -> Impeller -> Muffler)
   // ---------------------------------------------------------------------------
-  const N_PARTICLES = 380;
+  const N_PARTICLES = 420;
   const ptSeeds = Array.from({ length: N_PARTICLES }, (_, i) => ({
     phase: (i / N_PARTICLES) + Math.random() * 0.02,
     lane: (Math.random() - 0.5) * 2.0,
     isDebris: (i % 5 === 0),
-    speed: 0.22 + Math.random() * 0.08
+    isCoanda: (i % 5 !== 0) && (i % 6 === 1), // ~15% clean exhaust split -> Front-Right Coanda Corner Jet
+    speed: 0.22 + Math.random() * 0.07
   }));
   const ptPosData = new Float32Array(N_PARTICLES * 3);
   const ptColData = new Float32Array(N_PARTICLES * 4);
@@ -484,76 +485,91 @@
     for (let i = 0; i < N_PARTICLES; i++) {
       const s = ptSeeds[i];
       const u = (s.phase + tSec * s.speed) % 1.0;
-      let x = 0, y = 0, z = 0, r = 0.06, g = 0.68, b = 0.85, a = 0.85, sz = 4.2;
+      let x = 0, y = 0, z = 0, r = 0.06, g = 0.70, b = 0.88, a = 0.86, sz = 4.2;
 
-      if (u < 0.20) {
-        // Stage 1: Floor sweep -> Bernoulli nozzle (y: +92 -> +66, z: 3 -> 16)
-        const f = u / 0.20;
-        x = s.lane * 52.0 * (1.0 - 0.65 * f) + (s.lane > 0 ? 12 * (1 - f) : 0);
-        y = 92.0 - 28.0 * f;
-        z = 3.0 + 14.0 * f * f;
-        if (s.isDebris) { r = 0.92; g = 0.45; b = 0.12; sz = 5.6; }
-      } else if (u < 0.34) {
-        // Stage 2: Tangential intake chute -> PET Cyclone (-26, +24)
-        const f = (u - 0.20) / 0.14;
-        x = (1 - f) * (s.lane * 16.0) + f * (-26.0 + 27.0);
-        y = (1 - f) * 64.0 + f * (24.0 + 12.0);
-        z = 17.0 + 18.0 * f;
+      if (u < 0.18) {
+        // Stage 1: Full-width 126mm front Bernoulli intake (y: +94 -> +68, z: 2 -> 14)
+        const f = u / 0.18;
+        x = s.lane * 58.0 * (1.0 - 0.72 * f);
+        y = 94.0 - 26.0 * f;
+        z = 2.5 + 12.0 * f * f;
+        if (s.isDebris) { r = 0.94; g = 0.46; b = 0.12; sz = 5.6; }
+      } else if (u < 0.30) {
+        // Stage 2: Tangential intake chute -> Horizontal Transverse PET Cyclone (Y=36, Z=31)
+        const f = (u - 0.18) / 0.12;
+        x = (1 - f) * (s.lane * 16.0) + f * (-36.0);
+        y = (1 - f) * 68.0 + f * (36.0 + 16.0);
+        z = 14.5 + 34.0 * f;
         if (s.isDebris) { r = 0.95; g = 0.50; b = 0.14; sz = 5.5; }
-      } else if (u < 0.66) {
-        // Stage 3: High-speed helical vortex inside Ø65mm PET Cyclone (-26, 24)
-        const f = (u - 0.34) / 0.32;
-        const turns = f * Math.PI * 6.5;
+      } else if (u < 0.62) {
+        // Stage 3: 6.2-Turn Horizontal Helical Vortex along X-axis (X: -36 -> +36, center Y=36, Z=31)
+        const f = (u - 0.30) / 0.32;
+        const turns = f * Math.PI * 10.5;
         if (s.isDebris) {
-          // Heavy dust centrifuges to outer wall & drops into lower bin!
-          const rad = 28.5;
-          x = -26.0 + rad * Math.cos(turns);
-          y =  24.0 + rad * Math.sin(turns);
-          z = 36.0 - 24.0 * f;
-          r = 0.94; g = 0.46; b = 0.10; sz = 5.4; a = 0.92 * (1.0 - 0.4 * f);
+          // Heavy dust centrifuges to Ø48mm outer PET wall & travels into right-side expanded dust bin
+          const rad = 21.5;
+          x = -36.0 + 72.0 * f;
+          y =  36.0 + rad * Math.cos(turns);
+          z =  31.0 + rad * Math.sin(turns);
+          r = 0.94; g = 0.46; b = 0.10; sz = 5.4; a = 0.92 * (1.0 - 0.3 * f);
         } else {
-          // Clean air spirals down outer wall then shoots UP central vortex finder!
-          const rad = f < 0.55 ? (26.0 - 10.0 * (f / 0.55)) : (10.0 * (1.0 - (f - 0.55) / 0.45));
-          x = -26.0 + rad * Math.cos(turns);
-          y =  24.0 + rad * Math.sin(turns);
-          z = f < 0.55 ? (36.0 - 14.0 * (f / 0.55)) : (22.0 + 22.0 * ((f - 0.55) / 0.45));
-          r = 0.08; g = 0.72; b = 0.88; sz = 4.2;
+          // Clean air spirals along horizontal barrel then returns along central core to X=0 bellmouth
+          const rad = f < 0.60 ? (19.5 - 11.0 * (f / 0.60)) : (8.5 * (1.0 - (f - 0.60) / 0.40));
+          x = f < 0.60 ? (-36.0 + 64.0 * (f / 0.60)) : (28.0 - 28.0 * ((f - 0.60) / 0.40));
+          y = 36.0 + rad * Math.cos(turns);
+          z = 31.0 + rad * Math.sin(turns);
+          r = 0.08; g = 0.74; b = 0.90; sz = 4.2;
         }
-      } else if (u < 0.84) {
-        // Stage 4: Transfer duct -> Ø78mm 9-blade impeller (+34, +18, z=20)
-        const f = (u - 0.66) / 0.18;
+      } else if (u < 0.82) {
+        // Stage 4: Zero-elbow PET-neck bellmouth -> Centerline Ø78mm Impeller + 7-Vane Diffuser (0, -14)
+        const f = (u - 0.62) / 0.20;
         if (s.isDebris) {
-          // Settled peacefully in bottom dust bin
-          const ang = s.phase * 30.0 + tSec * 0.4;
-          x = -26.0 + 18.0 * Math.cos(ang);
-          y =  24.0 + 18.0 * Math.sin(ang);
-          z = 11.0;
+          const ang = s.phase * 28.0 + tSec * 0.4;
+          x = 32.0 + 6.0 * Math.cos(ang);
+          y = 36.0 + 12.0 * Math.sin(ang);
+          z = 14.0;
           r = 0.85; g = 0.44; b = 0.14; a = 0.45 * (1.0 - f); sz = 4.2;
-        } else if (f < 0.45) {
-          const g2 = f / 0.45;
-          x = -26.0 + 60.0 * g2;
-          y =  24.0 - 6.0 * g2;
-          z = 42.0 - 22.0 * g2;
-          r = 0.10; g = 0.76; b = 0.72; sz = 4.2;
+        } else if (f < 0.40) {
+          const g2 = f / 0.40;
+          x = s.lane * 5.0 * (1.0 - g2);
+          y = 36.0 - 50.0 * g2;
+          z = 31.0 - 16.0 * g2;
+          r = 0.10; g = 0.78; b = 0.76; sz = 4.2;
         } else {
-          const g2 = (f - 0.45) / 0.55;
-          const ang = g2 * Math.PI * 3.0;
-          const rad = 14.0 + 25.0 * g2;
-          x = 34.0 + rad * Math.cos(ang);
-          y = 18.0 + rad * Math.sin(ang);
-          z = 21.0 + s.lane * 2.5;
-          r = 0.12; g = 0.82; b = 0.64; sz = 4.6;
+          const g2 = (f - 0.40) / 0.60;
+          const ang = g2 * Math.PI * 2.8 + s.phase * 6.28;
+          const rad = 14.0 + 34.0 * g2; // sweeps through 9-blade impeller & 7-vane radial diffuser
+          x = rad * Math.cos(ang);
+          y = -14.0 + rad * Math.sin(ang);
+          z = 15.0 + 3.5 * g2 + s.lane * 2.0;
+          r = 0.10; g = 0.84; b = 0.66; sz = 4.6;
         }
       } else {
-        // Stage 5: Rear tangential diffuser -> Helmholtz exhaust muffler (y: -20 -> -118)
-        const f = (u - 0.84) / 0.16;
+        // Stage 5: Split Exhaust Reuse! 85% Rear Motor/PCB Cooling & 2-Stage Muffler + 15% Front-Right Coanda Corner Jet
+        const f = (u - 0.82) / 0.18;
         if (s.isDebris) {
-          x = -26; y = 24; z = 11; a = 0.0; sz = 0.0;
+          x = 32; y = 36; z = 14; a = 0.0; sz = 0.0;
+        } else if (s.isCoanda) {
+          // 15% Front-Right Coanda Corner Air-Knife Jet (0 W, 14.3 m/s): blasts 90° corner dust into front intake!
+          if (f < 0.48) {
+            const g2 = f / 0.48;
+            x = 46.0 + 22.0 * g2;
+            y = -10.0 + 84.0 * g2;
+            z = 16.0 - 6.0 * g2;
+            r = 0.02; g = 0.86; b = 0.98; a = 0.94; sz = 4.8;
+          } else {
+            const g2 = (f - 0.48) / 0.52;
+            x = 68.0 - 32.0 * g2;
+            y = 74.0 + 22.0 * g2 - 8.0 * g2 * g2;
+            z = 10.0 - 7.0 * g2;
+            r = 0.05; g = 0.92; b = 1.00; a = 0.92 * (1.0 - g2); sz = 5.4;
+          }
         } else {
-          x = 46.0 * (1.0 - f) + (s.lane * 22.0) * f;
-          y = -20.0 - 98.0 * f;
-          z = 22.0 + 22.0 * f;
-          r = 0.16; g = 0.78; b = 0.58; a = 0.82 * (1.0 - f); sz = 4.8;
+          // 85% Forced-Convection Motor/MOSFET Cooling -> Rear 2-Stage Metamaterial Muffler (y: -14 -> -116)
+          x = s.lane * (18.0 + 14.0 * f);
+          y = -14.0 - 102.0 * f;
+          z = 22.0 + 18.0 * f;
+          r = 0.14; g = 0.80; b = 0.56; a = 0.80 * (1.0 - f); sz = 4.6;
         }
       }
 
@@ -881,7 +897,7 @@
       let model = M4.translate(ex, ey, ez);
 
       if (m.id === "04_logarithmic_impeller" && state.flow) {
-        model = M4.mul(model, M4.rotZAround(-tSec * 14.0, 34.0, 18.0));
+        model = M4.mul(model, M4.rotZAround(-tSec * 14.0, 0.0, -14.0));
       }
 
       const drawCol = (m.id === "05_pet_cyclone_chamber") ? [0.08, 0.56, 0.82] : m.color;

@@ -1,27 +1,27 @@
 {
   "envelope_mm": {
-    "width_X": 216.84,
-    "length_Y": 205.84,
-    "height_Z": 78.0
+    "width_X": 210.0,
+    "length_Y": 204.0,
+    "height_Z": 58.35
   },
-  "total_mass_g": 494.9,
+  "total_mass_g": 457.6,
   "center_of_gravity_mm": {
-    "x": 4.46,
-    "y": -7.49,
-    "z": 24.99
+    "x": 0.75,
+    "y": -22.05,
+    "z": 21.72
   },
-  "drive_wheel_weight_fraction": 0.9086,
+  "drive_wheel_weight_fraction": 0.7744,
   "cog_inside_stability_triangle": true,
   "all_watertight": true,
-  "total_triangles": 20868,
+  "total_triangles": 20788,
   "parts": [
     {
       "step": 1,
       "id": "01_lower_monocoque_chassis",
-      "mass_g": 68.0,
-      "triangles": 2048,
+      "mass_g": 48.0,
+      "triangles": 1280,
       "watertight": true,
-      "volume_cm3": 79.78,
+      "volume_cm3": 82.46,
       "bounds_mm": [
         [
           -105.0,
@@ -31,37 +31,7 @@
         [
           105.0,
           94.0,
-          39.0
-        ]
-      ],
-      "dims_mm": [
-        210.0,
-        198.0,
-        35.0
-      ],
-      "centroid_mm": [
-        0.0,
-        4.13,
-        10.57
-      ]
-    },
-    {
-      "step": 2,
-      "id": "02_upper_aero_shell",
-      "mass_g": 46.0,
-      "triangles": 1556,
-      "watertight": true,
-      "volume_cm3": 118.99,
-      "bounds_mm": [
-        [
-          -105.0,
-          -104.0,
-          34.0
-        ],
-        [
-          105.0,
-          94.0,
-          62.0
+          32.0
         ]
       ],
       "dims_mm": [
@@ -70,178 +40,208 @@
         28.0
       ],
       "centroid_mm": [
-        4.48,
-        -2.7,
-        55.52
+        -0.0,
+        3.52,
+        10.16
+      ]
+    },
+    {
+      "step": 2,
+      "id": "02_upper_aero_shell",
+      "mass_g": 34.0,
+      "triangles": 1396,
+      "watertight": true,
+      "volume_cm3": 128.34,
+      "bounds_mm": [
+        [
+          -105.0,
+          -104.0,
+          32.0
+        ],
+        [
+          105.0,
+          94.0,
+          58.0
+        ]
+      ],
+      "dims_mm": [
+        210.0,
+        198.0,
+        26.0
+      ],
+      "centroid_mm": [
+        -0.33,
+        -3.06,
+        51.87
       ]
     },
     {
       "step": 3,
       "id": "03_volute_blower_housing",
-      "mass_g": 82.0,
-      "triangles": 1732,
+      "mass_g": 81.5,
+      "triangles": 1684,
       "watertight": true,
-      "volume_cm3": 75.87,
+      "volume_cm3": 64.54,
       "bounds_mm": [
         [
-          -41.0,
-          -34.0,
-          10.0
+          -49.0,
+          -82.0,
+          9.0
         ],
         [
-          83.5,
-          61.5,
-          58.8
+          72.45,
+          58.12,
+          54.8
         ]
       ],
       "dims_mm": [
-        124.5,
-        95.5,
-        48.8
+        121.45,
+        140.12,
+        45.8
       ],
       "centroid_mm": [
-        31.9,
-        13.48,
-        25.48
+        4.0,
+        -13.67,
+        22.72
       ]
     },
     {
       "step": 4,
       "id": "04_logarithmic_impeller",
-      "mass_g": 6.5,
-      "triangles": 2952,
+      "mass_g": 5.0,
+      "triangles": 3168,
       "watertight": true,
-      "volume_cm3": 10.63,
+      "volume_cm3": 10.8,
       "bounds_mm": [
         [
-          -5.0,
-          -21.0,
-          17.6
+          -39.0,
+          -53.0,
+          10.4
         ],
         [
-          73.0,
-          57.0,
-          26.6
+          39.0,
+          25.0,
+          20.6
         ]
       ],
       "dims_mm": [
         78.0,
         78.0,
-        9.0
+        10.2
       ],
       "centroid_mm": [
-        34.0,
-        18.0,
-        21.56
+        0.0,
+        -14.0,
+        15.49
       ]
     },
     {
       "step": 5,
       "id": "05_pet_cyclone_chamber",
-      "mass_g": 28.0,
-      "triangles": 1632,
+      "mass_g": 30.5,
+      "triangles": 1964,
       "watertight": true,
-      "volume_cm3": 37.79,
+      "volume_cm3": 52.72,
       "bounds_mm": [
         [
-          -59.5,
-          -9.5,
-          8.0
+          -44.75,
+          -29.25,
+          6.0
         ],
         [
-          19.03,
-          73.79,
-          62.3
+          44.75,
+          72.0,
+          56.0
         ]
       ],
       "dims_mm": [
-        78.53,
-        83.29,
-        54.3
+        89.5,
+        101.25,
+        50.0
       ],
       "centroid_mm": [
-        -22.84,
-        27.27,
-        36.12
+        -0.0,
+        25.66,
+        26.02
       ]
     },
     {
       "step": 6,
       "id": "06_friction_drive_wheels",
-      "mass_g": 64.0,
-      "triangles": 3936,
+      "mass_g": 63.0,
+      "triangles": 4152,
       "watertight": true,
-      "volume_cm3": 74.42,
+      "volume_cm3": 54.41,
       "bounds_mm": [
         [
-          -99.0,
-          -39.0,
+          -90.0,
+          -40.55,
           0.0
         ],
         [
-          99.0,
-          39.0,
-          78.0
+          90.0,
+          24.0,
+          56.0
         ]
       ],
       "dims_mm": [
-        198.0,
-        78.0,
-        78.0
+        180.0,
+        64.55,
+        56.0
       ],
       "centroid_mm": [
         0.0,
-        -5.31,
-        36.23
+        -10.94,
+        26.68
       ]
     },
     {
       "step": 7,
       "id": "07_pto_brush_system",
-      "mass_g": 22.0,
-      "triangles": 1456,
+      "mass_g": 6.0,
+      "triangles": 1256,
       "watertight": true,
-      "volume_cm3": 19.64,
+      "volume_cm3": 19.02,
       "bounds_mm": [
         [
-          -55.5,
-          -9.0,
-          4.0
+          -61.0,
+          -12.0,
+          3.95
         ],
         [
-          111.84,
-          101.84,
-          48.0
+          82.11,
+          86.56,
+          36.0
         ]
       ],
       "dims_mm": [
-        167.34,
-        110.84,
-        44.0
+        143.11,
+        98.56,
+        32.05
       ],
       "centroid_mm": [
-        15.76,
-        61.02,
-        15.6
+        12.74,
+        63.42,
+        13.88
       ]
     },
     {
       "step": 8,
       "id": "08_battery_pack_5aa",
-      "mass_g": 130.0,
+      "mass_g": 131.0,
       "triangles": 1944,
       "watertight": true,
       "volume_cm3": 43.44,
       "bounds_mm": [
         [
-          -42.0,
-          -72.8,
-          7.25
+          -38.0,
+          -90.8,
+          6.25
         ],
         [
-          34.0,
-          -19.2,
-          21.75
+          38.0,
+          -37.2,
+          20.75
         ]
       ],
       "dims_mm": [
@@ -250,99 +250,99 @@
         14.5
       ],
       "centroid_mm": [
-        -4.0,
-        -46.0,
-        14.5
+        0.0,
+        -64.0,
+        13.5
       ]
     },
     {
       "step": 9,
       "id": "09_main_pcb_assembly",
-      "mass_g": 24.4,
-      "triangles": 492,
+      "mass_g": 27.7,
+      "triangles": 636,
       "watertight": true,
-      "volume_cm3": 11.53,
+      "volume_cm3": 8.74,
       "bounds_mm": [
         [
-          -34.29,
-          -71.67,
-          39.0
+          -29.21,
+          -80.67,
+          33.0
         ],
         [
-          34.29,
-          -18.33,
-          52.1
+          29.21,
+          -27.33,
+          45.3
         ]
       ],
       "dims_mm": [
-        68.58,
+        58.42,
         53.34,
-        13.1
+        12.3
       ],
       "centroid_mm": [
-        -1.96,
-        -42.9,
-        41.8
+        -2.92,
+        -51.58,
+        35.45
       ]
     },
     {
       "step": 10,
       "id": "10_sensor_array",
-      "mass_g": 11.0,
-      "triangles": 968,
+      "mass_g": 14.9,
+      "triangles": 1156,
       "watertight": true,
-      "volume_cm3": 2.11,
+      "volume_cm3": 2.14,
       "bounds_mm": [
         [
           -59.6,
-          -62.0,
+          -59.0,
           3.5
         ],
         [
-          102.0,
+          101.0,
           97.0,
-          28.3
+          58.35
         ]
       ],
       "dims_mm": [
-        161.6,
-        159.0,
-        24.8
+        160.6,
+        156.0,
+        54.85
       ],
       "centroid_mm": [
         2.2,
-        -22.23,
-        9.4
+        -19.38,
+        15.67
       ]
     },
     {
       "step": 11,
       "id": "11_front_bumper_skirt",
-      "mass_g": 9.0,
+      "mass_g": 12.0,
       "triangles": 332,
       "watertight": true,
-      "volume_cm3": 27.37,
+      "volume_cm3": 25.88,
       "bounds_mm": [
         [
           -99.07,
           45.5,
-          2.0
+          1.85
         ],
         [
           99.07,
           100.0,
-          32.0
+          29.0
         ]
       ],
       "dims_mm": [
         198.14,
         54.5,
-        30.0
+        27.15
       ],
       "centroid_mm": [
-        -0.0,
-        82.79,
-        17.59
+        0.0,
+        82.7,
+        15.65
       ]
     },
     {
@@ -355,12 +355,12 @@
       "bounds_mm": [
         [
           -9.0,
-          -91.0,
+          -93.0,
           0.01
         ],
         [
           9.0,
-          -73.0,
+          -75.0,
           10.99
         ]
       ],
@@ -371,7 +371,7 @@
       ],
       "centroid_mm": [
         -0.0,
-        -82.0,
+        -84.0,
         6.73
       ]
     }

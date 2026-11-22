@@ -1,32 +1,21 @@
-* Suga Roomba II - SPICE Verification 4:
-* LED-as-Photodiode (OSR5JA3Z74A, 10 JPY!) Reverse-Bias Optical Wall & Cliff Ranging
-* Phase 1 (0..10us): RP2040 GPIO charges LED cathode to 3.3V (reverse bias)
-* Phase 2 (10us..2500us): GPIO switches to Hi-Z input; reflected light discharges LED junction capacitance (~28pF + 10pF GPIO)
-* Compares: Wall/Floor Present (I_photo = 420nA -> drops below 1.65V in ~140us)
-*       vs  Cliff / Open Space (I_dark  = 18nA  -> takes > 2400us! >17x ratio!)
+* Rev 3.0: 40-JPY Red LED-as-Photodiode 5.0V Reverse-Bias Optical Ranging (CH32X035 PIOC)
+* Physical reverse-biased PN junction: Cj=30pF, photocurrent rolls off smoothly to 0V, forward LED clamp
+.model D_RED D(IS=1e-18 N=1.8 RS=5 CJO=30p VJ=1.6)
+C_J1 led_floor 0 30p IC=5.0
+D_1  0 led_floor D_RED
+B_PH1 led_floor 0 I = 320n * (0.5 + 0.5 * tanh(V(led_floor) * 20))
+R_LK1 led_floor 0 250Meg
 
-.model SW_GPIO SW(RON=35 ROFF=1G VT=1.5 VH=0.1)
+C_J2 led_cliff 0 30p IC=5.0
+D_2  0 led_cliff D_RED
+B_PH2 led_cliff 0 I = 28n * (0.5 + 0.5 * tanh(V(led_cliff) * 20))
+R_LK2 led_cliff 0 250Meg
 
-* Control pulse: HIGH for 0..10us (reverse charge), then LOW (Hi-Z sense mode)
-V_CTRL ctrl 0 PULSE(3.3 0 10u 50n 50n 3m 4m)
-V_3V3 v3v3 0 DC 3.3
-
-* --- Case A: Floor / Wall Present (Reflected red light -> 420nA photocurrent) ---
-S_CHG_A v3v3 v_led_wall ctrl 0 SW_GPIO
-C_LED_A v_led_wall 0 38p IC=0
-I_PHOTO_A v_led_wall 0 DC 420n
-R_LEAK_A v_led_wall 0 100Meg
-
-* --- Case B: Stair Cliff / Open Air (Ambient dark only -> 18nA leakage) ---
-S_CHG_B v3v3 v_led_cliff ctrl 0 SW_GPIO
-C_LED_B v_led_cliff 0 38p IC=0
-I_PHOTO_B v_led_cliff 0 DC 18n
-R_LEAK_B v_led_cliff 0 100Meg
-
-.tran 2u 2.5m 0 2u uic
+.tran 2u 3.0m 0 2u uic
 .control
 run
-wrdata simulations/results/spice_led_sensor.txt v(v_led_wall) v(v_led_cliff)
+set wr_vecnames
+wrdata /home/antigravity/sc8z35a-collab/Zphone-2/simulations/results/spice_led_sensor.txt v(led_floor) v(led_cliff)
 quit
 .endc
 .end

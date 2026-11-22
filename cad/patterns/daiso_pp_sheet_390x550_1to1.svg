@@ -3,74 +3,109 @@
   <defs>
     <style>
       .sheet { fill: #f8fafc; stroke: #0f172a; stroke-width: 0.8; }
-      .cut { fill: #e0f2fe; fill-opacity: 0.45; stroke: #dc2626; stroke-width: 0.55; }
+      .cut { fill: #e0f2fe; fill-opacity: 0.48; stroke: #dc2626; stroke-width: 0.55; }
+      .cut-accent { fill: #ccfbf1; fill-opacity: 0.55; stroke: #0d9488; stroke-width: 0.55; }
       .cut-hole { fill: #ffffff; stroke: #dc2626; stroke-width: 0.45; }
-      .fold { fill: none; stroke: #2563eb; stroke-width: 0.45; stroke-dasharray: 3,2; }
-      .lbl { font-family: sans-serif; font-size: 6.5px; font-weight: 700; fill: #0f172a; text-anchor: middle; }
-      .sub { font-family: sans-serif; font-size: 4.5px; fill: #475569; text-anchor: middle; }
+      .fold { fill: none; stroke: #2563eb; stroke-width: 0.48; stroke-dasharray: 3,2; }
+      .hinge { fill: none; stroke: #d97706; stroke-width: 0.70; stroke-dasharray: 2,1.2; }
+      .lbl { font-family: sans-serif; font-size: 6.2px; font-weight: 700; fill: #0f172a; text-anchor: middle; }
+      .sub { font-family: sans-serif; font-size: 4.4px; fill: #475569; text-anchor: middle; }
     </style>
   </defs>
   <rect class="sheet" x="0" y="0" width="550.0" height="390.0"/>
-  <text x="275" y="7" class="sub" style="font-size:5.2px;font-weight:700;">SUGA ROOMBA II — 1:1 DAISO PP SHEET (550 x 390 x 0.75 mm, 110 JPY) | RED=CUT, BLUE DASH=SCORE &amp; FOLD | PACKING 79.0% (ZERO OVERLAP)</text>
-  <path class="cut" d="M 219.00,102.00 L 218.86,96.50 L 218.42,91.02 L 217.71,85.57 L 216.71,80.17 L 203.18,26.79 L 202.83,25.58 L 202.41,24.40 L 201.93,23.24 L 201.38,22.10 L 200.78,21.00 L 200.13,19.93 L 199.42,18.89 L 198.65,17.90 L 197.84,16.94 L 196.97,16.03 L 196.06,15.16 L 195.10,14.35 L 194.11,13.58 L 193.07,12.87 L 192.00,12.22 L 190.90,11.62 L 189.76,11.07 L 188.60,10.59 L 187.42,10.17 L 186.21,9.82 L 184.99,9.52 L 130.43,-1.71 L 124.98,-2.42 L 119.50,-2.86 L 114.00,-3.00 L 108.50,-2.86 L 103.02,-2.42 L 97.57,-1.71 L 43.01,9.52 L 41.79,9.82 L 40.58,10.17 L 39.40,10.59 L 38.24,11.07 L 37.10,11.62 L 36.00,12.22 L 34.93,12.87 L 33.89,13.58 L 32.90,14.35 L 31.94,15.16 L 31.03,16.03 L 30.16,16.94 L 29.35,17.90 L 28.58,18.89 L 27.87,19.93 L 27.22,21.00 L 26.62,22.10 L 26.07,23.24 L 25.59,24.40 L 25.17,25.58 L 24.82,26.79 L 11.29,80.17 L 10.29,85.57 L 9.58,91.02 L 9.14,96.50 L 9.00,102.00 L 9.14,107.50 L 9.58,112.98 L 10.29,118.43 L 11.29,123.83 L 12.58,129.18 L 14.14,134.45 L 15.97,139.63 L 18.08,144.71 L 20.44,149.67 L 23.07,154.50 L 25.94,159.19 L 29.05,163.72 L 32.40,168.08 L 35.97,172.26 L 39.75,176.25 L 43.74,180.03 L 47.92,183.60 L 52.28,186.95 L 56.81,190.06 L 61.50,192.93 L 66.33,195.56 L 71.29,197.92 L 76.37,200.03 L 81.55,201.86 L 86.82,203.42 L 92.17,204.71 L 97.57,205.71 L 103.02,206.42 L 108.50,206.86 L 114.00,207.00 L 119.50,206.86 L 124.98,206.42 L 130.43,205.71 L 135.83,204.71 L 141.18,203.42 L 146.45,201.86 L 151.63,200.03 L 156.71,197.92 L 161.67,195.56 L 166.50,192.93 L 171.19,190.06 L 175.72,186.95 L 180.08,183.60 L 184.26,180.03 L 188.25,176.25 L 192.03,172.26 L 195.60,168.08 L 198.95,163.72 L 202.06,159.19 L 204.93,154.50 L 207.56,149.67 L 209.92,144.71 L 212.03,139.63 L 213.86,134.45 L 215.42,129.18 L 216.71,123.83 L 217.71,118.43 L 218.42,112.98 L 218.86,107.50 Z"/>
-  <rect class="cut-hole" x="20" y="61" width="18" height="84"/>
-  <rect class="cut-hole" x="190" y="61" width="18" height="84"/>
-  <rect class="cut-hole" x="56.5" y="31" width="115" height="14"/>
-  <circle class="cut-hole" cx="114" cy="151" r="7"/>
-  <text x="114" y="102" class="lbl">01 LOWER MONOCOQUE BASE</text>
-  <text x="114" y="110" class="sub">210 x 198 mm (Reuleaux-D)</text>
-  <path class="cut" d="M 428.70,101.06 L 428.56,95.89 L 428.16,90.74 L 427.48,85.62 L 426.54,80.54 L 413.83,30.36 L 413.50,29.23 L 413.10,28.12 L 412.65,27.02 L 412.14,25.96 L 411.58,24.92 L 410.96,23.91 L 410.29,22.94 L 409.57,22.00 L 408.81,21.10 L 407.99,20.25 L 407.14,19.43 L 406.24,18.67 L 405.30,17.95 L 404.33,17.28 L 403.32,16.66 L 402.28,16.10 L 401.22,15.59 L 400.12,15.14 L 399.01,14.74 L 397.88,14.41 L 396.73,14.13 L 345.44,3.58 L 340.32,2.90 L 335.17,2.50 L 330.00,2.36 L 324.83,2.50 L 319.68,2.90 L 314.56,3.58 L 263.27,14.13 L 262.12,14.41 L 260.99,14.74 L 259.88,15.14 L 258.78,15.59 L 257.72,16.10 L 256.68,16.66 L 255.67,17.28 L 254.70,17.95 L 253.76,18.67 L 252.86,19.43 L 252.01,20.25 L 251.19,21.10 L 250.43,22.00 L 249.71,22.94 L 249.04,23.91 L 248.42,24.92 L 247.86,25.96 L 247.35,27.02 L 246.90,28.12 L 246.50,29.23 L 246.17,30.36 L 233.46,80.54 L 232.52,85.62 L 231.84,90.74 L 231.44,95.89 L 231.30,101.06 L 231.44,106.23 L 231.84,111.38 L 232.52,116.50 L 233.46,121.58 L 234.66,126.61 L 236.13,131.56 L 237.86,136.43 L 239.83,141.20 L 242.06,145.87 L 244.52,150.41 L 247.22,154.82 L 250.15,159.07 L 253.30,163.17 L 256.65,167.10 L 260.21,170.85 L 263.96,174.41 L 267.89,177.76 L 271.99,180.91 L 276.24,183.84 L 280.65,186.54 L 285.19,189.00 L 289.86,191.23 L 294.63,193.20 L 299.50,194.93 L 304.45,196.40 L 309.48,197.60 L 314.56,198.54 L 319.68,199.22 L 324.83,199.62 L 330.00,199.76 L 335.17,199.62 L 340.32,199.22 L 345.44,198.54 L 350.52,197.60 L 355.55,196.40 L 360.50,194.93 L 365.37,193.20 L 370.14,191.23 L 374.81,189.00 L 379.35,186.54 L 383.76,183.84 L 388.01,180.91 L 392.11,177.76 L 396.04,174.41 L 399.79,170.85 L 403.35,167.10 L 406.70,163.17 L 409.85,159.07 L 412.78,154.82 L 415.48,150.41 L 417.94,145.87 L 420.17,141.20 L 422.14,136.43 L 423.87,131.56 L 425.34,126.61 L 426.54,121.58 L 427.48,116.50 L 428.16,111.38 L 428.56,106.23 Z"/>
-  <circle class="cut-hole" cx="305" cy="80" r="34"/>
-  <text x="330" y="138" class="lbl">02 UPPER AERO SHELL</text>
-  <text x="330" y="146" class="sub">PET Cyclone Bay Ø68 Cutout</text>
-  <rect class="cut" x="10" y="216" width="336" height="34"/>
-  <line class="fold" x1="10" y1="221" x2="346" y2="221"/>
-  <line class="fold" x1="10" y1="245" x2="346" y2="245"/>
-  <text x="178" y="235" class="lbl">03 FRONT/SIDE MONOCOQUE WALL BAND (336 x 34 mm)</text>
-  <rect class="cut" x="10" y="256" width="336" height="34"/>
-  <line class="fold" x1="10" y1="261" x2="346" y2="261"/>
-  <line class="fold" x1="10" y1="285" x2="346" y2="285"/>
-  <text x="178" y="275" class="lbl">04 REAR WALL + HELMHOLTZ MUFFLER BAND (336 x 34 mm)</text>
-  <rect class="cut" x="10" y="296" width="268" height="34"/>
-  <line class="fold" x1="10" y1="304.5" x2="278" y2="304.5"/>
-  <line class="fold" x1="10" y1="313.0" x2="278" y2="313.0"/>
-  <line class="fold" x1="10" y1="321.5" x2="278" y2="321.5"/>
-  <line class="cut" x1="144" y1="296" x2="144" y2="330"/>
-  <text x="77" y="315" class="sub">05A BOX-RIB STIFFENERS (x2)</text>
-  <text x="211" y="315" class="sub">05B BOX-RIB STIFFENERS (x2)</text>
-  <rect class="cut" x="284" y="296" width="62" height="34"/>
-  <line class="fold" x1="284" y1="308" x2="346" y2="308"/>
-  <line class="fold" x1="284" y1="320" x2="346" y2="320"/>
-  <text x="315" y="316" class="sub">06 VOLUTE</text>
-  <rect class="cut" x="10" y="336" width="336" height="46"/>
-  <line class="fold" x1="90" y1="336" x2="90" y2="382"/>
-  <line class="fold" x1="170" y1="336" x2="170" y2="382"/>
-  <line class="fold" x1="250" y1="336" x2="250" y2="382"/>
-  <line class="fold" x1="10" y1="348" x2="346" y2="348"/>
-  <line class="fold" x1="10" y1="370" x2="346" y2="370"/>
-  <text x="178" y="361" class="lbl">07 5S-AA BATTERY BAY + HELMHOLTZ CAVITY (9.5cm3) + NOZZLE CHUTE NET</text>
-  <circle class="cut" cx="396" cy="250" r="42"/>
-  <circle class="cut-hole" cx="396" cy="250" r="4.0"/>
-  <text x="396" y="276" class="sub">08 VOLUTE TOP</text>
-  <circle class="cut" cx="396" cy="340" r="42"/>
-  <circle class="cut-hole" cx="396" cy="340" r="14.5"/>
-  <text x="396" y="366" class="sub">09 VOLUTE BOT</text>
-  <circle class="cut" cx="485" cy="53" r="38"/>
-  <circle class="cut-hole" cx="485" cy="53" r="2.1"/>
-  <text x="485" y="69" class="sub">WHEEL L1 Ø76</text>
-  <circle class="cut" cx="485" cy="137" r="38"/>
-  <circle class="cut-hole" cx="485" cy="137" r="2.1"/>
-  <text x="485" y="153" class="sub">WHEEL L2 Ø76</text>
-  <circle class="cut" cx="485" cy="221" r="38"/>
-  <circle class="cut-hole" cx="485" cy="221" r="2.1"/>
-  <text x="485" y="237" class="sub">WHEEL R1 Ø76</text>
-  <circle class="cut" cx="485" cy="305" r="38"/>
-  <circle class="cut-hole" cx="485" cy="305" r="2.1"/>
-  <text x="485" y="321" class="sub">WHEEL R2 Ø76</text>
-  <rect class="cut" x="446" y="350" width="96" height="32"/>
-  <line class="fold" x1="446" y1="366" x2="542" y2="366"/>
-  <text x="494" y="361" class="sub">14 BERNOULLI</text>
-  <text x="494" y="375" class="sub">SKIRT (2mm GAP)</text>
-  <rect x="446" y="384" width="50" height="4" fill="#0f172a"/>
-  <text x="520" y="387.5" class="sub">50 mm SCALE</text>
+  <text x="275" y="7.5" class="sub" style="font-size:5.1px;font-weight:700;">SUGA ROOMBA II REV 3.0 — 1:1 DAISO PP SHEET (550 x 390 x 0.75 mm, 110 JPY) | RED=CUT, BLUE=FOLD, ORANGE=LIVING HINGE | PACKING 82.7% (0 OVERLAP)</text>
+  <path class="cut" d="M 219.00,107.00 L 218.97,105.74 L 218.87,104.49 L 218.70,103.25 L 218.48,102.01 L 203.18,30.79 L 202.83,29.58 L 202.41,28.40 L 201.93,27.24 L 201.38,26.10 L 200.78,25.00 L 200.13,23.93 L 199.42,22.89 L 198.65,21.90 L 197.84,20.94 L 196.97,20.03 L 196.06,19.16 L 195.10,18.35 L 194.11,17.58 L 193.07,16.87 L 192.00,16.22 L 190.90,15.62 L 189.76,15.07 L 188.60,14.59 L 187.42,14.17 L 186.21,13.82 L 184.99,13.52 L 183.75,13.30 L 182.51,13.13 L 181.26,13.03 L 180.00,13.00 L 46.74,13.03 L 45.49,13.13 L 44.25,13.30 L 43.01,13.52 L 41.79,13.82 L 40.58,14.17 L 39.40,14.59 L 38.24,15.07 L 37.10,15.62 L 36.00,16.22 L 34.93,16.87 L 33.89,17.58 L 32.90,18.35 L 31.94,19.16 L 31.03,20.03 L 30.16,20.94 L 29.35,21.90 L 28.58,22.89 L 27.87,23.93 L 27.22,25.00 L 26.62,26.10 L 26.07,27.24 L 25.59,28.40 L 25.17,29.58 L 24.82,30.79 L 9.52,102.01 L 9.30,103.25 L 9.13,104.49 L 9.03,105.74 L 9.00,107.00 L 9.03,108.26 L 9.13,109.51 L 9.30,110.75 L 9.52,111.99 L 9.82,113.21 L 10.17,114.42 L 10.59,115.60 L 11.07,116.76 L 11.62,117.90 L 12.22,119.00 L 43.55,172.75 L 46.04,176.37 L 48.72,179.86 L 51.58,183.21 L 54.60,186.40 L 57.79,189.42 L 61.14,192.28 L 64.63,194.96 L 68.25,197.45 L 72.00,199.75 L 75.86,201.84 L 79.83,203.74 L 83.90,205.42 L 88.04,206.89 L 92.26,208.14 L 96.54,209.16 L 100.86,209.97 L 105.22,210.54 L 109.60,210.88 L 114.00,211.00 L 118.40,210.88 L 122.78,210.54 L 127.14,209.97 L 131.46,209.16 L 135.74,208.14 L 139.96,206.89 L 144.10,205.42 L 148.17,203.74 L 152.14,201.84 L 156.00,199.75 L 159.75,197.45 L 163.37,194.96 L 166.86,192.28 L 170.21,189.42 L 173.40,186.40 L 176.42,183.21 L 179.28,179.86 L 181.96,176.37 L 184.45,172.75 L 215.78,119.00 L 216.38,117.90 L 216.93,116.76 L 217.41,115.60 L 217.83,114.42 L 218.18,113.21 L 218.48,111.99 L 218.70,110.75 L 218.87,109.51 L 218.97,108.26 Z"/>
+  <rect class="cut-hole" x="26.0" y="80.0" width="20" height="62"/>
+  <rect class="cut-hole" x="182.0" y="80.0" width="20" height="62"/>
+  <rect class="cut-hole" x="51.0" y="32.5" width="126" height="13"/>
+  <circle class="cut-hole" cx="114.0" cy="153.0" r="7"/>
+  <text x="114.0" y="105.0" class="lbl">01 LOWER MONOCOQUE BASE</text>
+  <text x="114.0" y="114.0" class="sub">210 x 198 mm | 100% Symmetric</text>
+  <text x="114.0" y="121.0" class="sub">All-Flush Ø56 Wells + 126mm Nozzle</text>
+  <path class="cut" d="M 421.65,103.00 L 421.62,101.83 L 421.53,100.67 L 421.38,99.51 L 421.16,98.36 L 406.94,32.12 L 406.61,31.00 L 406.22,29.90 L 405.77,28.82 L 405.27,27.77 L 404.71,26.74 L 404.10,25.74 L 403.44,24.78 L 402.73,23.85 L 401.97,22.97 L 401.16,22.12 L 400.31,21.31 L 399.43,20.55 L 398.50,19.84 L 397.54,19.18 L 396.54,18.57 L 395.51,18.01 L 394.46,17.51 L 393.38,17.06 L 392.28,16.67 L 391.16,16.34 L 390.02,16.07 L 388.87,15.85 L 387.71,15.70 L 386.55,15.61 L 385.38,15.58 L 261.45,15.61 L 260.29,15.70 L 259.13,15.85 L 257.98,16.07 L 256.84,16.34 L 255.72,16.67 L 254.62,17.06 L 253.54,17.51 L 252.49,18.01 L 251.46,18.57 L 250.46,19.18 L 249.50,19.84 L 248.57,20.55 L 247.69,21.31 L 246.84,22.12 L 246.03,22.97 L 245.27,23.85 L 244.56,24.78 L 243.90,25.74 L 243.29,26.74 L 242.73,27.77 L 242.23,28.82 L 241.78,29.90 L 241.39,31.00 L 241.06,32.12 L 226.84,98.36 L 226.62,99.51 L 226.47,100.67 L 226.38,101.83 L 226.35,103.00 L 226.38,104.17 L 226.47,105.33 L 226.62,106.49 L 226.84,107.64 L 227.11,108.78 L 227.44,109.90 L 227.83,111.00 L 228.28,112.08 L 228.78,113.13 L 229.34,114.16 L 258.48,164.15 L 260.80,167.52 L 263.29,170.76 L 265.95,173.87 L 268.76,176.84 L 271.73,179.65 L 274.84,182.31 L 278.08,184.80 L 281.45,187.12 L 284.94,189.25 L 288.53,191.21 L 292.23,192.97 L 296.00,194.53 L 299.86,195.90 L 303.78,197.06 L 307.76,198.01 L 311.78,198.76 L 315.83,199.29 L 319.91,199.61 L 324.00,199.72 L 328.09,199.61 L 332.17,199.29 L 336.22,198.76 L 340.24,198.01 L 344.22,197.06 L 348.14,195.90 L 352.00,194.53 L 355.77,192.97 L 359.47,191.21 L 363.06,189.25 L 366.55,187.12 L 369.92,184.80 L 373.16,182.31 L 376.27,179.65 L 379.24,176.84 L 382.05,173.87 L 384.71,170.76 L 387.20,167.52 L 389.52,164.15 L 418.66,114.16 L 419.22,113.13 L 419.72,112.08 L 420.17,111.00 L 420.56,109.90 L 420.89,108.78 L 421.16,107.64 L 421.38,106.49 L 421.53,105.33 L 421.62,104.17 Z"/>
+  <rect class="cut-hole" x="282.0" y="53.0" width="84" height="36" rx="5"/>
+  <circle class="fold" cx="324.0" cy="135.0" r="11"/>
+  <text x="324.0" y="73.0" class="sub">HORIZ. PET BAY HATCH</text>
+  <text x="324.0" y="107.0" class="lbl">02 ALL-FLUSH UPPER SHELL</text>
+  <text x="324.0" y="115.0" class="sub">H=58.0 mm | ZERO WHEEL BULGE</text>
+  <text x="324.0" y="137.0" class="sub">TOUCHKEY</text>
+  <rect class="cut" x="10" y="218" width="328" height="30"/>
+  <line class="fold" x1="10" y1="222.5" x2="338" y2="222.5"/>
+  <line class="fold" x1="10" y1="243.5" x2="338" y2="243.5"/>
+  <text x="174" y="235.5" class="lbl">03 FRONT/SIDE ULTRA-SLIM MONOCOQUE WALL BAND (328 x 30 mm)</text>
+  <rect class="cut" x="10" y="254" width="328" height="30"/>
+  <line class="fold" x1="10" y1="258.5" x2="338" y2="258.5"/>
+  <line class="fold" x1="10" y1="279.5" x2="338" y2="279.5"/>
+  <text x="174" y="271.5" class="lbl">04 REAR WALL + EXHAUST COOLING DUCT BAND (328 x 30 mm)</text>
+  <rect class="cut" x="10" y="290" width="248" height="32"/>
+  <line class="fold" x1="10" y1="298.0" x2="258" y2="298.0"/>
+  <line class="fold" x1="10" y1="306.0" x2="258" y2="306.0"/>
+  <line class="fold" x1="10" y1="314.0" x2="258" y2="314.0"/>
+  <line class="cut" x1="134" y1="290" x2="134" y2="322"/>
+  <text x="72" y="308" class="sub">05A BOX-RIB STIFFENERS (x2)</text>
+  <text x="196" y="308" class="sub">05B BOX-RIB STIFFENERS (x2)</text>
+  <rect class="cut-accent" x="264" y="290" width="74" height="32"/>
+  <line class="fold" x1="264" y1="298" x2="338" y2="298"/>
+  <line class="fold" x1="264" y1="314" x2="338" y2="314"/>
+  <text x="301" y="305" class="sub" style="font-weight:700;">06 COANDA JET</text>
+  <text x="301" y="311.5" class="sub">14.3 m/s (0 W)</text>
+  <rect class="cut" x="10" y="328" width="328" height="52"/>
+  <line class="fold" x1="110" y1="328" x2="110" y2="380"/>
+  <line class="fold" x1="218" y1="328" x2="218" y2="380"/>
+  <line class="fold" x1="10" y1="341" x2="338" y2="341"/>
+  <line class="fold" x1="10" y1="367" x2="338" y2="367"/>
+  <text x="60" y="356" class="sub" style="font-weight:700;">5S AA BAY NET</text>
+  <text x="164" y="353" class="sub" style="font-weight:700;">HELMHOLTZ 10.2cm3</text>
+  <text x="164" y="360" class="sub">1,497 Hz (-24.3 dB)</text>
+  <text x="278" y="353" class="sub" style="font-weight:700;">1/4-WAVE 28.7mm</text>
+  <text x="278" y="360" class="sub">2,994 Hz (-14.9 dB)</text>
+  <rect class="cut-accent" x="344" y="208" width="96" height="92"/>
+  <line class="cut" x1="344" y1="238" x2="440" y2="238"/>
+  <line class="cut" x1="344" y1="268" x2="440" y2="268"/>
+  <line class="hinge" x1="362" y1="208" x2="362" y2="268"/>
+  <line class="hinge" x1="365" y1="208" x2="365" y2="268"/>
+  <text x="401" y="225" class="sub" style="font-weight:700;">08A ROCKER ARM L</text>
+  <text x="401" y="255" class="sub" style="font-weight:700;">08B ROCKER ARM R</text>
+  <text x="392" y="285" class="sub" style="font-weight:700;">08C PET CYCLONE CRADLE</text>
+  <rect class="cut" x="344" y="306" width="96" height="74"/>
+  <line class="fold" x1="344" y1="324" x2="440" y2="324"/>
+  <line class="fold" x1="344" y1="343" x2="440" y2="343"/>
+  <line class="fold" x1="344" y1="362" x2="440" y2="362"/>
+  <text x="392" y="335" class="sub" style="font-weight:700;">09 VOLUTE WALL</text>
+  <text x="392" y="354" class="sub">+ BELLMOUTH RING</text>
+  <circle class="cut" cx="458" cy="42" r="27"/>
+  <circle class="cut-hole" cx="458" cy="42" r="2.0"/>
+  <text x="458" y="54" class="sub" style="font-weight:700;">WHEEL L1</text>
+  <text x="458" y="60" class="sub">Ø54(+2mm)</text>
+  <circle class="cut" cx="518" cy="42" r="27"/>
+  <circle class="cut-hole" cx="518" cy="42" r="2.0"/>
+  <text x="518" y="54" class="sub" style="font-weight:700;">WHEEL L2</text>
+  <text x="518" y="60" class="sub">Ø54(+2mm)</text>
+  <circle class="cut" cx="458" cy="102" r="27"/>
+  <circle class="cut-hole" cx="458" cy="102" r="2.0"/>
+  <text x="458" y="114" class="sub" style="font-weight:700;">WHEEL R1</text>
+  <text x="458" y="120" class="sub">Ø54(+2mm)</text>
+  <circle class="cut" cx="518" cy="102" r="27"/>
+  <circle class="cut-hole" cx="518" cy="102" r="2.0"/>
+  <text x="518" y="114" class="sub" style="font-weight:700;">WHEEL R2</text>
+  <text x="518" y="120" class="sub">Ø54(+2mm)</text>
+  <circle class="cut" cx="495" cy="185" r="48"/>
+  <circle class="cut-hole" cx="495" cy="185" r="4.0"/>
+  <line class="fold" x1="535.0" y1="185.0" x2="539.5" y2="169.3"/>
+  <line class="fold" x1="519.9" y1="216.3" x2="535.1" y2="210.0"/>
+  <line class="fold" x1="486.1" y1="224.0" x2="500.4" y2="231.9"/>
+  <line class="fold" x1="459.0" y1="202.4" x2="461.7" y2="218.5"/>
+  <line class="fold" x1="459.0" y1="167.6" x2="448.1" y2="179.9"/>
+  <line class="fold" x1="486.1" y1="146.0" x2="469.8" y2="145.1"/>
+  <line class="fold" x1="519.9" y1="153.7" x2="510.4" y2="140.4"/>
+  <text x="495" y="213" class="sub" style="font-weight:700;">14 DIFFUSER TOP Ø96</text>
+  <circle class="cut" cx="495" cy="289" r="48"/>
+  <circle class="cut-hole" cx="495" cy="289" r="15.0"/>
+  <text x="495" y="317" class="sub" style="font-weight:700;">15 DIFFUSER BOT Ø96</text>
+  <rect class="cut" x="446" y="344" width="98" height="36"/>
+  <line class="fold" x1="446" y1="362" x2="544" y2="362"/>
+  <text x="495" y="356" class="sub" style="font-weight:700;">16 BERNOULLI SKIRT</text>
+  <text x="495" y="373" class="sub">126mm (1.85mm GAP)</text>
+  <rect x="446" y="383" width="50" height="4" fill="#0f172a"/>
+  <text x="520" y="386.8" class="sub">50 mm SCALE</text>
 </svg>

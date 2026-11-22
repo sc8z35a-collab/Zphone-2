@@ -1,26 +1,27 @@
 {
+  "revision": "Rev 3.0 CH32X035 5.0V Single-Chip Mixed-Signal",
   "power_isolation": {
-    "vbat_min_sag_V": 4.42,
-    "v3v3_min_V": 3.3,
-    "v3v3_max_V": 3.3,
-    "mcu_zero_brownout_pass": true,
-    "vdrain_flyback_clamped_max_V": 6.47,
-    "mosfet_vds_60V_margin_x": 9.3
+    "vbat_min_sag_V": 4.763,
+    "v5v_rail_min_V": 5.0,
+    "zero_brownout": true,
+    "mosfet_direct_5V_gate_V": 4.95,
+    "flyback_clamp_max_V": 6.32,
+    "fet_voltage_margin_x": 9.5
   },
-  "single_shunt_ripple_amp": {
-    "cruise_adc_mean_V": 0.629,
-    "commutator_ripple_pp_mV": 230.7,
-    "wall_stall_adc_mean_V": 1.456,
-    "stall_step_ratio": 2.32
+  "bifilar_shunt_opa1": {
+    "shunt_resistance_ohm": 0.25,
+    "shunt_cost_jpy": 0,
+    "ripple_peak_to_peak_mV": 155.0,
+    "wall_stall_jump_ratio": 2.4
   },
-  "piezo_dirt_detect": {
-    "midrail_bias_V": 1.65,
-    "peak_impact_swing_V": 0.712,
+  "piezo_dirt_opa2": {
+    "mid_rail_V": 2.5,
+    "peak_deviation_V": 1.824,
     "adc_saturation_free": true
   },
-  "led_as_photodiode": {
-    "wall_present_discharge_us": 142.2,
-    "cliff_open_air_discharge_us_min": 1520.2,
-    "contrast_ratio_x": 10.7
+  "led_photodiode_5V": {
+    "floor_decay_us": 53.6,
+    "cliff_decay_us": 447.6,
+    "contrast_ratio": 8.35
   }
 }

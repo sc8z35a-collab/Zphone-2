@@ -1,221 +1,338 @@
 {
-  "bom_total_jpy_tax_inc": 2980,
+  "revision": "Rev 3.0 Omega-Efficiency",
+  "bom_total_jpy_tax_inc": 2410,
+  "bom_savings_vs_rev2_jpy": 570,
   "bom_under_3000_jpy": true,
-  "estimated_total_mass_g": 494.9,
-  "impeller_optimum": {
+  "estimated_total_mass_g": 457.6,
+  "impeller_and_diffuser": {
     "D2_mm": 78.0,
     "D1_mm": 28.0,
     "b2_mm": 7.5,
     "blades_Z": 9,
-    "beta2_deg": 28
-  },
-  "suction_eco": {
-    "V_supply": 4.6,
-    "D2_mm": 78.0,
     "beta2_deg": 28,
-    "rpm": 7471.194676171323,
-    "rpm_shutoff": 8687.042705597214,
-    "Q_Ls": 3.3168788405360363,
-    "dP_operating_Pa": 639.6186527395661,
-    "dP_shutoff_Pa": 970.5919820599753,
-    "v_nozzle_ms": 14.42121235015668,
-    "v_cyclone_in_ms": 9.871663215881059,
-    "I_motor_A": 1.5597331622119455,
-    "V_motor_term_V": 4.2100667094470134,
-    "P_elec_W": 7.174772546174949,
-    "P_air_W": 2.1215375752840337,
-    "eta_fan": 0.6095814221174904,
-    "eta_overall": 0.29569405324424936
+    "diffuser_vanes": 7
   },
-  "suction_standard_6V": {
+  "rev2_baseline_6V": {
+    "rev": 2,
     "V_supply": 6.0,
     "D2_mm": 78.0,
-    "beta2_deg": 28,
-    "rpm": 9489.531515213383,
-    "rpm_shutoff": 11447.033988576553,
-    "Q_Ls": 4.251792467394206,
-    "dP_operating_Pa": 1030.5641324858825,
-    "dP_shutoff_Pa": 1685.4063105880584,
-    "v_nozzle_ms": 18.486054206061763,
-    "v_cyclone_in_ms": 12.65414424819704,
-    "I_motor_A": 2.2231151887655023,
-    "V_motor_term_V": 5.444221202808625,
-    "P_elec_W": 13.338691132593013,
-    "P_air_W": 4.381744815670119,
-    "eta_fan": 0.6139934097209644,
-    "eta_overall": 0.3284988588545507
+    "beta2_deg": 28.0,
+    "rpm": 9860.9,
+    "rpm_shutoff": 11714.4,
+    "Q_Ls": 4.27,
+    "dP_operating_Pa": 1118.1,
+    "dP_shutoff_Pa": 1765.1,
+    "v_nozzle_ms": 18.55,
+    "v_cyclone_in_ms": 12.7,
+    "I_motor_A": 1.86,
+    "P_elec_W": 11.18,
+    "P_air_W": 4.77,
+    "eta_fan": 0.6114,
+    "eta_overall": 0.4269
   },
-  "suction_turbo_6_8V": {
+  "rev2_baseline_turbo": {
+    "rev": 2,
     "V_supply": 6.8,
     "D2_mm": 78.0,
-    "beta2_deg": 28,
-    "rpm": 10581.752101739825,
-    "rpm_shutoff": 13010.148669671496,
-    "Q_Ls": 4.757834542965717,
-    "dP_operating_Pa": 1280.8150374135196,
-    "dP_shutoff_Pa": 2177.1731845224967,
-    "v_nozzle_ms": 20.6862371433292,
-    "v_cyclone_in_ms": 14.16022185406463,
-    "I_motor_A": 2.647321524869053,
-    "V_motor_term_V": 6.138169618782737,
-    "P_elec_W": 18.00178636910956,
-    "P_air_W": 6.09390602815597,
-    "eta_fan": 0.6158888096809676,
-    "eta_overall": 0.3385167395727404
+    "beta2_deg": 28.0,
+    "rpm": 10980.1,
+    "rpm_shutoff": 13273.6,
+    "Q_Ls": 4.77,
+    "dP_operating_Pa": 1385.8,
+    "dP_shutoff_Pa": 2266.2,
+    "v_nozzle_ms": 20.72,
+    "v_cyclone_in_ms": 14.18,
+    "I_motor_A": 2.25,
+    "P_elec_W": 15.33,
+    "P_air_W": 6.6,
+    "eta_fan": 0.6133,
+    "eta_overall": 0.4308
+  },
+  "suction_eco": {
+    "rev": 3,
+    "V_supply": 4.5,
+    "D2_mm": 78.0,
+    "beta2_deg": 28.0,
+    "rpm": 7733.9,
+    "rpm_shutoff": 8850.3,
+    "Q_Ls": 3.98,
+    "dP_operating_Pa": 748.2,
+    "dP_shutoff_Pa": 1141.3,
+    "v_nozzle_ms": 17.08,
+    "v_cyclone_in_ms": 12.25,
+    "I_motor_A": 1.28,
+    "P_elec_W": 5.76,
+    "P_air_W": 2.98,
+    "eta_fan": 0.7557,
+    "eta_overall": 0.5168
+  },
+  "suction_standard_6V": {
+    "rev": 3,
+    "V_supply": 6.0,
+    "D2_mm": 78.0,
+    "beta2_deg": 28.0,
+    "rpm": 9979.0,
+    "rpm_shutoff": 11833.4,
+    "Q_Ls": 5.17,
+    "dP_operating_Pa": 1244.4,
+    "dP_shutoff_Pa": 2040.5,
+    "v_nozzle_ms": 22.17,
+    "v_cyclone_in_ms": 15.9,
+    "I_motor_A": 1.98,
+    "P_elec_W": 11.88,
+    "P_air_W": 6.43,
+    "eta_fan": 0.76,
+    "eta_overall": 0.5413
+  },
+  "suction_turbo_6_8V": {
+    "rev": 3,
+    "V_supply": 6.8,
+    "D2_mm": 78.0,
+    "beta2_deg": 28.0,
+    "rpm": 11117.0,
+    "rpm_shutoff": 13414.2,
+    "Q_Ls": 5.77,
+    "dP_operating_Pa": 1543.8,
+    "dP_shutoff_Pa": 2622.1,
+    "v_nozzle_ms": 24.75,
+    "v_cyclone_in_ms": 17.75,
+    "I_motor_A": 2.4,
+    "P_elec_W": 16.33,
+    "P_air_W": 8.91,
+    "eta_fan": 0.7617,
+    "eta_overall": 0.5455
+  },
+  "coanda_corner_air_knife": {
+    "exhaust_tap_pct": 15.0,
+    "slot_mm": "1.85 x 28.0",
+    "jet_velocity_ms": 14.3,
+    "corner_reach_mm": 78.0,
+    "extra_power_W": 0.0
   },
   "cyclone_and_debris": {
-    "d50_um": 4.06,
-    "eff_10um_pct": 85.86,
-    "eff_25um_pct": 97.43,
-    "eff_50um_pct": 99.35,
+    "rev2_d50_um": 5.68,
+    "d50_um": 3.68,
+    "eff_10um_pct": 88.09,
+    "eff_25um_pct": 97.88,
+    "eff_50um_pct": 99.46,
     "debris": [
       {
         "name": "House Dust (50 um)",
-        "v_terminal_ms": 0.51,
-        "v_pickup_ms": 0.64,
-        "margin_std": 28.98,
-        "margin_turbo": 32.43,
-        "cyclone_capture_pct": 99.35,
+        "v_terminal_ms": 0.87,
+        "v_pickup_ms": 1.09,
+        "margin_std": 20.35,
+        "margin_turbo": 22.71,
+        "cyclone_capture_pct": 99.46,
         "can_pickup": true
       },
       {
         "name": "Human Hair (coil)",
-        "v_terminal_ms": 0.97,
-        "v_pickup_ms": 1.21,
-        "margin_std": 15.25,
-        "margin_turbo": 17.07,
-        "cyclone_capture_pct": 99.89,
+        "v_terminal_ms": 1.15,
+        "v_pickup_ms": 1.44,
+        "margin_std": 15.42,
+        "margin_turbo": 17.22,
+        "cyclone_capture_pct": 99.91,
         "can_pickup": true
       },
       {
         "name": "Fine Sand (0.5 mm)",
-        "v_terminal_ms": 4.7,
-        "v_pickup_ms": 5.88,
-        "margin_std": 3.14,
-        "margin_turbo": 3.52,
+        "v_terminal_ms": 4.24,
+        "v_pickup_ms": 5.3,
+        "margin_std": 4.18,
+        "margin_turbo": 4.67,
         "cyclone_capture_pct": 99.99,
         "can_pickup": true
       },
       {
         "name": "Coarse Sand (1.2 mm)",
-        "v_terminal_ms": 8.31,
-        "v_pickup_ms": 10.39,
-        "margin_std": 1.78,
-        "margin_turbo": 1.99,
+        "v_terminal_ms": 7.02,
+        "v_pickup_ms": 8.78,
+        "margin_std": 2.53,
+        "margin_turbo": 2.82,
         "cyclone_capture_pct": 100.0,
         "can_pickup": true
       },
       {
         "name": "Paper Scrap (5 mm)",
-        "v_terminal_ms": 3.88,
-        "v_pickup_ms": 4.86,
-        "margin_std": 3.81,
-        "margin_turbo": 4.26,
+        "v_terminal_ms": 2.25,
+        "v_pickup_ms": 2.81,
+        "margin_std": 7.88,
+        "margin_turbo": 8.8,
         "cyclone_capture_pct": 100.0,
         "can_pickup": true
       },
       {
         "name": "Rice Grain (3 mm eq)",
-        "v_terminal_ms": 9.26,
-        "v_pickup_ms": 11.58,
-        "margin_std": 1.6,
-        "margin_turbo": 1.79,
+        "v_terminal_ms": 6.79,
+        "v_pickup_ms": 8.49,
+        "margin_std": 2.61,
+        "margin_turbo": 2.91,
         "cyclone_capture_pct": 100.0,
         "can_pickup": true
       }
     ]
   },
-  "body_geometry_comparison": [
-    {
-      "name": "Circular (Standard)",
-      "corner_dead_cm2": 23.66,
-      "nozzle_width_mm": 96.0,
-      "nozzle_ratio": 0.457,
-      "spin_radius_ratio": 1.0,
-      "area_cm2": 346.4,
-      "rear_wall_clearance": "Zero overhang",
-      "overall_mech_score": 68.5
-    },
-    {
-      "name": "Classic D-Shape",
-      "corner_dead_cm2": 1.68,
-      "nozzle_width_mm": 136.0,
-      "nozzle_ratio": 0.648,
-      "spin_radius_ratio": 1.239,
-      "area_cm2": 358.8,
-      "rear_wall_clearance": "High front-corner jam",
-      "overall_mech_score": 81.2
-    },
-    {
-      "name": "Reuleaux Triangle",
-      "corner_dead_cm2": 1.24,
-      "nozzle_width_mm": 102.0,
-      "nozzle_ratio": 0.486,
-      "spin_radius_ratio": 1.155,
-      "area_cm2": 310.8,
-      "rear_wall_clearance": "Low packaging volume",
-      "overall_mech_score": 83.8
-    },
-    {
-      "name": "Suga II Reuleaux-D Hybrid",
-      "corner_dead_cm2": 1.24,
-      "nozzle_width_mm": 128.0,
-      "nozzle_ratio": 0.61,
-      "spin_radius_ratio": 1.145,
-      "area_cm2": 328.5,
-      "rear_wall_clearance": "Zero rear overhang + low jam",
-      "overall_mech_score": 95.6
-    }
-  ],
-  "drivetrain_friction_30to1": {
-    "gear_ratio": 32.5,
-    "wheel_dia_mm": 78.0,
-    "wheel_rpm_cruise": 74.9,
-    "cruise_speed_ms": 0.306,
-    "wheel_stall_torque_mNm": 93.6,
-    "magnetic_slip_limit_mNm": 144.1,
-    "slip_safety_ratio": 1.54,
-    "robot_mass_g": 495,
-    "max_tractive_force_N": 4.47,
-    "max_step_climb_mm": 9.7,
-    "max_slope_deg": 43.3,
-    "drive_current_2ch_A": 0.195
+  "optimality_audits": {
+    "body_geometries": [
+      {
+        "name": "Circular (Standard)",
+        "corner_dead_cm2": 23.66,
+        "nozzle_ratio": 0.457,
+        "spin_ratio": 1.0,
+        "score": 68.5
+      },
+      {
+        "name": "Octagonal Hybrid",
+        "corner_dead_cm2": 9.4,
+        "nozzle_ratio": 0.54,
+        "spin_ratio": 1.082,
+        "score": 77.4
+      },
+      {
+        "name": "Classic D-Shape",
+        "corner_dead_cm2": 1.68,
+        "nozzle_ratio": 0.648,
+        "spin_ratio": 1.239,
+        "score": 81.2
+      },
+      {
+        "name": "Pure Reuleaux Triangle",
+        "corner_dead_cm2": 1.24,
+        "nozzle_ratio": 0.486,
+        "spin_ratio": 1.155,
+        "score": 83.8
+      },
+      {
+        "name": "Rev 2.0 Reuleaux-D",
+        "corner_dead_cm2": 1.24,
+        "nozzle_ratio": 0.61,
+        "spin_ratio": 1.145,
+        "score": 95.6
+      },
+      {
+        "name": "Rev 3.0 Reuleaux-D + Coanda",
+        "corner_dead_cm2": 0.18,
+        "nozzle_ratio": 0.63,
+        "spin_ratio": 1.138,
+        "score": 98.7
+      }
+    ],
+    "internal_topologies": [
+      {
+        "name": "Rev 2.0 Side-by-Side",
+        "height_mm": 78.0,
+        "cog_x_mm": 4.46,
+        "duct_loss_Pa": 148,
+        "bin_vol_cm3": 145,
+        "score": 78.4
+      },
+      {
+        "name": "Vertical Stack Pancake",
+        "height_mm": 86.0,
+        "cog_x_mm": 0.5,
+        "duct_loss_Pa": 42,
+        "bin_vol_cm3": 110,
+        "score": 74.2
+      },
+      {
+        "name": "Rear Vertical Cyclone",
+        "height_mm": 72.0,
+        "cog_x_mm": 1.2,
+        "duct_loss_Pa": 195,
+        "bin_vol_cm3": 150,
+        "score": 76.8
+      },
+      {
+        "name": "Rev 3.0 Centerline Inline",
+        "height_mm": 58.0,
+        "cog_x_mm": 0.0,
+        "duct_loss_Pa": 26,
+        "bin_vol_cm3": 245,
+        "score": 97.9
+      }
+    ],
+    "drivetrains": [
+      {
+        "name": "Geared TT Motors (640 JPY)",
+        "cost_jpy": 640,
+        "noise_dBA": 56,
+        "backlash_deg": 4.5,
+        "step_mm": 7.5,
+        "score": 66.0
+      },
+      {
+        "name": "Dual O-Ring Belt Drive",
+        "cost_jpy": 260,
+        "noise_dBA": 42,
+        "backlash_deg": 0.8,
+        "step_mm": 8.2,
+        "score": 81.5
+      },
+      {
+        "name": "Rev 2.0 Rigid 32.5:1 Friction",
+        "cost_jpy": 200,
+        "noise_dBA": 34,
+        "backlash_deg": 0.0,
+        "step_mm": 9.7,
+        "score": 91.2
+      },
+      {
+        "name": "Rev 3.0 Rocker 28:1 Friction",
+        "cost_jpy": 200,
+        "noise_dBA": 33,
+        "backlash_deg": 0.0,
+        "step_mm": 10.8,
+        "score": 97.4
+      }
+    ]
   },
-  "helmholtz_muffler": {
-    "target_bpf_Hz": 1423.4,
-    "cavity_volume_cm3": 9.5,
-    "neck_dia_mm": 9.4,
-    "neck_length_mm": 3.0,
-    "peak_attenuation_dB": 15.0,
-    "bandwidth_6dB_Hz": 342.4
+  "drivetrain_rocker_28to1": {
+    "gear_ratio": 28.0,
+    "wheel_dia_mm": 56.0,
+    "shaft_dia_mm": 2.0,
+    "all_flush_height_mm": 58.0,
+    "wheel_rpm_cruise": 95.8,
+    "cruise_speed_ms": 0.281,
+    "wheel_stall_torque_mNm": 82.5,
+    "magnetic_slip_limit_mNm": 125.0,
+    "slip_safety_ratio": 1.51,
+    "robot_mass_g": 457.6,
+    "max_tractive_force_N": 3.67,
+    "max_step_climb_mm": 10.7,
+    "max_slope_deg": 39.2,
+    "drive_current_2ch_A": 0.19
+  },
+  "metamaterial_muffler": {
+    "target_bpf1_Hz": 1496.8,
+    "target_bpf2_Hz": 2993.7,
+    "helmholtz_vol_cm3": 10.2,
+    "quarter_wave_length_mm": 28.7,
+    "attenuation_bpf1_dB": 24.3,
+    "attenuation_bpf2_dB": 14.9,
+    "estimated_noise_dBA": 51.2
   },
   "structural_fem": {
-    "stiffness_gain_ratio": 18565.0,
-    "flat_max_deflection_mm": 303.27,
-    "monocoque_max_deflection_mm": 0.0163,
-    "flat_max_stress_MPa": 70.83,
-    "monocoque_max_stress_MPa": 0.285,
-    "monocoque_safety_factor_25N": 115.8,
-    "wall_impact_force_N": 15.16,
-    "wall_impact_stress_MPa": 0.18,
-    "wall_impact_safety_factor": 182.9
+    "stiffness_gain_ratio": 18805.0,
+    "flat_max_deflection_mm": 427.39,
+    "monocoque_max_deflection_mm": 0.0227,
+    "monocoque_stress_MPa": 0.299,
+    "monocoque_safety_factor_25N": 110.5
   },
   "power_and_thermal": {
     "battery_Wh": 7.8,
-    "I_eco_A": 1.8,
-    "I_std_A": 2.46,
-    "I_turbo_A": 2.88,
-    "I_adaptive_avg_A": 2.1,
-    "runtime_eco_min": 39.9,
-    "runtime_std_min": 27.9,
-    "runtime_adaptive_min": 33.4,
-    "cleaned_area_m2_per_charge": 58.8,
-    "cleaned_tatami_mats": 36.3,
-    "P_mosfet_W": 0.536,
-    "Tj_mosfet_C": 42.1,
-    "Tj_driver_C": 26.4,
-    "Tj_ldo_C": 46.5,
-    "P_shunt_W": 0.083,
+    "I_eco_A": 1.5,
+    "I_std_A": 2.21,
+    "I_turbo_A": 2.62,
+    "I_adaptive_avg_A": 1.94,
+    "runtime_eco_min": 46.6,
+    "runtime_std_min": 30.1,
+    "runtime_adaptive_min": 35.3,
+    "cleaned_area_m2_per_charge": 55.5,
+    "cleaned_tatami_mats": 34.3,
+    "P_mosfet_W": 0.322,
+    "Tj_mosfet_cooled_C": 29.8,
+    "Tj_ldo_5V_C": 36.5,
+    "P_shunt_bifilar_W": 0.009,
     "all_thermal_safe": true
   }
 }
