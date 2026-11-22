@@ -574,7 +574,7 @@ def write_kicad_pcb():
         f' (stroke (width 0.1) (type solid)) (fill none) (layer "Edge.Cuts") (tstamp {uid("board_edge")}))'
     )
     pcb_lines.append(
-        f'  (gr_text "SUGA ROOMBA II REV4.0 CH32X035 2880JPY" (at {board_x0 + board_w/2:.2f} {board_y0 + 1.6:.2f})'
+        f'  (gr_text "SUGA ROOMBA II REV5.0 CH32X035 REAL-HW" (at {board_x0 + board_w/2:.2f} {board_y0 + 1.6:.2f})'
         f' (layer "F.SilkS") (effects (font (size 1.0 1.0) (thickness 0.15))) (tstamp {uid("pcb_title")}))'
     )
     pcb_lines.extend(footprints)
@@ -619,7 +619,7 @@ def run_kicad_cli_checks(sch_path, pcb_path):
         if proc.returncode != 0:
             raise RuntimeError(f"kicad-cli {label} failed: {proc.stderr}")
 
-    gerb_zip = os.path.join(OUT_DIR, "SugaRoomba2_Rev4_JLCPCB_Gerbers.zip")
+    gerb_zip = os.path.join(OUT_DIR, "SugaRoomba2_Rev5_JLCPCB_Gerbers.zip")
     with zipfile.ZipFile(gerb_zip, "w", zipfile.ZIP_DEFLATED) as zf:
         for fn in sorted(os.listdir(GERB_DIR)):
             zf.write(os.path.join(GERB_DIR, fn), arcname=fn)
@@ -639,7 +639,7 @@ def run_kicad_cli_checks(sch_path, pcb_path):
         print("  !", e)
     assert len(errs) == 0, f"DRC errors found: {errs}"
     assert "Found 0 unconnected pads" in report, "Unconnected pads detected!"
-    print("[KiCad 7 REV 4.0 PASS] 0 DRC errors, 0 silk overlaps, 0 unconnected pads!")
+    print("[KiCad 7 REV 5.0 PASS] 0 DRC errors, 0 silk overlaps, 0 unconnected pads!")
 
 
 if __name__ == "__main__":

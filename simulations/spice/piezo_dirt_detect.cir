@@ -1,18 +1,18 @@
-* Rev 3.0: 30-JPY Murata PKM13EPYH4000 Piezo + CH32X035 On-Chip OPA2 (VMID = 2.50V -> +51% headroom!)
+* Rev 5.0: 30-JPY Murata PKM13EPYH4000 Piezo + CH32X035 On-Chip OPA2 (VMID = 2.50V)
 V_DD v5v 0 DC 5.0
 R_B1 v5v vmid 10k
 R_B2 vmid 0 10k
 C_M  vmid 0 1u IC=2.5
 
-* Piezo sand & rice grain impact bursts inside horizontal PET cyclone inlet (4kHz damped bursts)
+* Piezo sand & rice impact bursts on Cyclone Intake Ramp wall (4kHz damped bursts)
 V_IMP1 n1 vmid SIN(0 0.24 4000 3m 450)
 V_IMP2 n2 n1   SIN(0 0.36 4200 10m 380)
 C_PZ   n2 pz_in 18n
-R_PZ   pz_in vmid 20k ; 2x 10k E1 series
+R_PZ   pz_in vmid 20k
 
-* CH32X035 On-Chip OPA2 Non-Inverting AC Gain = 1 + 20k/5k = 5.0x around VMID = 2.50V
-R_G2   inv2 vmid 5k   ; 2x 10k parallel
-R_F2   adc_dirt inv2 20k ; 2x 10k series
+* CH32X035 On-Chip OPA2 Non-Inverting AC Gain = 5.0x around VMID = 2.50V
+R_G2   inv2 vmid 5k
+R_F2   adc_dirt inv2 20k
 B_OPA2 adc_dirt 0 V = 2.5 + 2.45 * tanh(2e3 * (V(pz_in) - V(inv2)))
 
 .tran 10u 18m 0 10u uic

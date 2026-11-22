@@ -1,20 +1,28 @@
 {
-  "revision": "Rev 4.0 CH32X035 5.0V Single-Chip + Back-EMF Barometer",
+  "revision": "Rev 5.0 Production-Ready (1.5ms Coast Back-EMF, RS-385PH L=450uH, Ra=0.40R)",
   "power_isolation": {
-    "vbat_min_sag_V": 4.819,
+    "vbat_min_sag_V": 4.99,
     "v5v_rail_min_V": 5.0,
     "zero_brownout": true,
     "mosfet_direct_5V_gate_V": 4.95,
-    "flyback_clamp_max_V": 6.33,
+    "flyback_clamp_max_V": 6.28,
     "fet_voltage_margin_x": 9.5,
-    "bemf_adc_max_V": 3.0,
-    "bemf_adc_safe_under_5V": true
+    "bemf_adc_max_V": 3.09,
+    "bemf_adc_safe_under_5V": true,
+    "motor_inductance_uH": 450,
+    "coast_window_ms": 1.5,
+    "freewheel_decay_to_5mA_ms": 0.113,
+    "settled_winding_current_at_1p2ms_mA": 0.047,
+    "settled_adc_bemf_V": 0.674,
+    "settled_plateau_ripple_mV": 0.29,
+    "reconstructed_motor_bemf_V": 4.65,
+    "true_motor_bemf_V": 4.65,
+    "bemf_measurement_error_mV": 0.0
   },
   "bifilar_shunt_opa1": {
     "shunt_resistance_ohm": 0.25,
-    "shunt_cost_jpy": 0,
-    "ripple_peak_to_peak_mV": 155.0,
-    "wall_stall_jump_ratio": 2.4
+    "ripple_peak_to_peak_mV": 116.0,
+    "wall_stall_jump_ratio": 2.67
   },
   "piezo_dirt_opa2": {
     "mid_rail_V": 2.5,

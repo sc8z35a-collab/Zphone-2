@@ -48,7 +48,7 @@
   (net 30 "USB_DM")
   (net 31 "BUMP_SW")
   (gr_rect (start 100.00 100.00) (end 159.69 155.88) (stroke (width 0.1) (type solid)) (fill none) (layer "Edge.Cuts") (tstamp 57649d97-51ee-5522-95fe-da458681f8fa))
-  (gr_text "SUGA ROOMBA II REV4.0 CH32X035 2880JPY" (at 129.84 101.60) (layer "F.SilkS") (effects (font (size 1.0 1.0) (thickness 0.15))) (tstamp c02a41b3-69b2-54cd-a5d0-84eb7eec98fd))
+  (gr_text "SUGA ROOMBA II REV5.0 CH32X035 REAL-HW" (at 129.84 101.60) (layer "F.SilkS") (effects (font (size 1.0 1.0) (thickness 0.15))) (tstamp c02a41b3-69b2-54cd-a5d0-84eb7eec98fd))
   (footprint "SugaR4:J1" (layer "F.Cu")
     (tstamp 06b9794f-39a1-5afa-acd5-978780202a06)
     (at 105.080 105.080)

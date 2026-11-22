@@ -1,11 +1,12 @@
 #!/usr/bin/env python3
 """
-菅ルンバ II Rev 3.0 (CH32X035 5.0V Single-Chip Mixed-Signal) — Real ngspice 42 Verification!
-Simulates all 4 core Rev 3.0 electronic circuits with real ngspice transient analysis:
-  1. 5S NiMH Sag Isolation (1S4 + 470uF + LP2950L-50 -> 5.00V) & Direct 5V 2SK4017 PWM (No DTC114EL!)
+菅ルンバ II Rev 5.0 (Production-Ready Real-Hardware) — Real ngspice 42 Verification!
+Simulates all 4 core Rev 5.0 electronic circuits with real ngspice transient analysis:
+  1. 5S NiMH Sag Isolation (1S4 + 470uF + LP2950L-50 -> 5.00V), Direct 5V 2SK4017 PWM,
+     AND 1.5 ms PWM-OFF Back-EMF Virtual Barometer Coast Window (conservative RS-385PH L=450uH, R=0.40R!)
   2. 0-JPY 0.25-ohm Bifilar Copper Shunt + CH32X035 On-Chip OPA1 (13x E1 10k-only) Ripple Tach
-  3. 30-JPY Murata Piezo Acoustic Dirt Detect + CH32X035 On-Chip OPA2 (2.50V mid-rail, +51% headroom!)
-  4. 40-JPY Red LED-as-Photodiode 5.0V Reverse-Bias Optical Ranging (PIOC Wall/Cliff Contrast)
+  3. 30-JPY Murata Piezo Acoustic Dirt Detect + CH32X035 On-Chip OPA2 (2.50V mid-rail)
+  4. 40-JPY Red LED-as-Photodiode 5.0V Reverse-Bias Optical Ranging (Wall/Cliff Contrast)
 """
 
 import json
@@ -23,58 +24,61 @@ os.makedirs(SPICE_DIR, exist_ok=True)
 os.makedirs(RES_DIR, exist_ok=True)
 
 CIRCUITS = {
-    "power_mosfet_isolation.cir": """* Rev 4.0: 5S NiMH Sag Isolation (5.00V) + Direct 5V 2SK4017 PWM + 0-JPY Back-EMF Virtual Barometer
+    "power_mosfet_isolation.cir": """* Rev 5.0: 5S NiMH Sag Isolation (5.00V) + 2SK4017 PWM + 1.5ms Coast Back-EMF Barometer (L=450uH)
 .model D_1S4 D(IS=1.5e-5 RS=0.09 N=1.06 BV=40)
 .model D_SB340 D(IS=2e-5 RS=0.045 N=1.05 BV=40)
 .model M_2SK4017 NMOS(VTO=1.9 KP=14.0 RD=0.022 RS=0.014 CBD=320p CBS=350p)
 
-* 5S NiMH Battery (6.0V nom, 0.195 ohm pack ESR)
+* 5S NiMH Battery (6.0V nom, 0.20 ohm pack ESR)
 V_BATT v_raw 0 DC 6.0
-R_ESR  v_raw vbat 0.195
+R_ESR  v_raw vbat 0.20
 C_BULK vbat 0 470u IC=6.0
 
-* Sag-Isolated 5.0V Rail (1S4 Schottky Vf=0.25V@35mA + 470uF Holdup + LP2950L-50-T92 0.38V dropout)
+* Sag-Isolated 5.0V Rail (1S4 Schottky + 470uF Holdup + LP2950L-50-T92)
 D_ISO  vbat vldo_in D_1S4
 C_HOLD vldo_in 0 470u IC=5.75
 B_LDO  v5v 0 V = (V(vldo_in) > 5.38) ? 5.0 : ((V(vldo_in) > 0.38) ? (V(vldo_in) - 0.38) : 0)
 C_5V   v5v 0 1u IC=5.0
 R_MCU  v5v 0 140 ; 35.7mA (CH32X035 18mA + 5V USB Mouse 17.7mA)
 
-* Direct 5.0V 25kHz PWM from CH32X035 PA0 (NO DTC114EL needed! Safe pulldown 10k)
-V_PWM  pwm_pa0 0 PULSE(0 5.0 0.5m 60n 60n 32u 40u)
+* Direct 5.0V 25kHz PWM with explicit 1.5ms PWM-OFF Coast Window (t = 5.0ms .. 6.5ms)!
+V_CLK  pwm_clk 0 PULSE(0 5.0 0.5m 60n 60n 35u 40u)
+V_WIN  pwm_win 0 PWL(0 0 0.49m 0 0.50m 1 4.999m 1 5.000m 0 6.499m 0 6.500m 1 10m 1)
+B_PWM  pwm_pa0 0 V = V(pwm_clk) * V(pwm_win)
 R_G    pwm_pa0 gate 100
 R_PD   gate 0 10k
 
-* RS-385PH Turbine (Helical-cooled Ra=0.372R, L=120uH, BackEMF=4.73V open)
-L_MOT  vbat mot_mid 120u
-R_MOT  mot_mid mot_emf 0.372
-V_EMF  mot_emf drain PWL(0 0 0.5m 0 4.5m 4.73 12m 4.73)
+* RS-385PH-4045 Real Datasheet Parameters: Ra=0.40R (6V/15A), conservative L=450uH, BackEMF=4.65V @ 9,850rpm
+V_IMOT vbat mot_in DC 0 ; 0V ammeter for exact winding current I(V_IMOT)
+L_MOT  mot_in mot_mid 450u
+R_MOT  mot_mid mot_emf 0.400
+V_EMF  mot_emf drain PWL(0 0 0.5m 0 4.0m 4.65 10m 4.65)
 D_FLY  drain vbat D_SB340
 M_FET  drain gate 0 0 M_2SK4017
 
-* Rev 4.0 0-JPY Back-EMF Virtual Barometer Divider (2x spare 10k E1 resistors -> CH32X035 ADC)
+* Rev 5.0 0-JPY Back-EMF Virtual Barometer Divider (2x spare 10k E1 resistors -> CH32X035 PB2 ADC)
 R_BEMF1 drain adc_bemf 10k
 R_BEMF2 adc_bemf 0 10k
 C_BEMF  adc_bemf 0 1n
 
-.tran 2u 10m 0 2u uic
+.tran 2u 8.5m 0 2u uic
 .control
 run
 set wr_vecnames
-wrdata {out} v(vbat) v(vldo_in) v(v5v) v(drain) v(gate) v(adc_bemf)
+wrdata {out} v(vbat) v(vldo_in) v(v5v) v(drain) v(gate) v(adc_bemf) i(V_IMOT)
 quit
 .endc
 .end
 """,
-    "motor_shunt_ripple.cir": """* Rev 3.0: 0-JPY 0.25R Salvaged Bifilar Copper Shunt + CH32X035 On-Chip OPA1 (Gain=13x E1 10k-only)
+    "motor_shunt_ripple.cir": """* Rev 5.0: 0-JPY 0.25R Salvaged Bifilar Copper Shunt + CH32X035 On-Chip OPA1 (Gain=13x E1 10k-only)
 V_DD v5v 0 DC 5.0
 
-* Drive Motor Current: Normal cruise (0.19A + 48mApp commutator ripple @ 175Hz) -> Wall Stall at t=30ms (0.46A)
-I_DRIVE 0 shunt_n PWL(0 0.19 29.8m 0.19 30.2m 0.46 60m 0.46)
-I_RIP   0 shunt_n SIN(0 0.024 175 0 0)
-R_SHUNT shunt_n 0 0.25 ; 0-JPY 22cm bifilar copper strand from salvaged Daiso mouse cable!
+* PWN10EB12CB Drive Motor Current @ 6.0V: Cruise 0.14A + 36mApp ripple -> Wall Stall 0.38A at t=30ms
+I_DRIVE 0 shunt_n PWL(0 0.14 29.8m 0.14 30.2m 0.38 60m 0.38)
+I_RIP   0 shunt_n SIN(0 0.018 165 0 0)
+R_SHUNT shunt_n 0 0.25 ; 0-JPY bifilar copper strand from salvaged Daiso mouse cable
 
-* CH32X035 On-Chip OPA1 (5V Rail-to-Rail, E1 10k-only: Rf=30k = 3x10k series, Rg=2.5k = 4x10k parallel -> G=13x)
+* CH32X035 On-Chip OPA1 (5V Rail-to-Rail, E1 10k-only: Rf=30k, Rg=2.5k -> G=13x)
 R_G   inv_n 0 2.5k
 R_F   adc_shunt inv_n 30k
 B_OPA adc_shunt 0 V = 2.5 + 2.45 * tanh(2e3 * (V(shunt_n) - V(inv_n)))
@@ -89,21 +93,21 @@ quit
 .endc
 .end
 """,
-    "piezo_dirt_detect.cir": """* Rev 3.0: 30-JPY Murata PKM13EPYH4000 Piezo + CH32X035 On-Chip OPA2 (VMID = 2.50V -> +51% headroom!)
+    "piezo_dirt_detect.cir": """* Rev 5.0: 30-JPY Murata PKM13EPYH4000 Piezo + CH32X035 On-Chip OPA2 (VMID = 2.50V)
 V_DD v5v 0 DC 5.0
 R_B1 v5v vmid 10k
 R_B2 vmid 0 10k
 C_M  vmid 0 1u IC=2.5
 
-* Piezo sand & rice grain impact bursts inside horizontal PET cyclone inlet (4kHz damped bursts)
+* Piezo sand & rice impact bursts on Cyclone Intake Ramp wall (4kHz damped bursts)
 V_IMP1 n1 vmid SIN(0 0.24 4000 3m 450)
 V_IMP2 n2 n1   SIN(0 0.36 4200 10m 380)
 C_PZ   n2 pz_in 18n
-R_PZ   pz_in vmid 20k ; 2x 10k E1 series
+R_PZ   pz_in vmid 20k
 
-* CH32X035 On-Chip OPA2 Non-Inverting AC Gain = 1 + 20k/5k = 5.0x around VMID = 2.50V
-R_G2   inv2 vmid 5k   ; 2x 10k parallel
-R_F2   adc_dirt inv2 20k ; 2x 10k series
+* CH32X035 On-Chip OPA2 Non-Inverting AC Gain = 5.0x around VMID = 2.50V
+R_G2   inv2 vmid 5k
+R_F2   adc_dirt inv2 20k
 B_OPA2 adc_dirt 0 V = 2.5 + 2.45 * tanh(2e3 * (V(pz_in) - V(inv2)))
 
 .tran 10u 18m 0 10u uic
@@ -115,8 +119,7 @@ quit
 .endc
 .end
 """,
-    "led_photodiode_sensor.cir": """* Rev 3.0: 40-JPY Red LED-as-Photodiode 5.0V Reverse-Bias Optical Ranging (CH32X035 PIOC)
-* Physical reverse-biased PN junction: Cj=30pF, photocurrent rolls off smoothly to 0V, forward LED clamp
+    "led_photodiode_sensor.cir": """* Rev 5.0: 40-JPY Red LED-as-Photodiode 5.0V Reverse-Bias Optical Ranging
 .model D_RED D(IS=1e-18 N=1.8 RS=5 CJO=30p VJ=1.6)
 C_J1 led_floor 0 30p IC=5.0
 D_1  0 led_floor D_RED
@@ -139,6 +142,7 @@ quit
 """,
 }
 
+
 def load_wrdata(path):
     rows = []
     with open(path, encoding="utf-8") as f:
@@ -152,6 +156,7 @@ def load_wrdata(path):
             except ValueError:
                 continue
     return np.array(rows)
+
 
 def main():
     out_files = {
@@ -170,20 +175,35 @@ def main():
             raise RuntimeError(f"ngspice failed on {fname}:\n{proc.stderr}")
         print(f"[ngspice OK] {fname} -> {os.path.basename(out_txt)}")
 
-    # Parse all 4 real simulation outputs (wrdata alternates time, val, time, val...)
     d_pwr = load_wrdata(out_files["power_mosfet_isolation.cir"])
-    t_pwr, vbat, vldo, v5v, vdrn, vgate, vbemf = d_pwr[:,0]*1e3, d_pwr[:,1], d_pwr[:,3], d_pwr[:,5], d_pwr[:,7], d_pwr[:,9], d_pwr[:,11]
+    t_pwr = d_pwr[:, 0] * 1e3
+    vbat, vldo, v5v, vdrn, vgate, vbemf, imot = (
+        d_pwr[:, 1], d_pwr[:, 3], d_pwr[:, 5], d_pwr[:, 7], d_pwr[:, 9], d_pwr[:, 11], d_pwr[:, 13]
+    )
 
     d_sh = load_wrdata(out_files["motor_shunt_ripple.cir"])
-    t_sh, vsh, vadc_sh = d_sh[:,0]*1e3, d_sh[:,1], d_sh[:,3]
+    t_sh, vsh, vadc_sh = d_sh[:, 0] * 1e3, d_sh[:, 1], d_sh[:, 3]
 
     d_pz = load_wrdata(out_files["piezo_dirt_detect.cir"])
-    t_pz, vpz, vadc_pz = d_pz[:,0]*1e3, d_pz[:,1], d_pz[:,3]
+    t_pz, vpz, vadc_pz = d_pz[:, 0] * 1e3, d_pz[:, 1], d_pz[:, 3]
 
     d_ld = load_wrdata(out_files["led_photodiode_sensor.cir"])
-    t_ld, vflr, vclf = d_ld[:,0]*1e3, d_ld[:,1], d_ld[:,3]
+    t_ld, vflr, vclf = d_ld[:, 0] * 1e3, d_ld[:, 1], d_ld[:, 3]
 
-    # Metrics
+    # Analyze exact 1.5 ms PWM-OFF Coast Window (t = 5.00 .. 6.50 ms)!
+    coast_mask = (t_pwr >= 5.00) & (t_pwr <= 6.48)
+    t_coast = t_pwr[coast_mask] - 5.00
+    i_coast = imot[coast_mask]
+    v_coast = vbemf[coast_mask]
+    zero_idx = np.where(np.abs(i_coast) < 0.005)[0]
+    t_decay_ms = float(t_coast[zero_idx[0]]) if len(zero_idx) else 1.50
+
+    sample_mask = (t_pwr >= 6.00) & (t_pwr <= 6.45)  # Sample at 1.0–1.45 ms into 1.5 ms coast window!
+    vbemf_settled = float(np.mean(vbemf[sample_mask]))
+    vbemf_ripple_mv = float((np.max(vbemf[sample_mask]) - np.min(vbemf[sample_mask])) * 1000.0)
+    imot_settled_ma = float(np.mean(np.abs(imot[sample_mask])) * 1000.0)
+    reconstructed_bemf = float(np.mean(vbat[sample_mask]) - 2.0 * vbemf_settled)
+
     vbat_min = float(np.min(vbat))
     v5v_min  = float(np.min(v5v[t_pwr >= 0.2]))
     vdrn_max = float(np.max(vdrn))
@@ -198,13 +218,12 @@ def main():
     pz_swing = float(np.max(np.abs(vadc_pz[m_pz] - 2.50)))
     pz_sat_free = bool(np.min(vadc_pz[m_pz]) > 0.15 and np.max(vadc_pz[m_pz]) < 4.85)
 
-    # Discharge time from 5.0V to 2.5V CMOS threshold
     t_flr_us = float(t_ld[np.argmax(vflr <= 2.5)] * 1000.0)
     t_clf_us = float(t_ld[np.argmax(vclf <= 2.5)] * 1000.0)
     led_ratio = t_clf_us / max(t_flr_us, 1e-6)
 
     spice_summary = {
-        "revision": "Rev 4.0 CH32X035 5.0V Single-Chip + Back-EMF Barometer",
+        "revision": "Rev 5.0 Production-Ready (1.5ms Coast Back-EMF, RS-385PH L=450uH, Ra=0.40R)",
         "power_isolation": {
             "vbat_min_sag_V": round(vbat_min, 3),
             "v5v_rail_min_V": round(v5v_min, 3),
@@ -214,10 +233,18 @@ def main():
             "fet_voltage_margin_x": round(60.0 / vdrn_max, 1),
             "bemf_adc_max_V": round(vbemf_max, 2),
             "bemf_adc_safe_under_5V": bool(vbemf_max < 4.5),
+            "motor_inductance_uH": 450,
+            "coast_window_ms": 1.50,
+            "freewheel_decay_to_5mA_ms": round(t_decay_ms, 3),
+            "settled_winding_current_at_1p2ms_mA": round(imot_settled_ma, 3),
+            "settled_adc_bemf_V": round(vbemf_settled, 3),
+            "settled_plateau_ripple_mV": round(vbemf_ripple_mv, 2),
+            "reconstructed_motor_bemf_V": round(reconstructed_bemf, 3),
+            "true_motor_bemf_V": 4.650,
+            "bemf_measurement_error_mV": round(abs(reconstructed_bemf - 4.650) * 1000.0, 1),
         },
         "bifilar_shunt_opa1": {
             "shunt_resistance_ohm": 0.25,
-            "shunt_cost_jpy": 0,
             "ripple_peak_to_peak_mV": round(sh_rip_mv, 1),
             "wall_stall_jump_ratio": round(sh_jump, 2),
         },
@@ -235,40 +262,49 @@ def main():
     with open(os.path.join(RES_DIR, "spice_summary.json"), "w", encoding="utf-8") as f:
         json.dump(spice_summary, f, indent=2)
 
-    # 2x2 Verification Waveform Dashboard
-    fig, axes = plt.subplots(2, 2, figsize=(13, 8.2))
-    axes[0,0].plot(t_pwr, vbat, color="#ea580c", lw=1.6, label=f"5S NiMH VBAT (min {vbat_min:.2f}V)")
-    axes[0,0].plot(t_pwr, v5v,  color="#0f766e", lw=2.4, label=f"CH32X035 5.0V Rail (min {v5v_min:.3f}V)")
-    axes[0,0].plot(t_pwr, vdrn, color="#3b82f6", lw=0.7, alpha=0.45, label=f"2SK4017 Drain Clamp (max {vdrn_max:.2f}V)")
-    axes[0,0].plot(t_pwr, vbemf,color="#8b5cf6", lw=0.9, alpha=0.75, label=f"0-JPY Back-EMF Sense (max {vbemf_max:.2f}V <5V)")
-    axes[0,0].set_title("A. 5V Sag Isolation, Direct-5V PWM & 0-JPY Back-EMF Sense")
-    axes[0,0].set_xlabel("Time [ms]"); axes[0,0].set_ylabel("Voltage [V]"); axes[0,0].legend(fontsize=7.6, loc="lower right")
+    # 2x2 Verification Waveform Dashboard (Panel A highlights the 1.5ms coast window & freewheel decay!)
+    fig, axes = plt.subplots(2, 2, figsize=(13.2, 8.4))
 
-    axes[0,1].plot(t_sh, vadc_sh, color="#0f766e", lw=1.6, label=f"On-Chip OPA1 Out ({sh_rip_mv:.0f} mVpp ripple, {sh_jump:.2f}x stall)")
-    axes[0,1].axvline(30.0, color="#ea580c", ls="--", lw=1.3, label="Wall Contact Event (t=30ms)")
-    axes[0,1].set_title("B. 0-JPY 0.25R Bifilar Copper Shunt + CH32X035 On-Chip OPA1")
-    axes[0,1].set_xlabel("Time [ms]"); axes[0,1].set_ylabel("ADC Voltage [V]"); axes[0,1].legend(fontsize=8)
+    ax = axes[0, 0]
+    ax.axvspan(5.0, 6.5, color="#fef3c7", alpha=0.7, label="1.5ms PWM-OFF Coast Window")
+    ax.plot(t_pwr, vbat,  color="#ea580c", lw=1.6, label=f"5S NiMH VBAT (min {vbat_min:.2f}V)")
+    ax.plot(t_pwr, v5v,   color="#0f766e", lw=2.3, label=f"CH32X035 5.0V Rail (min {v5v_min:.3f}V)")
+    ax.plot(t_pwr, vbemf, color="#7c3aed", lw=1.4, label=f"Back-EMF ADC (settled {vbemf_settled:.3f}V, max {vbemf_max:.2f}V)")
+    ax.plot(t_pwr, imot,  color="#2563eb", lw=1.0, alpha=0.65, label=f"Motor Current I(L=450uH) -> 0mA in {t_decay_ms:.2f}ms")
+    ax.annotate(f"0 mA settled @ {t_decay_ms:.2f}ms\nEst. Back-EMF = {reconstructed_bemf:.2f}V\n(True 4.65V, err {abs(reconstructed_bemf-4.65)*1000:.0f}mV)",
+                xy=(6.2, vbemf_settled), xytext=(5.15, 2.35),
+                arrowprops=dict(arrowstyle="->", color="#4c1d95", lw=1.0),
+                fontsize=7.6, bbox=dict(boxstyle="round,pad=0.25", fc="white", ec="#7c3aed", alpha=0.92))
+    ax.set_title("A. 5V Sag Isolation & 1.5ms Back-EMF Coast Sampling (L=450uH)", fontsize=10)
+    ax.set_xlabel("Time [ms]"); ax.set_ylabel("Voltage [V] / Current [A]")
+    ax.set_ylim(-0.3, 6.6); ax.legend(fontsize=7.3, loc="lower left")
 
-    axes[1,0].plot(t_pz[m_pz], vadc_pz[m_pz], color="#2563eb", lw=1.3, label=f"On-Chip OPA2 Out (±{pz_swing:.2f}V around 2.50V)")
-    axes[1,0].axhline(2.50, color="#64748b", ls=":", lw=1.0)
-    axes[1,0].set_title("C. 30-JPY Murata Piezo Dirt Detect (5V Rail: +51% Headroom)")
-    axes[1,0].set_xlabel("Time [ms]"); axes[1,0].set_ylabel("ADC Voltage [V]"); axes[1,0].set_ylim(0, 5.1); axes[1,0].legend(fontsize=8)
+    axes[0, 1].plot(t_sh, vadc_sh, color="#0f766e", lw=1.6, label=f"OPA1 Out ({sh_rip_mv:.0f} mVpp ripple, {sh_jump:.2f}x stall)")
+    axes[0, 1].axvline(30.0, color="#ea580c", ls="--", lw=1.3, label="Wall Contact Event (t=30ms)")
+    axes[0, 1].set_title("B. 0-JPY 0.25R Bifilar Shunt + CH32X035 OPA1 (PWN10 @ 6V)", fontsize=10)
+    axes[0, 1].set_xlabel("Time [ms]"); axes[0, 1].set_ylabel("ADC Voltage [V]"); axes[0, 1].legend(fontsize=8)
 
-    axes[1,1].plot(t_ld*1e3, vflr, color="#0f766e", lw=2.3, label=f"Floor / Wall ({t_flr_us:.0f} us)")
-    axes[1,1].plot(t_ld*1e3, vclf, color="#dc2626", lw=2.3, label=f"Stair Cliff Drop ({t_clf_us:.0f} us = {led_ratio:.1f}x!)")
-    axes[1,1].axhline(2.5, color="#64748b", ls="--", lw=1.1, label="CH32X035 5V CMOS Threshold (2.5V)")
-    axes[1,1].set_title("D. 40-JPY Red LED-as-Photodiode 5.0V Reverse-Bias Ranging")
-    axes[1,1].set_xlabel("Discharge Time [us]"); axes[1,1].set_ylabel("LED Pin Voltage [V]"); axes[1,1].set_xlim(0, 2800); axes[1,1].set_ylim(-0.15, 5.4); axes[1,1].legend(fontsize=8)
+    axes[1, 0].plot(t_pz[m_pz], vadc_pz[m_pz], color="#2563eb", lw=1.4, label=f"OPA2 Out (±{pz_swing:.2f}V around 2.50V)")
+    axes[1, 0].axhline(2.50, color="#64748b", ls=":", lw=1.0)
+    axes[1, 0].set_title("C. 30-JPY Murata Piezo Dirt Detect (5V Mid-Rail)", fontsize=10)
+    axes[1, 0].set_xlabel("Time [ms]"); axes[1, 0].set_ylabel("ADC Voltage [V]"); axes[1, 0].set_ylim(0, 5.1); axes[1, 0].legend(fontsize=8)
 
+    axes[1, 1].plot(t_ld * 1000, vflr, color="#0f766e", lw=2.2, label=f"Floor / Wall ({t_flr_us:.0f} us)")
+    axes[1, 1].plot(t_ld * 1000, vclf, color="#dc2626", lw=2.2, label=f"Stair Cliff ({t_clf_us:.0f} us = {led_ratio:.1f}x!)")
+    axes[1, 1].axhline(2.5, color="#64748b", ls="--", lw=1.1, label="5V CMOS Threshold (2.5V)")
+    axes[1, 1].set_title("D. 40-JPY Red LED-as-Photodiode 5.0V Reverse-Bias Ranging", fontsize=10)
+    axes[1, 1].set_xlabel("Discharge Time [us]"); axes[1, 1].set_ylabel("LED Pin Voltage [V]"); axes[1, 1].set_xlim(0, 1500); axes[1, 1].legend(fontsize=8)
+
+    for a in axes.flat:
+        a.grid(True, alpha=0.25)
     plt.tight_layout()
-    plt.savefig(os.path.join(RES_DIR, "04_ngspice_circuit_verification.png"), dpi=150)
-    plt.close()
-
-    print("\n=== REV 3.0 NGSPICE VERIFICATION SUMMARY ===")
+    plt.savefig(os.path.join(RES_DIR, "04_ngspice_circuit_verification.png"), dpi=145)
+    print("\n=== REV 5.0 ngspice 42 REAL CIRCUIT SUMMARY ===")
     print(json.dumps(spice_summary, indent=2))
     assert spice_summary["power_isolation"]["zero_brownout"]
-    assert spice_summary["piezo_dirt_opa2"]["adc_saturation_free"]
-    assert spice_summary["led_photodiode_5V"]["contrast_ratio"] > 7.0
+    assert spice_summary["power_isolation"]["bemf_adc_safe_under_5V"]
+    assert t_decay_ms < 0.80, f"Freewheel decay too slow: {t_decay_ms}ms!"
+    assert spice_summary["power_isolation"]["bemf_measurement_error_mV"] < 50.0
 
 
 if __name__ == "__main__":

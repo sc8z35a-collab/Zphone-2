@@ -1,0 +1,354 @@
+{
+  "revision": "Rev 5.0 Production-Ready Real-Hardware",
+  "overall_passed": true,
+  "test_1_boolean_interference": {
+    "pairs_checked": 105,
+    "clashes": [],
+    "passed": true
+  },
+  "test_2_clearance_audit": {
+    "passed": true,
+    "entries": [
+      {
+        "category": "Rotating",
+        "interface": "Impeller Outer Rim <-> Diffuser Vanes (Radial)",
+        "measured_mm": 2.05,
+        "min_required_mm": 1.5,
+        "passed": true,
+        "note": "Imp R=38.00 vs Diff R=40.05"
+      },
+      {
+        "category": "Rotating",
+        "interface": "Impeller Blades Bottom <-> Volute Floor (Axial)",
+        "measured_mm": 0.9,
+        "min_required_mm": 0.8,
+        "passed": true,
+        "note": "Imp Z0=16.20 vs Floor 15.30"
+      },
+      {
+        "category": "Rotating",
+        "interface": "Impeller Backplate Top <-> Volute Lid (Axial)",
+        "measured_mm": 0.9,
+        "min_required_mm": 0.8,
+        "passed": true,
+        "note": "Lid Z0=25.50 vs Imp Z1=24.60"
+      },
+      {
+        "category": "Rotating",
+        "interface": "Impeller <-> Chassis Overall 3D Min Dist",
+        "measured_mm": 0.9,
+        "min_required_mm": 0.8,
+        "passed": true,
+        "note": "Exact BVH 3D surface min"
+      },
+      {
+        "category": "Rotating",
+        "interface": "Impeller <-> Volute Lid Overall 3D Min Dist",
+        "measured_mm": 0.9,
+        "min_required_mm": 0.8,
+        "passed": true,
+        "note": "Exact BVH 3D surface min"
+      },
+      {
+        "category": "Rotating",
+        "interface": "Impeller Hub Bore <-> RS-385PH \u00d82.30mm Shaft",
+        "measured_mm": 0.07,
+        "min_required_mm": 0.05,
+        "passed": true,
+        "note": "Slip-bond press fit (\u00d82.45 bore)"
+      },
+      {
+        "category": "Rotating",
+        "interface": "Drive Wheels <-> Chassis Wheel Wells",
+        "measured_mm": 2.0,
+        "min_required_mm": 1.5,
+        "passed": true,
+        "note": "\u00b12.0mm axial, 3.0mm radial well"
+      },
+      {
+        "category": "Rotating",
+        "interface": "Drive Wheels <-> Upper Canopy Interior",
+        "measured_mm": 5.52,
+        "min_required_mm": 2.0,
+        "passed": true,
+        "note": "Wheel top 50.0 vs Canopy 62.0"
+      },
+      {
+        "category": "Rotating",
+        "interface": "Front Agitator Roller <-> Nozzle Walls",
+        "measured_mm": 1.6,
+        "min_required_mm": 0.8,
+        "passed": true,
+        "note": "\u00d88.4mm roller in 12mm mouth"
+      },
+      {
+        "category": "Sliding",
+        "interface": "Removable Dust Cup <-> Cyclone Housing",
+        "measured_mm": 0.4,
+        "min_required_mm": 0.3,
+        "passed": true,
+        "note": "Cup OD 47.6 in ID 48.4, Z0=5.60"
+      },
+      {
+        "category": "Sliding",
+        "interface": "Removable Dust Cup <-> Cyclone Cap & VF",
+        "measured_mm": 0.4,
+        "min_required_mm": 0.3,
+        "passed": true,
+        "note": "Cup Z1=33.60 vs Cap 34.00"
+      },
+      {
+        "category": "Sliding",
+        "interface": "Floating Front Bumper <-> Chassis Front & Slots",
+        "measured_mm": 0.5,
+        "min_required_mm": 0.4,
+        "passed": true,
+        "note": "0.50mm rail slip, 1.50mm front gap"
+      },
+      {
+        "category": "Sliding",
+        "interface": "Motor Swing-Arms <-> Chassis Clevis & Floor",
+        "measured_mm": 0.55,
+        "min_required_mm": 0.3,
+        "passed": true,
+        "note": "M3 pivot clearance, rubber-band pull"
+      },
+      {
+        "category": "Elec/HW",
+        "interface": "RS-385PH Unbent Lugs <-> Canopy Inner Dome",
+        "measured_mm": 3.7,
+        "min_required_mm": 2.5,
+        "passed": true,
+        "note": "Lugs Z1=70.30 vs Dome 74.00"
+      },
+      {
+        "category": "Elec/HW",
+        "interface": "RS-385PH Motor <-> Canopy 3D Min Dist",
+        "measured_mm": 3.7,
+        "min_required_mm": 2.5,
+        "passed": true,
+        "note": "Full unbent lugs + wire bend room"
+      },
+      {
+        "category": "Elec/HW",
+        "interface": "RS-385PH Motor Sleeve <-> Main PCB Edge",
+        "measured_mm": 2.26,
+        "min_required_mm": 2.0,
+        "passed": true,
+        "note": "Zero thermal/mechanical clash"
+      },
+      {
+        "category": "Elec/HW",
+        "interface": "RS-385PH Bare Motor <-> Main PCB Edge",
+        "measured_mm": 4.81,
+        "min_required_mm": 3.0,
+        "passed": true,
+        "note": "Direct 3D surface clearance"
+      },
+      {
+        "category": "Elec/HW",
+        "interface": "5x AA Batteries <-> Volute Lid Top",
+        "measured_mm": 2.9,
+        "min_required_mm": 1.0,
+        "passed": true,
+        "note": "Bat Z0=30.40 vs Lid 27.50"
+      },
+      {
+        "category": "Elec/HW",
+        "interface": "5x AA Batteries <-> Main PCB Bottom",
+        "measured_mm": 3.4,
+        "min_required_mm": 2.0,
+        "passed": true,
+        "note": "PCB Z0=48.00 vs Bat Z1=44.60"
+      },
+      {
+        "category": "Elec/HW",
+        "interface": "5x AA Batteries <-> Chassis Cradle Walls",
+        "measured_mm": 0.3,
+        "min_required_mm": 0.2,
+        "passed": true,
+        "note": "Drop-in cradle + Al-can spring slot"
+      },
+      {
+        "category": "Elec/HW",
+        "interface": "Main PCB & Tallest 470uF Cap <-> Canopy Ceiling",
+        "measured_mm": 2.3,
+        "min_required_mm": 1.5,
+        "passed": true,
+        "note": "Cap top Z1=60.10 vs Canopy 62.0"
+      }
+    ]
+  },
+  "test_3_voxel_airflow_flood_fill": {
+    "passed": true,
+    "voxel_pitch_mm": 1.5,
+    "floor_leak_columns": 0,
+    "visited_air_vol_cm3": 146.7,
+    "waypoints": [
+      {
+        "stage": "01_Front_Floor_Nozzle",
+        "coord_mm": [
+          0.0,
+          87.5,
+          7.0
+        ],
+        "open_air": true,
+        "reached": true
+      },
+      {
+        "stage": "02_Intake_Ramp_Mid",
+        "coord_mm": [
+          14.0,
+          78.0,
+          22.0
+        ],
+        "open_air": true,
+        "reached": true
+      },
+      {
+        "stage": "03_Cyclone_Tangential_In",
+        "coord_mm": [
+          16.0,
+          66.0,
+          23.0
+        ],
+        "open_air": true,
+        "reached": true
+      },
+      {
+        "stage": "04_Cyclone_Dust_Chamber",
+        "coord_mm": [
+          0.0,
+          58.0,
+          14.0
+        ],
+        "open_air": true,
+        "reached": true
+      },
+      {
+        "stage": "05_Vortex_Finder_Core",
+        "coord_mm": [
+          0.0,
+          58.0,
+          30.0
+        ],
+        "open_air": true,
+        "reached": true
+      },
+      {
+        "stage": "06_Overhead_Return_Arch",
+        "coord_mm": [
+          0.0,
+          40.0,
+          41.0
+        ],
+        "open_air": true,
+        "reached": true
+      },
+      {
+        "stage": "07_Vertical_Downcomer",
+        "coord_mm": [
+          0.0,
+          26.5,
+          22.0
+        ],
+        "open_air": true,
+        "reached": true
+      },
+      {
+        "stage": "08_Sealed_UnderVolute_Duct",
+        "coord_mm": [
+          0.0,
+          0.0,
+          9.5
+        ],
+        "open_air": true,
+        "reached": true
+      },
+      {
+        "stage": "09_Blower_Coaxial_Eye",
+        "coord_mm": [
+          0.0,
+          -25.0,
+          14.5
+        ],
+        "open_air": true,
+        "reached": true
+      },
+      {
+        "stage": "10_Volute_Impeller_Room",
+        "coord_mm": [
+          24.0,
+          -25.0,
+          20.5
+        ],
+        "open_air": true,
+        "reached": true
+      },
+      {
+        "stage": "11_Rear_Exhaust_Collector",
+        "coord_mm": [
+          0.0,
+          -76.0,
+          20.5
+        ],
+        "open_air": true,
+        "reached": true
+      },
+      {
+        "stage": "12_Left_Rear_Exhaust_Exit",
+        "coord_mm": [
+          -24.0,
+          -104.0,
+          20.5
+        ],
+        "open_air": true,
+        "reached": true
+      },
+      {
+        "stage": "13_Right_Rear_Exhaust_Exit",
+        "coord_mm": [
+          24.0,
+          -104.0,
+          20.5
+        ],
+        "open_air": true,
+        "reached": true
+      }
+    ],
+    "leak_probes": [
+      {
+        "probe": "Leak_Battery_Bay_Left",
+        "coord_mm": [
+          -50.0,
+          -48.0,
+          38.0
+        ],
+        "sealed": true
+      },
+      {
+        "probe": "Leak_Battery_Bay_Right",
+        "coord_mm": [
+          50.0,
+          -48.0,
+          38.0
+        ],
+        "sealed": true
+      },
+      {
+        "probe": "Leak_Mouse_Sensor_Bay",
+        "coord_mm": [
+          0.0,
+          -72.0,
+          8.5
+        ],
+        "sealed": true
+      }
+    ]
+  },
+  "test_4_assembly_parity": {
+    "passed": true,
+    "stl_count": 10,
+    "bom_parity": true
+  }
+}

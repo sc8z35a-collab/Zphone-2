@@ -1,5 +1,4 @@
-* Rev 3.0: 40-JPY Red LED-as-Photodiode 5.0V Reverse-Bias Optical Ranging (CH32X035 PIOC)
-* Physical reverse-biased PN junction: Cj=30pF, photocurrent rolls off smoothly to 0V, forward LED clamp
+* Rev 5.0: 40-JPY Red LED-as-Photodiode 5.0V Reverse-Bias Optical Ranging
 .model D_RED D(IS=1e-18 N=1.8 RS=5 CJO=30p VJ=1.6)
 C_J1 led_floor 0 30p IC=5.0
 D_1  0 led_floor D_RED

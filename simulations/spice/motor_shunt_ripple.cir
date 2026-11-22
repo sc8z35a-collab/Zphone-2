@@ -1,12 +1,12 @@
-* Rev 3.0: 0-JPY 0.25R Salvaged Bifilar Copper Shunt + CH32X035 On-Chip OPA1 (Gain=13x E1 10k-only)
+* Rev 5.0: 0-JPY 0.25R Salvaged Bifilar Copper Shunt + CH32X035 On-Chip OPA1 (Gain=13x E1 10k-only)
 V_DD v5v 0 DC 5.0
 
-* Drive Motor Current: Normal cruise (0.19A + 48mApp commutator ripple @ 175Hz) -> Wall Stall at t=30ms (0.46A)
-I_DRIVE 0 shunt_n PWL(0 0.19 29.8m 0.19 30.2m 0.46 60m 0.46)
-I_RIP   0 shunt_n SIN(0 0.024 175 0 0)
-R_SHUNT shunt_n 0 0.25 ; 0-JPY 22cm bifilar copper strand from salvaged Daiso mouse cable!
+* PWN10EB12CB Drive Motor Current @ 6.0V: Cruise 0.14A + 36mApp ripple -> Wall Stall 0.38A at t=30ms
+I_DRIVE 0 shunt_n PWL(0 0.14 29.8m 0.14 30.2m 0.38 60m 0.38)
+I_RIP   0 shunt_n SIN(0 0.018 165 0 0)
+R_SHUNT shunt_n 0 0.25 ; 0-JPY bifilar copper strand from salvaged Daiso mouse cable
 
-* CH32X035 On-Chip OPA1 (5V Rail-to-Rail, E1 10k-only: Rf=30k = 3x10k series, Rg=2.5k = 4x10k parallel -> G=13x)
+* CH32X035 On-Chip OPA1 (5V Rail-to-Rail, E1 10k-only: Rf=30k, Rg=2.5k -> G=13x)
 R_G   inv_n 0 2.5k
 R_F   adc_shunt inv_n 30k
 B_OPA adc_shunt 0 V = 2.5 + 2.45 * tanh(2e3 * (V(shunt_n) - V(inv_n)))

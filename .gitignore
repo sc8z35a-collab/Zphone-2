@@ -1,1 +1,3 @@
 __pycache__/
+*.pyc
+cad/audit_stl/
