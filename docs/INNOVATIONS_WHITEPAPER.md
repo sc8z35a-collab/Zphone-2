@@ -66,3 +66,26 @@
 | **回路図＆2層PCB設計（R18/R19統合）** | **KiCad 7.0.11** + `pcbnew` DRC | `59.69 × 55.88 mm`, **31/31ネット** (380配線/48ビア), **DRCエラー 0・未接続 0** | [`SugaRoomba2_Rev5_JLCPCB_Gerbers.zip`](../kicad/outputs/SugaRoomba2_Rev5_JLCPCB_Gerbers.zip) |
 | **文字ゼロ WebGL2 3D CAD ビューア** | **WebGL2** + Playwright自動監査 | `/index.html` & `/cad-viewer/index.html` 双方 `innerText === ""`, SVG `<text>` 0, エラー 0 | [`index.html`](../index.html) |
 | **Colab 物理検証＆TinyML Cヘッダ検証** | **Google Colab** + `gcc -O2 -Wall -Wextra` | INT8 TinyML **99.25%** (952B), Cヘッダ **6/6一致・警告0**, 80mmソファ下SLAM **98.3%網羅 / 96.2%回収** | [`SugaRoomba2_AI_CFD_RL_Lab.ipynb`](../colab/SugaRoomba2_AI_CFD_RL_Lab.ipynb) |
+
+---
+
+## 5. 実3D物理ソルバー（OpenFOAM / CalculiX / Elmer / MuJoCo / Ngspice MC）による厳格検証と 1D 近似の誠実な補正
+
+1D簡易近似の限界を排除するため、製造業・航空宇宙・ロボティクス標準の実3D物理ソルバー5種を Rev 5.0 実STLおよび実回路ネットリストへ直接適用し、**全領域で Coarse vs Fine の2段階メッシュ／時間刻み収束（`< 5%`）** と保存則を検証しました（再現用 4フェーズ環境分離 Colab A100 ノートブック：`colab/01..04_*_A100.ipynb`）。
+
+| 物理領域 | 実3Dソルバー | 1D理論推定値 | **実3Dソルバー実測値（2段階収束検証済）** | 3D解析が発見した実機課題と Rev 5.1 改善指針 |
+|---|---|---|---|---|
+| **3D 流体 CFD（回転翼 MRF）** | **OpenFOAM v2406 MPI** (`simpleFoam` + `kOmegaSST` + `linearUpwindV`) | 締切 1,294 / 1,576 Pa・運転 918 Pa @ 3.0 L/s (49.1%) | **締切 6.0V = `1,123.3 Pa`（115k `1,089.3` vs 189k `1,123.3`, 収束 `3.03%`）・6.6V = `1,330.3 Pa`（相似則 `0.31%`）・質量保存誤差 `< 0.48%`**。高流量 `3.0 L/s` は `345 Pa`（軸トルク `8.45 mN·m`, 収束 `4.79%`） | 同心円ボリュート＋0.90mm軸隙間での旋回損失により、実モーター平衡運転点は `Q ≈ 1.5–2.0 L/s`（`680–850 Pa`）へシフト。Rev 5.1 で **真の対数渦巻ボリュート化** が最大の効率向上策。 |
+| **3D 構造・固有振動 FEM** | **CalculiX 2.21 (`C3D10` 2次10節点四面体)** + Gmsh | 1D回転円板応力・静的近似 | **インペラ 12,100 rpm：`6.38 MPa`（安全率 `7.5x`）・遠心撓み `0.472 mm`（収束 `0.65%`）・`f1 = 325.4 Hz`（収束 `0.15%`）・p99.5応力 `1.76%`**。**揺動アーム 3.2 N：`1.40 MPa`（変位 `0.026 mm`, 収束 `0.69%`, 対クリープ `10.0x`）** | 片持ちセミオープン翼は 12,100 rpm で `0.47 mm` 撓むため、Rev 5.0 の **`0.90 mm` 軸隙間が必須** であったことを証明（旧 Rev 4.0 の `0.35 mm` では確実に接触破損）。 |
+| **3D 音響透過損失 FEM** | **Elmer FEM 26.2** (`HelmholtzSolver` + `UMFPACK`, 直管校正 `0.0006 dB`) | 1Dヘルムホルツ `1,480 Hz` (-12.8 dB) → 58.5 dBA | **Peak TL = `35.61 dB @ 2,000 Hz`（1,561 vs 4,384四面体, 収束 `4.52%`）**・`1,499 Hz` 収束 `0.60%`（`1.68 dB`） | 実3D空洞コンプライアンスにより共鳴が `+500 Hz` 上方シフトし、現行 Rev 5.0 の実測騒音は ~60〜62 dBA 想定。Colab NB #2 にて **ネック径 `Ø5.6 mm` 化で `1,499 Hz` へ直撃同調** できることを実証。 |
+| **3D 剛体接触・摩擦走行** | **MuJoCo 4.0.1** (クーロン摩擦 $\mu=0.82$・実797.5g重心) | 1D 登坂 `34.6°`・段差 `7.5 mm` | **`dt=2.0ms` vs `0.5ms`：`vx = 0.2714 m/s`（`0.000%`）・駆動輪荷重 `84.66%`（`0.000%`）・実3D登坂限界 `22°`（`25°` 失速）・剛体段差 `≤ 3.0 mm`・バンパー `2.38 mm`** | 登坂時の3D重心移動（後輪ビー玉側への荷重逃げ）により実登坂限界は **`22°`**。また剛体段差は前面スカート床高 `3.5 mm` が支配し、Rev 5.1 で前縁スキー面取りを設けると段差踏破性が向上。 |
+| **2段階3Dボクセル＆SPICE 200回MC** | `trimesh` + **Ngspice 42** + **KiCad CLI** | 単一解像度・ノミナル回路 0.0 mV | **ボクセル `145.88` vs `151.29 cm³`（収束 `3.58%`・漏れ `0`）・MC `200/200` で 5.0V維持（最悪 `5.000 V`）・ADC `< 3.45 V`・1.15ms 残留 `< 0.052 mA`** | ±5% 炭素皮膜分圧抵抗（R18/R19）のDC誤差（中央値 `230 mV`）を検出。ファームウェア側で **起動時開放基準からの相対差分 $\Delta V_{\text{bemf}}$** を用いる（または 1% 金属皮膜抵抗へ置換）ことで完全相殺。 |
+
+| OpenFOAM v2406 実3D MRF CFD | CalculiX (`C3D10`) + Elmer 3D 音響 |
+|---|---|
+| ![OpenFOAM 3D CFD](../simulations/real3d/results/01_openfoam_3d_cfd_verification.png) | ![CalculiX + Elmer 3D FEM](../simulations/real3d/results/02_calculix_elmer_3d_fem_verification.png) |
+
+| MuJoCo 4.0.1 実3D接触・登坂22° | Ngspice 42 200回モンテカルロ |
+|---|---|
+| ![MuJoCo 3D 接触](../simulations/real3d/results/03_mujoco_3d_contact_verification.png) | ![Ngspice 200回MC](../simulations/real3d/results/04_ngspice_200run_montecarlo.png) |
+

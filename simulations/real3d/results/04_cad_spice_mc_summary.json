@@ -1,0 +1,39 @@
+{
+  "voxel_2level_convergence": {
+    "coarse": {
+      "pitch_mm": 1.5,
+      "grid_voxels": 362934,
+      "floor_sealed_cols": 1107,
+      "floor_total_cols": 1107,
+      "floor_leaks": 0,
+      "waypoints_connected": 13,
+      "waypoints_total": 13,
+      "bay_leaks": 0,
+      "sealed_air_vol_cm3": 145.88
+    },
+    "fine": {
+      "pitch_mm": 1.15,
+      "grid_voxels": 780528,
+      "floor_sealed_cols": 1768,
+      "floor_total_cols": 1768,
+      "floor_leaks": 0,
+      "waypoints_connected": 13,
+      "waypoints_total": 13,
+      "bay_leaks": 0,
+      "sealed_air_vol_cm3": 151.29
+    },
+    "air_volume_diff_pct": 3.58,
+    "converged_under_5pct": true
+  },
+  "ngspice_monte_carlo_200": {
+    "n_runs": 200,
+    "v5v_min_worst_V": 5.0,
+    "adc_bemf_max_worst_V": 3.45,
+    "drain_clamp_worst_V": 6.9,
+    "settled_winding_current_worst_mA": 0.0517,
+    "bemf_error_median_mV": 229.7,
+    "bemf_error_p99_mV": 698.9,
+    "all_corners_passed": true
+  },
+  "kicad_drc_zero_unconnected": true
+}
