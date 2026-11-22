@@ -105,7 +105,7 @@ def write_kicad_sch():
             ("1", "VDD_5V"), ("2", "GND"),
             ("3", "PA0_PWM_TURB"), ("4", "PA1_LIN1"), ("5", "PA2_LIN2"),
             ("6", "PA3_RIN1"), ("7", "PA4_RIN2"), ("8", "PA5_OPA1_P"),
-            ("9", "PA6_OPA1_N"), ("10", "PA7_OPA1_OUT"),
+            ("9", "PA6_OPA1_N"), ("10", "PA7_OPA1_OUT"), ("21", "PB2_ADC_BEMF"),
         ], [
             ("11", "PB0_OPA2_P"), ("12", "PB1_OPA2_N"), ("13", "PB3_OPA2_OUT"),
             ("14", "PC16_USB_DM"), ("15", "PC17_USB_DP"),
@@ -136,18 +136,20 @@ def write_kicad_sch():
         ("U3",  "LP2950L_50", "LP2950L-50-T92", 111.76, 71.12, {"1": "VLDO_IN",   "2": "GND", "3": "V5V"}),
         ("C3",  "TWO_PIN",    "1uF_MLCC",       147.32, 71.12, {"1": "V5V",       "2": "GND"}),
 
-        # Block 2: Direct-5V Turbine PWM Drive (No DTC114EL! Direct PA0 -> 2SK4017 Gate!)
-        ("R1",  "TWO_PIN",       "10k_PD_E1",      55.88, 121.92, {"1": "PWM_TURB", "2": "GND"}),
-        ("Q1",  "MOSFET_2SK4017","2SK4017_60V5A",  93.98, 121.92, {"1": "PWM_TURB", "2": "TURB_NEG", "3": "GND"}),
-        ("D1",  "TWO_PIN",       "SB340LS_40V3A", 132.08, 114.30, {"1": "TURB_NEG", "2": "VBAT"}),
-        ("J2",  "TWO_PIN",       "RS-385PH_TURB", 132.08, 132.08, {"1": "VBAT",     "2": "TURB_NEG"}),
+        # Block 2: Direct-5V Turbine PWM Drive + 0-JPY Back-EMF Virtual Barometer (R18/R19)
+        ("R1",  "TWO_PIN",       "10k_PD_E1",      48.26, 121.92, {"1": "PWM_TURB", "2": "GND"}),
+        ("Q1",  "MOSFET_2SK4017","2SK4017_60V5A",  83.82, 121.92, {"1": "PWM_TURB", "2": "TURB_NEG", "3": "GND"}),
+        ("D1",  "TWO_PIN",       "SB340LS_40V3A", 119.38, 114.30, {"1": "TURB_NEG", "2": "VBAT"}),
+        ("J2",  "TWO_PIN",       "RS-385PH_TURB", 119.38, 132.08, {"1": "VBAT",     "2": "TURB_NEG"}),
+        ("R18", "TWO_PIN",       "10k_E1_BEMF1",  154.94, 114.30, {"1": "TURB_NEG", "2": "ADC_BEMF"}),
+        ("R19", "TWO_PIN",       "10k_E1_BEMF2",  154.94, 132.08, {"1": "ADC_BEMF", "2": "GND"}),
 
         # Block 3: CH32X035G8U6 32-bit RISC-V Single-Chip Mixed-Signal Brain (290 JPY!)
-        ("U1", "CH32X035G8U6", "CH32X035G8U6_DIP30", 215.90, 96.52, {
+        ("U1", "CH32X035G8U6", "CH32X035G8U6_DIP30", 220.98, 96.52, {
             "1": "V5V", "2": "GND",
             "3": "PWM_TURB", "4": "MOT_LIN1", "5": "MOT_LIN2",
             "6": "MOT_RIN1", "7": "MOT_RIN2", "8": "SHUNT_NODE",
-            "9": "OPA1_INV", "10": "ADC_SHUNT",
+            "9": "OPA1_INV", "10": "ADC_SHUNT", "21": "ADC_BEMF",
             "11": "PZ_IN", "12": "OPA2_INV", "13": "ADC_DIRT",
             "14": "USB_DM", "15": "USB_DP",
             "16": "LED_FRONT", "17": "LED_SIDE",
@@ -190,10 +192,10 @@ def write_kicad_sch():
         f'  (uuid {uid("root_sheet")})',
         '  (paper "A3")',
         '  (title_block',
-        '    (title "Suga Roomba II Rev 3.0 — 2,410 JPY CH32X035 Single-Chip Vacuum")',
+        '    (title "Suga Roomba II Rev 4.0 (2,880 JPY Industrial-Fab)")',
         '    (date "2026-11-22")',
-        '    (rev "3.0")',
-        '    (company "Open Engineering / Verified BOM 2,410 JPY Tax-Inc (-570 JPY)")',
+        '    (rev "4.0")',
+        '    (company "Open Engineering / BOM 2,880 JPY (JLC3DP SLA + CH32X035)")',
         '  )',
         '  (lib_symbols',
         *sym_defs,
@@ -202,8 +204,8 @@ def write_kicad_sch():
 
     notes = [
         (35.56,  30.48, "1. 5S NiMH + 1S4 SCHOTTKY SAG ISOLATION + LP2950L-50 5.0V RAIL (20 JPY)"),
-        (35.56, 101.60, "2. DIRECT-5V TURBINE 25kHz PWM (NO DTC114EL! PA0 -> 2SK4017 + SB340LS)"),
-        (177.80, 48.26, "3. CH32X035G8U6 RISC-V BRAIN (290 JPY: OPA1+OPA2+PIOC+USB HOST+TOUCHKEY)"),
+        (35.56, 101.60, "2. DIRECT-5V TURBINE 25kHz PWM + 0-JPY BACK-EMF VIRTUAL BAROMETER (R18/R19)"),
+        (182.88, 48.26, "3. CH32X035G8U6 RISC-V BRAIN (290 JPY: OPA1+OPA2+BEMF ADC+USB HOST+TOUCHKEY)"),
         (292.10, 38.10, "4. DUAL H-BRIDGE (TC78H653FTG) + 0-JPY 0.25R BIFILAR WIRE SHUNT"),
         (203.20,147.32, "5. E1 10k-ONLY NETWORKS FOR ON-CHIP OPA1 (13x TACH) & OPA2 (5x PIEZO @ 2.5V)"),
         (35.56, 157.48, "6. 4x LED-AS-PHOTODIODE (40 JPY) + NATIVE 5V USB MOUSE + TOUCHKEY/BUMPER"),
@@ -262,11 +264,11 @@ def write_kicad_sch():
 def write_kicad_pcb():
     """Hyper-Compact 58.42 x 53.34 mm (-15% smaller than Rev 2.0) 2-Layer THT PCB, 0 DRC errors!"""
     board_x0, board_y0 = 100.0, 100.0
-    board_w, board_h = 58.42, 53.34  # Exact 46 x 42 grid of 1.27mm!
+    board_w, board_h = 59.69, 55.88  # Exact 47 x 44 grid of 1.27mm!
 
     net_list = [
         "", "GND", "VBATT_RAW", "VBATT_SW", "VBAT", "VLDO_IN", "V5V",
-        "PWM_TURB", "TURB_NEG", "SHUNT_NODE",
+        "PWM_TURB", "TURB_NEG", "ADC_BEMF", "SHUNT_NODE",
         "MOT_LIN1", "MOT_LIN2", "MOT_RIN1", "MOT_RIN2",
         "ML_P", "ML_N", "MR_P", "MR_N",
         "ADC_SHUNT", "OPA1_INV", "ADC_DIRT", "OPA2_INV", "VMID", "PZ_IN",
@@ -287,7 +289,7 @@ def write_kicad_pcb():
         minx, maxx = min(xs) - 1.15, max(xs) + 1.15
         miny, maxy = min(ys) - 1.15, max(ys) + 1.15
         fp_lines = [
-            f'  (footprint "SugaR3:{ref}" (layer "F.Cu")',
+            f'  (footprint "SugaR4:{ref}" (layer "F.Cu")',
             f'    (tstamp {uid("fp_" + ref)})',
             f'    (at {fx:.3f} {fy:.3f})',
             f'    (fp_text reference "{ref}" (at {(minx+maxx)/2:.2f} {miny - 1.0:.2f}) (layer "F.SilkS") (effects (font (size 0.85 0.85) (thickness 0.15))) (tstamp {uid("fpref_" + ref)}))',
@@ -315,14 +317,14 @@ def write_kicad_pcb():
     add_fp("D1",  "SB340LS", 28, 4, [("1", 0.0, 0.0, "TURB_NEG", 0.9, 1.5), ("2", 5.08, 0.0, "VBAT", 0.9, 1.5)])
     add_fp("J2",  "RS385PH", 36, 4, [("1", 0.0, 0.0, "VBAT", 0.9, 1.5), ("2", 3.81, 0.0, "TURB_NEG", 0.9, 1.5)])
 
-    # Row B (gy=10): 1S4 Schottky + 470uF Holdup + LP2950L-50 + Direct-5V 2SK4017 + 10k PD (NO DTC114EL!)
+    # Row B (gy=10): 1S4 Schottky + 470uF Holdup + LP2950L-50 + Direct-5V 2SK4017 + 10k PD
     add_fp("D2",  "1S4",       4, 10, [("1", 0.0, 0.0, "VBAT", 0.85, 1.45), ("2", 5.08, 0.0, "VLDO_IN", 0.85, 1.45)])
     add_fp("C2",  "470uF",    11, 10, [("1", 0.0, 0.0, "VLDO_IN", 0.85, 1.45), ("2", 3.81, 0.0, "GND", 0.85, 1.45)])
     add_fp("U3",  "LP2950-5", 18, 10, [("1", 0.0, 0.0, "VLDO_IN", 0.8, 1.4), ("2", 2.54, 0.0, "GND", 0.8, 1.4), ("3", 5.08, 0.0, "V5V", 0.8, 1.4)])
     add_fp("R1",  "10k_PD",   26, 10, [("1", 0.0, 0.0, "PWM_TURB", 0.8, 1.4), ("2", 5.08, 0.0, "GND", 0.8, 1.4)])
     add_fp("Q1",  "2SK4017",  34, 10, [("1", 0.0, 0.0, "PWM_TURB", 0.85, 1.45), ("2", 2.54, 0.0, "TURB_NEG", 0.85, 1.45), ("3", 5.08, 0.0, "GND", 0.85, 1.45)])
 
-    # Center-Left: U1 CH32X035G8U6 DIP Breakout (2x10 functional pins, NO external MCP6002 needed!)
+    # Center-Left: U1 CH32X035G8U6 DIP Breakout (21 functional pins incl. PB2_ADC_BEMF!)
     add_fp("U1", "CH32X035", 4, 16, [
         ("1",  0.0,  0.0,  "V5V",         0.8, 1.4),
         ("2",  0.0,  2.54, "GND",         0.8, 1.4),
@@ -334,6 +336,7 @@ def write_kicad_pcb():
         ("8",  0.0, 17.78, "SHUNT_NODE",  0.8, 1.4),
         ("9",  0.0, 20.32, "OPA1_INV",    0.8, 1.4),
         ("10", 0.0, 22.86, "ADC_SHUNT",   0.8, 1.4),
+        ("21", 0.0, 25.40, "ADC_BEMF",    0.8, 1.4),
         ("11", 12.70,  0.0,  "PZ_IN",       0.8, 1.4),
         ("12", 12.70,  2.54, "OPA2_INV",    0.8, 1.4),
         ("13", 12.70,  5.08, "ADC_DIRT",    0.8, 1.4),
@@ -347,7 +350,7 @@ def write_kicad_pcb():
     ])
 
     # Center-Right: U2 TC78H653FTG + 0-JPY Bifilar Shunt + Motors + Piezo
-    add_fp("U2", "TC78H653", 23, 16, [
+    add_fp("U2", "TC78H653", 24, 16, [
         ("1", 0.0,  0.0,  "VBAT",       0.8, 1.4),
         ("2", 0.0,  2.54, "SHUNT_NODE", 0.8, 1.4),
         ("3", 0.0,  5.08, "MOT_LIN1",   0.8, 1.4),
@@ -360,21 +363,23 @@ def write_kicad_pcb():
         ("10",7.62, 7.62, "MR_P",       0.8, 1.4),
         ("11",7.62,10.16, "MR_N",       0.8, 1.4),
     ])
-    add_fp("R17", "0R25_0JPY", 35, 16, [("1", 0.0, 0.0, "SHUNT_NODE", 0.85, 1.45), ("2", 5.08, 0.0, "GND", 0.85, 1.45)])
-    add_fp("J3",  "MOT_L",     42, 16, [("1", 0.0, 0.0, "ML_P", 0.85, 1.45), ("2", 0.0, 2.54, "ML_N", 0.85, 1.45)])
-    add_fp("J4",  "MOT_R",     42, 22, [("1", 0.0, 0.0, "MR_P", 0.85, 1.45), ("2", 0.0, 2.54, "MR_N", 0.85, 1.45)])
-    add_fp("BZ1", "PIEZO",     42, 28, [("1", 0.0, 0.0, "PZ_IN", 0.8, 1.4), ("2", 0.0, 2.54, "VMID", 0.8, 1.4)])
+    add_fp("R17", "0R25_0JPY", 36, 16, [("1", 0.0, 0.0, "SHUNT_NODE", 0.85, 1.45), ("2", 5.08, 0.0, "GND", 0.85, 1.45)])
+    add_fp("J3",  "MOT_L",     43, 16, [("1", 0.0, 0.0, "ML_P", 0.85, 1.45), ("2", 0.0, 2.54, "ML_N", 0.85, 1.45)])
+    add_fp("J4",  "MOT_R",     43, 22, [("1", 0.0, 0.0, "MR_P", 0.85, 1.45), ("2", 0.0, 2.54, "MR_N", 0.85, 1.45)])
+    add_fp("BZ1", "PIEZO",     43, 28, [("1", 0.0, 0.0, "PZ_IN", 0.8, 1.4), ("2", 0.0, 2.54, "VMID", 0.8, 1.4)])
 
-    # Compact E1 On-Chip OPA1/OPA2 Resistors + Sensor Header along bottom (clear of U1 y=34!)
-    add_fp("R15", "20k_F2", 34, 22, [("1", 0.0, 0.0, "ADC_DIRT", 0.8, 1.4), ("2", 5.08, 0.0, "OPA2_INV", 0.8, 1.4)])
-    add_fp("R13", "5k_G2",  34, 27, [("1", 0.0, 0.0, "OPA2_INV", 0.8, 1.4), ("2", 5.08, 0.0, "VMID", 0.8, 1.4)])
-    add_fp("R3",  "2k5_G1", 22, 33, [("1", 0.0, 0.0, "OPA1_INV", 0.8, 1.4), ("2", 5.08, 0.0, "GND", 0.8, 1.4)])
-    add_fp("R6",  "30k_F1", 30, 33, [("1", 0.0, 0.0, "ADC_SHUNT",0.8, 1.4), ("2", 5.08, 0.0, "OPA1_INV", 0.8, 1.4)])
-    add_fp("R9",  "10k_B1", 22, 39, [("1", 0.0, 0.0, "V5V",      0.8, 1.4), ("2", 5.08, 0.0, "VMID", 0.8, 1.4)])
-    add_fp("R10", "10k_B2", 30, 39, [("1", 0.0, 0.0, "VMID",     0.8, 1.4), ("2", 5.08, 0.0, "GND", 0.8, 1.4)])
-    add_fp("C4",  "1uF",    38, 39, [("1", 0.0, 0.0, "VMID",     0.8, 1.4), ("2", 2.54, 0.0, "GND", 0.8, 1.4)])
+    # Compact E1 On-Chip OPA1/OPA2 + 0-JPY Back-EMF Virtual Barometer (R18/R19) Resistors
+    add_fp("R15", "20k_F2",  35, 22, [("1", 0.0, 0.0, "ADC_DIRT", 0.8, 1.4), ("2", 5.08, 0.0, "OPA2_INV", 0.8, 1.4)])
+    add_fp("R13", "5k_G2",   35, 27, [("1", 0.0, 0.0, "OPA2_INV", 0.8, 1.4), ("2", 5.08, 0.0, "VMID", 0.8, 1.4)])
+    add_fp("R3",  "2k5_G1",  23, 32, [("1", 0.0, 0.0, "OPA1_INV", 0.8, 1.4), ("2", 5.08, 0.0, "GND", 0.8, 1.4)])
+    add_fp("R6",  "30k_F1",  31, 32, [("1", 0.0, 0.0, "ADC_SHUNT",0.8, 1.4), ("2", 5.08, 0.0, "OPA1_INV", 0.8, 1.4)])
+    add_fp("R18", "10k_BM1", 23, 36, [("1", 0.0, 0.0, "TURB_NEG", 0.8, 1.4), ("2", 5.08, 0.0, "ADC_BEMF", 0.8, 1.4)])
+    add_fp("R19", "10k_BM2", 31, 36, [("1", 0.0, 0.0, "ADC_BEMF", 0.8, 1.4), ("2", 5.08, 0.0, "GND", 0.8, 1.4)])
+    add_fp("R9",  "10k_B1",  23, 41, [("1", 0.0, 0.0, "V5V",      0.8, 1.4), ("2", 5.08, 0.0, "VMID", 0.8, 1.4)])
+    add_fp("R10", "10k_B2",  31, 41, [("1", 0.0, 0.0, "VMID",     0.8, 1.4), ("2", 5.08, 0.0, "GND", 0.8, 1.4)])
+    add_fp("C4",  "1uF",     39, 41, [("1", 0.0, 0.0, "VMID",     0.8, 1.4), ("2", 2.54, 0.0, "GND", 0.8, 1.4)])
 
-    add_fp("J5", "SENS_USB", 4, 39, [
+    add_fp("J5", "SENS_USB", 4, 41, [
         ("1",  0.0,  0.0, "BUMP_SW",     0.8, 1.4),
         ("2",  2.54, 0.0, "LED_CLIFF_R", 0.8, 1.4),
         ("3",  5.08, 0.0, "LED_CLIFF_L", 0.8, 1.4),
@@ -569,7 +574,7 @@ def write_kicad_pcb():
         f' (stroke (width 0.1) (type solid)) (fill none) (layer "Edge.Cuts") (tstamp {uid("board_edge")}))'
     )
     pcb_lines.append(
-        f'  (gr_text "SUGA ROOMBA II REV3.0 CH32X035 2410JPY" (at {board_x0 + board_w/2:.2f} {board_y0 + 1.6:.2f})'
+        f'  (gr_text "SUGA ROOMBA II REV4.0 CH32X035 2880JPY" (at {board_x0 + board_w/2:.2f} {board_y0 + 1.6:.2f})'
         f' (layer "F.SilkS") (effects (font (size 1.0 1.0) (thickness 0.15))) (tstamp {uid("pcb_title")}))'
     )
     pcb_lines.extend(footprints)
@@ -597,6 +602,7 @@ def write_kicad_pcb():
 
 
 def run_kicad_cli_checks(sch_path, pcb_path):
+    import zipfile
     cmds = [
         (["kicad-cli", "sch", "export", "svg", "--output", OUT_DIR, sch_path], "SCH SVG"),
         (["kicad-cli", "sch", "export", "pdf", "--output", os.path.join(OUT_DIR, "suga_roomba_ii_schematic.pdf"), sch_path], "SCH PDF"),
@@ -613,6 +619,12 @@ def run_kicad_cli_checks(sch_path, pcb_path):
         if proc.returncode != 0:
             raise RuntimeError(f"kicad-cli {label} failed: {proc.stderr}")
 
+    gerb_zip = os.path.join(OUT_DIR, "SugaRoomba2_Rev4_JLCPCB_Gerbers.zip")
+    with zipfile.ZipFile(gerb_zip, "w", zipfile.ZIP_DEFLATED) as zf:
+        for fn in sorted(os.listdir(GERB_DIR)):
+            zf.write(os.path.join(GERB_DIR, fn), arcname=fn)
+    print(f"[JLCPCB GERBER ZIP] {os.path.getsize(gerb_zip)/1024:.1f} KB -> {gerb_zip}")
+
     drc_txt = os.path.join(OUT_DIR, "drc_report.txt")
     drc_cmd = [
         "/usr/bin/python3", "-c",
@@ -627,7 +639,7 @@ def run_kicad_cli_checks(sch_path, pcb_path):
         print("  !", e)
     assert len(errs) == 0, f"DRC errors found: {errs}"
     assert "Found 0 unconnected pads" in report, "Unconnected pads detected!"
-    print("[KiCad 7 REV 3.0 PASS] 0 DRC errors, 0 silk overlaps, 0 unconnected pads!")
+    print("[KiCad 7 REV 4.0 PASS] 0 DRC errors, 0 silk overlaps, 0 unconnected pads!")
 
 
 if __name__ == "__main__":

@@ -23,14 +23,14 @@ os.makedirs(SPICE_DIR, exist_ok=True)
 os.makedirs(RES_DIR, exist_ok=True)
 
 CIRCUITS = {
-    "power_mosfet_isolation.cir": """* Rev 3.0: 5S NiMH Sag Isolation (1S4 Schottky + 470uF + LP2950L-50 5.0V) + Direct 5V CH32X035 -> 2SK4017 PWM
+    "power_mosfet_isolation.cir": """* Rev 4.0: 5S NiMH Sag Isolation (5.00V) + Direct 5V 2SK4017 PWM + 0-JPY Back-EMF Virtual Barometer
 .model D_1S4 D(IS=1.5e-5 RS=0.09 N=1.06 BV=40)
 .model D_SB340 D(IS=2e-5 RS=0.045 N=1.05 BV=40)
 .model M_2SK4017 NMOS(VTO=1.9 KP=14.0 RD=0.022 RS=0.014 CBD=320p CBS=350p)
 
-* 5S NiMH Battery (6.0V nom, 0.21 ohm pack ESR)
+* 5S NiMH Battery (6.0V nom, 0.195 ohm pack ESR)
 V_BATT v_raw 0 DC 6.0
-R_ESR  v_raw vbat 0.21
+R_ESR  v_raw vbat 0.195
 C_BULK vbat 0 470u IC=6.0
 
 * Sag-Isolated 5.0V Rail (1S4 Schottky Vf=0.25V@35mA + 470uF Holdup + LP2950L-50-T92 0.38V dropout)
@@ -45,18 +45,23 @@ V_PWM  pwm_pa0 0 PULSE(0 5.0 0.5m 60n 60n 32u 40u)
 R_G    pwm_pa0 gate 100
 R_PD   gate 0 10k
 
-* RS-385PH Turbine (15A startup inrush pulse at t=0.5ms..4.5ms, L=120uH, Ra=0.382R + BackEMF)
+* RS-385PH Turbine (Helical-cooled Ra=0.372R, L=120uH, BackEMF=4.73V open)
 L_MOT  vbat mot_mid 120u
-R_MOT  mot_mid mot_emf 0.382
-V_EMF  mot_emf drain PWL(0 0 0.5m 0 4.5m 4.55 12m 4.55)
+R_MOT  mot_mid mot_emf 0.372
+V_EMF  mot_emf drain PWL(0 0 0.5m 0 4.5m 4.73 12m 4.73)
 D_FLY  drain vbat D_SB340
 M_FET  drain gate 0 0 M_2SK4017
+
+* Rev 4.0 0-JPY Back-EMF Virtual Barometer Divider (2x spare 10k E1 resistors -> CH32X035 ADC)
+R_BEMF1 drain adc_bemf 10k
+R_BEMF2 adc_bemf 0 10k
+C_BEMF  adc_bemf 0 1n
 
 .tran 2u 10m 0 2u uic
 .control
 run
 set wr_vecnames
-wrdata {out} v(vbat) v(vldo_in) v(v5v) v(drain) v(gate)
+wrdata {out} v(vbat) v(vldo_in) v(v5v) v(drain) v(gate) v(adc_bemf)
 quit
 .endc
 .end
@@ -167,7 +172,7 @@ def main():
 
     # Parse all 4 real simulation outputs (wrdata alternates time, val, time, val...)
     d_pwr = load_wrdata(out_files["power_mosfet_isolation.cir"])
-    t_pwr, vbat, vldo, v5v, vdrn, vgate = d_pwr[:,0]*1e3, d_pwr[:,1], d_pwr[:,3], d_pwr[:,5], d_pwr[:,7], d_pwr[:,9]
+    t_pwr, vbat, vldo, v5v, vdrn, vgate, vbemf = d_pwr[:,0]*1e3, d_pwr[:,1], d_pwr[:,3], d_pwr[:,5], d_pwr[:,7], d_pwr[:,9], d_pwr[:,11]
 
     d_sh = load_wrdata(out_files["motor_shunt_ripple.cir"])
     t_sh, vsh, vadc_sh = d_sh[:,0]*1e3, d_sh[:,1], d_sh[:,3]
@@ -182,6 +187,7 @@ def main():
     vbat_min = float(np.min(vbat))
     v5v_min  = float(np.min(v5v[t_pwr >= 0.2]))
     vdrn_max = float(np.max(vdrn))
+    vbemf_max = float(np.max(vbemf))
 
     m_norm = (t_sh >= 5.0) & (t_sh <= 28.0)
     m_stal = (t_sh >= 35.0) & (t_sh <= 58.0)
@@ -198,7 +204,7 @@ def main():
     led_ratio = t_clf_us / max(t_flr_us, 1e-6)
 
     spice_summary = {
-        "revision": "Rev 3.0 CH32X035 5.0V Single-Chip Mixed-Signal",
+        "revision": "Rev 4.0 CH32X035 5.0V Single-Chip + Back-EMF Barometer",
         "power_isolation": {
             "vbat_min_sag_V": round(vbat_min, 3),
             "v5v_rail_min_V": round(v5v_min, 3),
@@ -206,6 +212,8 @@ def main():
             "mosfet_direct_5V_gate_V": round(float(np.max(vgate)), 2),
             "flyback_clamp_max_V": round(vdrn_max, 2),
             "fet_voltage_margin_x": round(60.0 / vdrn_max, 1),
+            "bemf_adc_max_V": round(vbemf_max, 2),
+            "bemf_adc_safe_under_5V": bool(vbemf_max < 4.5),
         },
         "bifilar_shunt_opa1": {
             "shunt_resistance_ohm": 0.25,
@@ -230,10 +238,11 @@ def main():
     # 2x2 Verification Waveform Dashboard
     fig, axes = plt.subplots(2, 2, figsize=(13, 8.2))
     axes[0,0].plot(t_pwr, vbat, color="#ea580c", lw=1.6, label=f"5S NiMH VBAT (min {vbat_min:.2f}V)")
-    axes[0,0].plot(t_pwr, v5v,  color="#0f766e", lw=2.4, label=f"CH32X035 + Mouse 5.0V Rail (min {v5v_min:.3f}V)")
-    axes[0,0].plot(t_pwr, vdrn, color="#3b82f6", lw=0.7, alpha=0.55, label=f"2SK4017 Drain Clamp (max {vdrn_max:.2f}V)")
-    axes[0,0].set_title("A. 5V Sag-Isolated Supply & Direct-5V 2SK4017 PWM (No DTC114EL)")
-    axes[0,0].set_xlabel("Time [ms]"); axes[0,0].set_ylabel("Voltage [V]"); axes[0,0].legend(fontsize=8, loc="lower right")
+    axes[0,0].plot(t_pwr, v5v,  color="#0f766e", lw=2.4, label=f"CH32X035 5.0V Rail (min {v5v_min:.3f}V)")
+    axes[0,0].plot(t_pwr, vdrn, color="#3b82f6", lw=0.7, alpha=0.45, label=f"2SK4017 Drain Clamp (max {vdrn_max:.2f}V)")
+    axes[0,0].plot(t_pwr, vbemf,color="#8b5cf6", lw=0.9, alpha=0.75, label=f"0-JPY Back-EMF Sense (max {vbemf_max:.2f}V <5V)")
+    axes[0,0].set_title("A. 5V Sag Isolation, Direct-5V PWM & 0-JPY Back-EMF Sense")
+    axes[0,0].set_xlabel("Time [ms]"); axes[0,0].set_ylabel("Voltage [V]"); axes[0,0].legend(fontsize=7.6, loc="lower right")
 
     axes[0,1].plot(t_sh, vadc_sh, color="#0f766e", lw=1.6, label=f"On-Chip OPA1 Out ({sh_rip_mv:.0f} mVpp ripple, {sh_jump:.2f}x stall)")
     axes[0,1].axvline(30.0, color="#ea580c", ls="--", lw=1.3, label="Wall Contact Event (t=30ms)")

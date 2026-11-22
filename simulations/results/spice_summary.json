@@ -1,12 +1,14 @@
 {
-  "revision": "Rev 3.0 CH32X035 5.0V Single-Chip Mixed-Signal",
+  "revision": "Rev 4.0 CH32X035 5.0V Single-Chip + Back-EMF Barometer",
   "power_isolation": {
-    "vbat_min_sag_V": 4.763,
+    "vbat_min_sag_V": 4.819,
     "v5v_rail_min_V": 5.0,
     "zero_brownout": true,
     "mosfet_direct_5V_gate_V": 4.95,
-    "flyback_clamp_max_V": 6.32,
-    "fet_voltage_margin_x": 9.5
+    "flyback_clamp_max_V": 6.33,
+    "fet_voltage_margin_x": 9.5,
+    "bemf_adc_max_V": 3.0,
+    "bemf_adc_safe_under_5V": true
   },
   "bifilar_shunt_opa1": {
     "shunt_resistance_ohm": 0.25,

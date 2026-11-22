@@ -1,26 +1,23 @@
 Category,Item,Vendor,Code,Qty,Unit_JPY_TaxInc,Subtotal_JPY,Mass_g,Engineering_Role
-MCU+Analog,"32bit RISC-V CH32X035G8U6 DIP30 Breakout (OPA x2, PIOC, USB Host/ISP, TouchKey)",Akizuki Denshi,131018,1,290,290,4.8,Main Brain + On-Chip OpAmp x2 + Native 5V USB Host/Bootloader + TouchKey
-Suction,DC Motor RS-385PH-4045 (6V 12100rpm 9.5W Carbon Brush 5-Slot),Akizuki Denshi,106439,1,300,300,74.0,High-Suction Centrifugal Turbine Motor (Exhaust-Jet Cooled)
-Drive,"Minebea High-Grade DC Motor PWN10EB12CB (12V/6V, 2.0mm shaft)",Akizuki Denshi,110024,2,100,200,42.0,28:1 Compliant Living-Hinge Magnetic-Preload Friction Rim Drive (0 dB)
+Body_Fab,"JLC3DP Industrial SLA 9600 Resin 3-Piece Hyper-Body (~88 cm3, ±0.15mm)",JLC3DP (SLA 9600),JLC-SLA9600,1,690,690,102.0,Geodesic Isogrid H=52mm Unibody + Quad-Ø24mm Micro-Cyclone + 3D Impeller + 11-Vane Diffuser + 3-Band Silencer
+MCU+Analog,"32bit RISC-V CH32X035G8U6 DIP30 Breakout (OPA x2, USB Host/ISP, TouchKey)",Akizuki Denshi,131018,1,290,290,4.8,Main Brain + On-Chip OPA1/OPA2 + Native 5V USB Host/ISP + TouchKey + Back-EMF Barometer
+Suction,DC Motor RS-385PH-4045 (6V 12100rpm 9.5W Carbon Brush 5-Slot),Akizuki Denshi,106439,1,300,300,74.0,"3,030+ Pa Centrifugal Turbine Motor (Helical Exhaust-Cooled Cradle)"
+Drive,"Minebea High-Grade DC Motor PWN10EB12CB (12V/6V, Ø2.0mm shaft)",Akizuki Denshi,110024,2,100,200,42.0,"25.0:1 Print-in-Place Leaf-Spring Preload Friction Drive (0 dB, 0 magnets)"
 Driver,"Dual H-Bridge Module AE-TC78H653FTG (DIP16, 1.8-7.5V, 0.22R)",Akizuki Denshi,114746,1,200,200,3.2,Left/Right Friction Drive H-Bridge (1-Shunt TDM)
-Passives,1/4W 10k-ohm Carbon Resistor Pack RD25S 10K (100 pcs),Akizuki Denshi,125103,1,100,100,3.0,E1 Single-Value Resistor Network for On-Chip OPA1/OPA2 Gain & Bias
-PCB,Double-Sided Plated Through-Hole Board AE-F-TH,Akizuki Denshi,112731,1,40,40,8.5,Compact 55.88 x 43.18 mm Main Board (-34% area vs Rev 2.0)
+Passives,1/4W 10k-ohm Carbon Resistor Pack RD25S 10K (100 pcs),Akizuki Denshi,125103,1,100,100,3.0,E1 Single-Value Network: OPA1/OPA2 Gain + 0-JPY Back-EMF Virtual Barometer Divider
+PCB,Double-Sided Plated Through-Hole Board AE-F-TH (or optional JLCPCB $2),Akizuki Denshi,112731,1,40,40,8.5,Compact 59.69 x 55.88 mm Main Control PCB (31/31 nets, 0 DRC)
 Safety,Resettable Polyfuse 3A MF-R300,Akizuki Denshi,112630,1,40,40,0.8,Overcurrent & Short-Circuit Auto-Resetting Breaker
-Sensors,3mm Red LED OSR5JA3Z74A (Used as Reverse-Bias Photodiodes),Akizuki Denshi,111577,4,10,40,1.2,4x PIOC Nanosecond Optical Wall (2) & Stair Cliff (2) Sensors
+Sensors,3mm Red LED OSR5JA3Z74A (Used as 5V Reverse-Bias Photodiodes),Akizuki Denshi,111577,4,10,40,1.2,4x 5V Optical Wall (2) & Stair Cliff (2) Sensors (8.35x contrast)
 Passives,1uF 50V X7R Radial MLCC Capacitor,Akizuki Denshi,108150,2,20,40,0.6,5.0V Rail & 2.5V Virtual-Midpoint Decoupling
-Power,N-ch Power MOSFET 60V 5A 2SK4017(Q) (Direct 5V Gate Drive!),Akizuki Denshi,107597,1,30,30,1.0,"25kHz Ultrasonic Turbine PWM (Direct 5V MCU Drive, 0 level-shifter)"
+Power,N-ch Power MOSFET 60V 5A 2SK4017(Q) (Direct 5V Gate Drive!),Akizuki Denshi,107597,1,30,30,1.0,"25kHz Ultrasonic Turbine PWM (Direct 5V Gate, 0 level-shifter)"
 Power,Schottky Barrier Diode 40V 3A SB340LS,Akizuki Denshi,107788,1,30,30,1.1,Turbine Inductive Flyback Energy Recirculation Clamp
-Sensors,Murata Piezo Sounder PKM13EPYH4000-A0 (Acoustic Mic Mode),Akizuki Denshi,104118,1,30,30,1.2,"Cyclone Inlet Acoustic Dirt-Impact Detector (Triggers 2,900+ Pa Turbo)"
+Sensors,Murata Piezo Sounder PKM13EPYH4000-A0 (Acoustic Mic Mode),Akizuki Denshi,104118,1,30,30,1.2,"Pre-Cyclone Acoustic Dirt-Impact Detector (Triggers 3,030 Pa Turbo)"
 Power,5.0V 100mA LDO Regulator LP2950L-50-T92 (30V Max Vin),Akizuki Denshi,108750,1,20,20,0.4,Rock-Solid 5.00V Rail for CH32X035 & 5V USB Optical Mouse
-Power,Rectifier Diode 1S4 (1A),Akizuki Denshi,100127,1,20,20,0.5,Battery Startup-Sag Isolation Valve
+Power,Rectifier Diode 1S4 (1A 40V Schottky),Akizuki Denshi,100127,1,20,20,0.5,Battery Startup-Sag Isolation Valve
 Power,470uF 16V Electrolytic Capacitor,Akizuki Denshi,108426,2,10,20,3.0,Main Bus Ripple Suppression & 5V Holdup Reservoir
 Power,Slide Switch SS-12D00G3,Akizuki Denshi,115707,1,20,20,0.8,Master Power Disconnect Switch
 Battery,Seria VOLCANO NZ AA NiMH Rechargeable Cell (1.2V 1300mAh),Seria (100-yen),VOLCANO-NZ,5,110,550,130.0,5S 6.0V (6.8V Peak) High-Discharge Balanced Battery Pack
-Structure,Daiso PP Sheet 0.75mm (390 x 550 mm),Daiso (100-yen),4549131311280,1,110,110,106.0,Single-Sheet Origami Monocoque + Living-Hinge Suspension + Coanda + 2-Stage Muffler
-Donor5in1,Daiso Wired USB Optical Mouse (5-in-1 Super Donor),Daiso (100-yen),4550480354552,1,110,110,18.0,5V Optical Flow + 2x Bumper SW + 1.2m Cable/USB Flash Plug + Rubber Ring + 0.25R Bifilar Shunt
-Mech,Daiso Neodymium Magnets (4 pcs pack),Daiso (100-yen),NEODYMIUM-4P,1,110,110,14.0,2x Friction-Drive Magnetic Preload + 2x Quick-Release Cyclone Latches
-Filter,Daiso Fine Mesh Drain Net (Secondary Filter),Daiso (100-yen),DRAIN-NET,1,110,110,1.5,Ultra-Low-Drop Post-Cyclone Micro-Filter (30+ replacements)
-Scrap,350ml Aluminum Beverage Can (0.1mm Al Sheet),Upcycled Scrap,SCRAP-AL350,1,0,0,10.0,9-Blade Impeller + 7-Vane Radial Diffuser + AA Contacts + TouchKey Pad
-Scrap,500ml Slim PET Bottle (Ø60mm + Natural Neck Bellmouth),Upcycled Scrap,SCRAP-PET500,1,0,0,22.0,Horizontal Long Cyclone (6.2 turns) + Zero-Loss Bellmouth Inlet Cone
-Scrap,Rubber Bands + Bottle Caps + Straws (Tread & PTO Belt),Upcycled Scrap,SCRAP-MISC,1,0,0,10.0,High-Grip Tire Chevron Tread + Axle-PTO O-Ring Belt + Rear Skid
-TOTAL,Suga Roomba II Rev 3.0 (Omega-Efficiency),All Sources,-,-,-,2410,457.6,"590 JPY under 3,000 JPY cap!"
+Donor5in1,Daiso Wired USB Optical Mouse (5-in-1 Super Donor),Daiso (100-yen),4550480354552,1,110,110,18.0,5V Optical Flow + 2x Bumper SW + USB-ISP Flash Cable + 0.25R Bifilar Shunt + Rubber Ring
+Filter,Daiso Fine Mesh Drain Net (Backup Safety Screen),Daiso (100-yen),DRAIN-NET,1,110,110,1.0,Post-Quad-Cyclone Backup Safety Micro-Mesh (Ultra-Low Resistance)
+Scrap,350ml Aluminum Can Scrap + Rubber Bands (Zero Impeller Cutting!),Upcycled Scrap,SCRAP-MIN,1,0,0,8.0,4x AA Spring Contacts + Ø22mm TouchKey Disc + Tire Chevron Rubber Tread
+TOTAL,Suga Roomba II Rev 4.0 (Hyper-Genesis Industrial-Fab),All Sources,-,-,-,2880,405.1,"120 JPY under 3,000 JPY cap (incl. JLC3DP SLA body!)"

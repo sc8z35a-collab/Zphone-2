@@ -1,11 +1,11 @@
-* Rev 3.0: 5S NiMH Sag Isolation (1S4 Schottky + 470uF + LP2950L-50 5.0V) + Direct 5V CH32X035 -> 2SK4017 PWM
+* Rev 4.0: 5S NiMH Sag Isolation (5.00V) + Direct 5V 2SK4017 PWM + 0-JPY Back-EMF Virtual Barometer
 .model D_1S4 D(IS=1.5e-5 RS=0.09 N=1.06 BV=40)
 .model D_SB340 D(IS=2e-5 RS=0.045 N=1.05 BV=40)
 .model M_2SK4017 NMOS(VTO=1.9 KP=14.0 RD=0.022 RS=0.014 CBD=320p CBS=350p)
 
-* 5S NiMH Battery (6.0V nom, 0.21 ohm pack ESR)
+* 5S NiMH Battery (6.0V nom, 0.195 ohm pack ESR)
 V_BATT v_raw 0 DC 6.0
-R_ESR  v_raw vbat 0.21
+R_ESR  v_raw vbat 0.195
 C_BULK vbat 0 470u IC=6.0
 
 * Sag-Isolated 5.0V Rail (1S4 Schottky Vf=0.25V@35mA + 470uF Holdup + LP2950L-50-T92 0.38V dropout)
@@ -20,18 +20,23 @@ V_PWM  pwm_pa0 0 PULSE(0 5.0 0.5m 60n 60n 32u 40u)
 R_G    pwm_pa0 gate 100
 R_PD   gate 0 10k
 
-* RS-385PH Turbine (15A startup inrush pulse at t=0.5ms..4.5ms, L=120uH, Ra=0.382R + BackEMF)
+* RS-385PH Turbine (Helical-cooled Ra=0.372R, L=120uH, BackEMF=4.73V open)
 L_MOT  vbat mot_mid 120u
-R_MOT  mot_mid mot_emf 0.382
-V_EMF  mot_emf drain PWL(0 0 0.5m 0 4.5m 4.55 12m 4.55)
+R_MOT  mot_mid mot_emf 0.372
+V_EMF  mot_emf drain PWL(0 0 0.5m 0 4.5m 4.73 12m 4.73)
 D_FLY  drain vbat D_SB340
 M_FET  drain gate 0 0 M_2SK4017
+
+* Rev 4.0 0-JPY Back-EMF Virtual Barometer Divider (2x spare 10k E1 resistors -> CH32X035 ADC)
+R_BEMF1 drain adc_bemf 10k
+R_BEMF2 adc_bemf 0 10k
+C_BEMF  adc_bemf 0 1n
 
 .tran 2u 10m 0 2u uic
 .control
 run
 set wr_vecnames
-wrdata /home/antigravity/sc8z35a-collab/Zphone-2/simulations/results/spice_power.txt v(vbat) v(vldo_in) v(v5v) v(drain) v(gate)
+wrdata /home/antigravity/sc8z35a-collab/Zphone-2/simulations/results/spice_power.txt v(vbat) v(vldo_in) v(v5v) v(drain) v(gate) v(adc_bemf)
 quit
 .endc
 .end

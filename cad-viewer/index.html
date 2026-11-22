@@ -448,14 +448,16 @@
   // ---------------------------------------------------------------------------
   // 3D Aerodynamic Streamline Particles (Nozzle -> PET Cyclone -> Impeller -> Muffler)
   // ---------------------------------------------------------------------------
-  const N_PARTICLES = 420;
+  const N_PARTICLES = 480;
   const ptSeeds = Array.from({ length: N_PARTICLES }, (_, i) => ({
     phase: (i / N_PARTICLES) + Math.random() * 0.02,
+    coneIdx: i % 4, // Distributes evenly across all 4 parallel Ø24mm micro-cyclones!
     lane: (Math.random() - 0.5) * 2.0,
     isDebris: (i % 5 === 0),
-    isCoanda: (i % 5 !== 0) && (i % 6 === 1), // ~15% clean exhaust split -> Front-Right Coanda Corner Jet
-    speed: 0.22 + Math.random() * 0.07
+    coandaSide: (i % 5 !== 0) ? (i % 10 === 1 ? -1 : (i % 10 === 6 ? 1 : 0)) : 0, // 20% exhaust -> Dual L+R Coanda!
+    speed: 0.23 + Math.random() * 0.07
   }));
+  const CONE_X = [-39.0, -13.0, 13.0, 39.0];
   const ptPosData = new Float32Array(N_PARTICLES * 3);
   const ptColData = new Float32Array(N_PARTICLES * 4);
   const ptSzData  = new Float32Array(N_PARTICLES);
@@ -485,91 +487,91 @@
     for (let i = 0; i < N_PARTICLES; i++) {
       const s = ptSeeds[i];
       const u = (s.phase + tSec * s.speed) % 1.0;
-      let x = 0, y = 0, z = 0, r = 0.06, g = 0.70, b = 0.88, a = 0.86, sz = 4.2;
+      const cx = CONE_X[s.coneIdx];
+      let x = 0, y = 0, z = 0, r = 0.06, g = 0.72, b = 0.90, a = 0.88, sz = 4.2;
 
-      if (u < 0.18) {
-        // Stage 1: Full-width 126mm front Bernoulli intake (y: +94 -> +68, z: 2 -> 14)
-        const f = u / 0.18;
-        x = s.lane * 58.0 * (1.0 - 0.72 * f);
-        y = 94.0 - 26.0 * f;
-        z = 2.5 + 12.0 * f * f;
-        if (s.isDebris) { r = 0.94; g = 0.46; b = 0.12; sz = 5.6; }
-      } else if (u < 0.30) {
-        // Stage 2: Tangential intake chute -> Horizontal Transverse PET Cyclone (Y=36, Z=31)
-        const f = (u - 0.18) / 0.12;
-        x = (1 - f) * (s.lane * 16.0) + f * (-36.0);
-        y = (1 - f) * 68.0 + f * (36.0 + 16.0);
-        z = 14.5 + 34.0 * f;
-        if (s.isDebris) { r = 0.95; g = 0.50; b = 0.14; sz = 5.5; }
-      } else if (u < 0.62) {
-        // Stage 3: 6.2-Turn Horizontal Helical Vortex along X-axis (X: -36 -> +36, center Y=36, Z=31)
-        const f = (u - 0.30) / 0.32;
-        const turns = f * Math.PI * 10.5;
+      if (u < 0.16) {
+        // Stage 1: Wide 132mm 3D Venturi Floor Nozzle Intake (y: +92 -> +66)
+        const f = u / 0.16;
+        x = (cx * 1.45) * (1.0 - f) + cx * f + s.lane * 8.0 * (1.0 - f);
+        y = 92.0 - 26.0 * f;
+        z = 2.0 + 10.0 * f * f;
+        if (s.isDebris) { r = 0.94; g = 0.46; b = 0.12; sz = 5.4; }
+      } else if (u < 0.28) {
+        // Stage 2: Convergent Manifold -> 4x Parallel Ø24mm Helical Scroll Entries (Y=+36)
+        const f = (u - 0.16) / 0.12;
+        x = cx + 9.5 * f;
+        y = 66.0 * (1.0 - f) + 41.0 * f;
+        z = 12.0 + 28.0 * f;
+        if (s.isDebris) { r = 0.95; g = 0.50; b = 0.14; sz = 5.3; }
+      } else if (u < 0.60) {
+        // Stage 3: 4x Simultaneous High-G Conical Micro-Vortices (>2,900 G!)
+        const f = (u - 0.28) / 0.32;
+        const turns = f * Math.PI * 11.5;
         if (s.isDebris) {
-          // Heavy dust centrifuges to Ø48mm outer PET wall & travels into right-side expanded dust bin
-          const rad = 21.5;
-          x = -36.0 + 72.0 * f;
-          y =  36.0 + rad * Math.cos(turns);
-          z =  31.0 + rad * Math.sin(turns);
-          r = 0.94; g = 0.46; b = 0.10; sz = 5.4; a = 0.92 * (1.0 - 0.3 * f);
+          // Dust centrifuges down tapered 14-deg SLA cone into bottom bayonet hopper!
+          const rad = 10.2 * (1.0 - 0.58 * f);
+          x = cx + rad * Math.cos(turns);
+          y = 36.0 + rad * Math.sin(turns);
+          z = 41.0 - 27.0 * f;
+          r = 0.94; g = 0.45; b = 0.10; sz = 5.2; a = 0.92 * (1.0 - 0.25 * f);
         } else {
-          // Clean air spirals along horizontal barrel then returns along central core to X=0 bellmouth
-          const rad = f < 0.60 ? (19.5 - 11.0 * (f / 0.60)) : (8.5 * (1.0 - (f - 0.60) / 0.40));
-          x = f < 0.60 ? (-36.0 + 64.0 * (f / 0.60)) : (28.0 - 28.0 * ((f - 0.60) / 0.40));
-          y = 36.0 + rad * Math.cos(turns);
-          z = 31.0 + rad * Math.sin(turns);
-          r = 0.08; g = 0.74; b = 0.90; sz = 4.2;
+          // Clean air spirals down outer wall then shoots UP coaxial vortex finder (z: 22 -> 46)!
+          const rad = f < 0.58 ? (9.8 - 5.2 * (f / 0.58)) : (3.6 * (1.0 - (f - 0.58) / 0.42));
+          x = cx + rad * Math.cos(turns);
+          y = 36.0 + rad * Math.sin(turns);
+          z = f < 0.58 ? (41.0 - 18.0 * (f / 0.58)) : (23.0 + 23.5 * ((f - 0.58) / 0.42));
+          r = 0.06; g = 0.76; b = 0.92; sz = 4.0;
         }
-      } else if (u < 0.82) {
-        // Stage 4: Zero-elbow PET-neck bellmouth -> Centerline Ø78mm Impeller + 7-Vane Diffuser (0, -14)
-        const f = (u - 0.62) / 0.20;
+      } else if (u < 0.80) {
+        // Stage 4: Top Collector Plenum -> 3D-Twisted 11-Blade Impeller + 11-Vane Diffuser (0, -14)
+        const f = (u - 0.60) / 0.20;
         if (s.isDebris) {
           const ang = s.phase * 28.0 + tSec * 0.4;
-          x = 32.0 + 6.0 * Math.cos(ang);
-          y = 36.0 + 12.0 * Math.sin(ang);
-          z = 14.0;
-          r = 0.85; g = 0.44; b = 0.14; a = 0.45 * (1.0 - f); sz = 4.2;
-        } else if (f < 0.40) {
-          const g2 = f / 0.40;
-          x = s.lane * 5.0 * (1.0 - g2);
-          y = 36.0 - 50.0 * g2;
-          z = 31.0 - 16.0 * g2;
-          r = 0.10; g = 0.78; b = 0.76; sz = 4.2;
+          x = cx + 5.5 * Math.cos(ang);
+          y = 36.0 + 5.5 * Math.sin(ang);
+          z = 10.0;
+          r = 0.85; g = 0.44; b = 0.14; a = 0.45 * (1.0 - f); sz = 4.0;
+        } else if (f < 0.42) {
+          const g2 = f / 0.42;
+          x = cx * (1.0 - g2);
+          y = 36.0 * (1.0 - g2) + (-14.0) * g2;
+          z = 46.5 * (1.0 - g2) + 12.5 * g2;
+          r = 0.10; g = 0.80; b = 0.78; sz = 4.0;
         } else {
-          const g2 = (f - 0.40) / 0.60;
+          const g2 = (f - 0.42) / 0.58;
           const ang = g2 * Math.PI * 2.8 + s.phase * 6.28;
-          const rad = 14.0 + 34.0 * g2; // sweeps through 9-blade impeller & 7-vane radial diffuser
+          const rad = 13.0 + 36.0 * g2;
           x = rad * Math.cos(ang);
           y = -14.0 + rad * Math.sin(ang);
-          z = 15.0 + 3.5 * g2 + s.lane * 2.0;
-          r = 0.10; g = 0.84; b = 0.66; sz = 4.6;
+          z = 12.5 + 3.2 * g2 + s.lane * 1.8;
+          r = 0.10; g = 0.84; b = 0.66; sz = 4.5;
         }
       } else {
-        // Stage 5: Split Exhaust Reuse! 85% Rear Motor/PCB Cooling & 2-Stage Muffler + 15% Front-Right Coanda Corner Jet
-        const f = (u - 0.82) / 0.18;
+        // Stage 5: 20% Dual Left+Right Coanda Corner Air-Knives (17.9 m/s!) + 80% Rear Helical Cooling & 3-Band Silencer
+        const f = (u - 0.80) / 0.20;
         if (s.isDebris) {
-          x = 32; y = 36; z = 14; a = 0.0; sz = 0.0;
-        } else if (s.isCoanda) {
-          // 15% Front-Right Coanda Corner Air-Knife Jet (0 W, 14.3 m/s): blasts 90° corner dust into front intake!
+          x = cx; y = 36; z = 10; a = 0.0; sz = 0.0;
+        } else if (s.coandaSide !== 0) {
+          const sx = s.coandaSide;
           if (f < 0.48) {
             const g2 = f / 0.48;
-            x = 46.0 + 22.0 * g2;
-            y = -10.0 + 84.0 * g2;
-            z = 16.0 - 6.0 * g2;
-            r = 0.02; g = 0.86; b = 0.98; a = 0.94; sz = 4.8;
+            x = sx * (45.0 + 21.0 * g2);
+            y = -12.0 + 78.0 * g2;
+            z = 12.0 - 3.5 * g2;
+            r = 0.02; g = 0.88; b = 1.00; a = 0.95; sz = 4.8;
           } else {
             const g2 = (f - 0.48) / 0.52;
-            x = 68.0 - 32.0 * g2;
-            y = 74.0 + 22.0 * g2 - 8.0 * g2 * g2;
-            z = 10.0 - 7.0 * g2;
-            r = 0.05; g = 0.92; b = 1.00; a = 0.92 * (1.0 - g2); sz = 5.4;
+            x = sx * (66.0 - 34.0 * g2);
+            y = 66.0 + 24.0 * g2 - 9.0 * g2 * g2;
+            z = 8.5 - 6.0 * g2;
+            r = 0.05; g = 0.94; b = 1.00; a = 0.92 * (1.0 - g2); sz = 5.4;
           }
         } else {
-          // 85% Forced-Convection Motor/MOSFET Cooling -> Rear 2-Stage Metamaterial Muffler (y: -14 -> -116)
-          x = s.lane * (18.0 + 14.0 * f);
-          y = -14.0 - 102.0 * f;
-          z = 22.0 + 18.0 * f;
-          r = 0.14; g = 0.80; b = 0.56; a = 0.80 * (1.0 - f); sz = 4.6;
+          x = s.lane * (16.0 + 14.0 * f);
+          y = -14.0 - 94.0 * f;
+          z = 18.0 + 20.0 * f;
+          r = 0.14; g = 0.82; b = 0.56; a = 0.80 * (1.0 - f); sz = 4.4;
         }
       }
 
