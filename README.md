@@ -18,10 +18,10 @@
 1. **🖱️ ブラウザで今すぐグルグル回せる「文字ゼロ」ライブ 3D CAD ビューア（Rev 5.2 実機モデル）**  
    → 🌐 **ライブ版（GitHub Pages）**：[**https://sc8z35a-collab.github.io/Zphone-2/**](https://sc8z35a-collab.github.io/Zphone-2/)  
    → 💻 **ローカル版**：[`index.html`](index.html) または [`cad-viewer/index.html`](cad-viewer/index.html)
-2. **🏭 3Dプリント業者（JLC3DP）独立 10 パーツ＆JLCPCB 0-DRC 基板の同梱発注マニュアル**  
+2. **🏭 3Dプリント業者（JLC3DP）独立 10 パーツ＆JLCPCB 0-DRC 基板の同梱発注パック＆マニュアル**  
+   → 📦 **【これ 1 個で全部入り】オールインワン同梱 ZIP（10 STL＋0-DRC ガーバー＋PDF/STEP＋FW＋BOM＋ガイド全 24 点）**：[`release/SugaRoomba2_Rev5_2_AllInOne_Bundle.zip`](release/SugaRoomba2_Rev5_2_AllInOne_Bundle.zip)  
    → 📖 注文画面クリック順マニュアル：[`docs/VENDOR_ORDERING_GUIDE.md`](docs/VENDOR_ORDERING_GUIDE.md)  
-   → 📦 JLC3DP 即アップロード用 独立 10 STL 一括 ZIP：[`cad/jlc3dp_order_pack/SugaRoomba2_Rev5_JLC3DP_Pack.zip`](cad/jlc3dp_order_pack/SugaRoomba2_Rev5_JLC3DP_Pack.zip)  
-   → 📦 JLCPCB 専用 2 層 PCB ガーバー ZIP（44/44 ネット・`0 DRC`）：[`kicad/outputs/SugaRoomba2_Rev5_JLCPCB_Gerbers.zip`](kicad/outputs/SugaRoomba2_Rev5_JLCPCB_Gerbers.zip)
+   → 📦 JLC3DP 単体 ZIP：[`cad/jlc3dp_order_pack/SugaRoomba2_Rev5_JLC3DP_Pack.zip`](cad/jlc3dp_order_pack/SugaRoomba2_Rev5_JLC3DP_Pack.zip) ／ JLCPCB 単体ガーバー ZIP（`0 DRC`）：[`kicad/outputs/SugaRoomba2_Rev5_JLCPCB_Gerbers.zip`](kicad/outputs/SugaRoomba2_Rev5_JLCPCB_Gerbers.zip)
 3. **📖 初心者でも M3 ドライバー 1 本で確実に組める完全組立ガイド（本体ハード ¥2,980 欠品ゼロ部品表つき）**  
    → [`docs/BEGINNER_ASSEMBLY_GUIDE.md`](docs/BEGINNER_ASSEMBLY_GUIDE.md) / [`docs/BOM_VERIFIED_2026.csv`](docs/BOM_VERIFIED_2026.csv)
 4. **🚀 Google Colab A100 実 3D 物理シミュレーション＆実機検証ラボ（環境分離・4 フェーズ構成）**  

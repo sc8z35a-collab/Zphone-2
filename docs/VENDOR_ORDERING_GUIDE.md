@@ -18,9 +18,10 @@
 
 ---
 
-## 2. 同梱の即発注ファイル一覧（独立 10 STL・計 12 個）
+## 2. 同梱の即発注ファイル一覧（独立 10 STL・計 12 個 ＋ JLCPCB 0-DRC 基板一括同梱）
 
-一括ダウンロード ZIP：[`cad/jlc3dp_order_pack/SugaRoomba2_Rev5_JLC3DP_Pack.zip`](../cad/jlc3dp_order_pack/SugaRoomba2_Rev5_JLC3DP_Pack.zip)（解凍して 10 個の `.stl` をそのまま JLC3DP へドラッグ＆ドロップ！）
+- **【推奨】オールインワン同梱 ZIP（10 STL＋JLCPCB 0-DRC ガーバー＋回路図/PCB PDF＋STEP＋FW＋BOM 全部入り）**：[`release/SugaRoomba2_Rev5_2_AllInOne_Bundle.zip`](../release/SugaRoomba2_Rev5_2_AllInOne_Bundle.zip)
+- JLC3DP 単体 10 STL ZIP：[`cad/jlc3dp_order_pack/SugaRoomba2_Rev5_JLC3DP_Pack.zip`](../cad/jlc3dp_order_pack/SugaRoomba2_Rev5_JLC3DP_Pack.zip)（解凍して 10 個の `.stl` をそのまま JLC3DP へドラッグ＆ドロップ！）
 
 | # | STL ファイル名 | 発注数 (Qty) | 実測体積 (計) | 硬化質量 (計) | 外形寸法 [mm] | JLC3DP 見積目安 (`9600 Resin`) | 役割（Rev 5.2 仕様） |
 |---|---|---:|---:|---:|---|---:|---|
