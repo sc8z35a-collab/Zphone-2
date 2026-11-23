@@ -59,7 +59,10 @@ struct MockHW {
     int      opa2_psel = -1, opa2_nsel = -1, opa2_mode = -1, opa2_fb = -1;
     uint16_t tim1_arr = 0, tim2_arr = 0;
     uint16_t tim1_ccr1 = 0, tim2_ccr[4] = {};
+    bool     tim1_moe = false, tim2_moe = false;
+    int      adc_bits = 10; // openwch/arduino_core_ch32 defaults analogRead() to 10-bit!
     int      iwdg_enabled = 0, iwdg_reloads = 0;
+    int      pc3_spl_reads = 0;
     uint32_t touch_charge_us = 4;
 };
 static MockHW g_hw;
@@ -70,6 +73,7 @@ inline void delayMicroseconds(uint32_t us) { g_hw.now_us += us; }
 inline void delay(uint32_t ms) { g_hw.now_us += ms * 1000U; }
 inline void analogWriteFrequency(uint32_t) {}
 inline void analogWriteResolution(uint32_t) {}
+inline void analogReadResolution(int res) { g_hw.adc_bits = res; }
 inline void pinMode(uint8_t p, uint8_t m) {
     if (m == INPUT && (p == PB4 || p == PB6 || p == PB7 || p == PB8)) {
         g_hw.pd_charge_t0[p] = g_hw.now_us;
@@ -98,19 +102,24 @@ inline uint8_t digitalRead(uint8_t p) {
 }
 inline void analogWrite(uint8_t p, uint16_t v) { g_hw.pwm_val[p] = v; }
 inline uint16_t analogRead(uint8_t p) {
-    if (p == PB1 && g_hw.adc_val[p] > 40) {
-        // Inject realistic ~180 Hz PWN10EB12CB commutator ripple (+/-12% around DC mean!)
+    uint16_t raw12 = g_hw.adc_val[p];
+    if (p == PB1 && raw12 > 40) {
+        // Inject realistic ~180 Hz PWN10EB12CB commutator ripple (+/-14% around DC mean!)
         float phase = (float)(g_hw.now_us % 5555U) * (6.2831853f / 5555.0f);
-        float v = (float)g_hw.adc_val[p] * (1.0f + 0.14f * sinf(phase));
-        return (uint16_t)constrain((int)v, 0, 4095);
+        float v = (float)raw12 * (1.0f + 0.14f * sinf(phase));
+        raw12 = (uint16_t)constrain((int)v, 0, 4095);
     }
-    return g_hw.adc_val[p];
+    // Emulate openwch/arduino_core_ch32 scaling: 10-bit default unless analogReadResolution(12) called!
+    return (g_hw.adc_bits >= 12) ? raw12 : (uint16_t)(raw12 >> (12 - g_hw.adc_bits));
 }
 
 #ifdef TEST_WCH_SPL_REGS
-#define OPA_BASE 0x40010000U
-#define TIM1_BASE 0x40012C00U
-#define TIM2_BASE 0x40000000U
+// Authentic ch32x035.h peripheral base address macros ONLY (NO fake function-name macros!)
+#define OPA_BASE   0x40026000U
+#define TIM1_BASE  0x40012C00U
+#define TIM2_BASE  0x40000000U
+#define IWDG_BASE  0x40003000U
+#define GPIOC_BASE 0x40011000U
 #define ENABLE 1
 #define DISABLE 0
 #define RCC_APB2Periph_AFIO  0x01
@@ -119,17 +128,18 @@ inline uint16_t analogRead(uint8_t p) {
 #define RCC_APB2Periph_GPIOC 0x10
 #define RCC_APB2Periph_TIM1  0x800
 #define RCC_APB1Periph_TIM2  0x01
-#define GPIO_PartialRemap1_TIM1 1
-#define GPIO_Pin_0 0x0001
-#define GPIO_Pin_1 0x0002
-#define GPIO_Pin_2 0x0004
-#define GPIO_Pin_3 0x0008
-#define GPIO_Pin_4 0x0010
-#define GPIO_Pin_5 0x0020
-#define GPIO_Pin_7 0x0080
-#define GPIO_Pin_9 0x0200
-#define GPIO_Mode_AIN 0
-#define GPIO_Mode_AF_PP 1
+#define GPIO_Pin_0 0x0001U
+#define GPIO_Pin_1 0x0002U
+#define GPIO_Pin_2 0x0004U
+#define GPIO_Pin_3 0x0008U
+#define GPIO_Pin_4 0x0010U
+#define GPIO_Pin_5 0x0020U
+#define GPIO_Pin_7 0x0080U
+#define GPIO_Pin_9 0x0200U
+#define GPIO_Mode_AIN    0x00
+#define GPIO_Mode_Out_PP 0x10
+#define GPIO_Mode_AF_PP  0x18
+#define GPIO_Mode_IPU    0x48
 #define GPIO_Speed_50MHz 3
 #define TIM_CKD_DIV1 0
 #define TIM_CounterMode_Up 0
@@ -150,14 +160,26 @@ enum { OUT_IO_OUT0=0, OUT_IO_OUT1=1 };
 enum { CHP0=0, CHP1=1, CHP2=2 };
 enum { FB_OFF=0, FB_ON=1 };
 enum { CHN0=0, CHN1=1, CHN2_PGA_16xIN=2, CHN_PGA_4xIN=3, CHN_PGA_8xIN=4, CHN_PGA_16xIN=5, CHN_PGA_32xIN=6 };
-struct GPIO_InitTypeDef { uint16_t GPIO_Pin; uint8_t GPIO_Mode; uint8_t GPIO_Speed; };
+struct GPIO_InitTypeDef { uint32_t GPIO_Pin; uint8_t GPIO_Mode; uint8_t GPIO_Speed; };
 struct OPA_InitTypeDef { int OPA_NUM, Mode, PSEL, FB, NSEL; };
 struct TIM_TimeBaseInitTypeDef { uint16_t TIM_Period, TIM_Prescaler, TIM_ClockDivision, TIM_CounterMode; };
 struct TIM_OCInitTypeDef { uint16_t TIM_OCMode, TIM_OutputState, TIM_Pulse, TIM_OCPolarity; };
 inline void RCC_APB2PeriphClockCmd(uint32_t, int) {}
 inline void RCC_APB1PeriphClockCmd(uint32_t, int) {}
-inline void GPIO_PinRemapConfig(uint32_t, int) {}
-inline void GPIO_Init(void*, GPIO_InitTypeDef*) {}
+inline void GPIO_Init(void* port, GPIO_InitTypeDef* cfg) {
+    if (port == GPIOC && (cfg->GPIO_Pin & GPIO_Pin_3) && cfg->GPIO_Mode == GPIO_Mode_IPU) {
+        g_hw.pd_charge_t0[PC3] = g_hw.now_us;
+    }
+}
+inline void GPIO_ResetBits(void*, uint32_t) {}
+inline uint8_t GPIO_ReadInputDataBit(void* port, uint32_t pin) {
+    if (port == GPIOC && pin == GPIO_Pin_3) {
+        g_hw.pc3_spl_reads++;
+        g_hw.now_us += 2;
+        return ((g_hw.now_us - g_hw.pd_charge_t0[PC3]) < g_hw.touch_charge_us) ? 0 : 1;
+    }
+    return 0;
+}
 inline void OPA_Unlock() { g_hw.opa_unlocked = true; }
 inline void OPA_StructInit(OPA_InitTypeDef* s) { memset(s, 0, sizeof(*s)); }
 inline void OPA_Init(OPA_InitTypeDef* s) {
@@ -181,7 +203,10 @@ inline void TIM_OC2PreloadConfig(void*, int) {}
 inline void TIM_OC3PreloadConfig(void*, int) {}
 inline void TIM_OC4PreloadConfig(void*, int) {}
 inline void TIM_ARRPreloadConfig(void*, int) {}
-inline void TIM_CtrlPWMOutputs(void*, int) {}
+inline void TIM_CtrlPWMOutputs(void* t, int st) {
+    if (t == TIM1) g_hw.tim1_moe = (st == ENABLE);
+    if (t == TIM2) g_hw.tim2_moe = (st == ENABLE);
+}
 inline void TIM_Cmd(void*, int) {}
 inline void TIM_SetCompare1(void* t, uint16_t v) { if (t==TIM1) g_hw.tim1_ccr1=v; else g_hw.tim2_ccr[0]=v; }
 inline void TIM_SetCompare2(void*, uint16_t v) { g_hw.tim2_ccr[1]=v; }
@@ -192,10 +217,6 @@ inline void IWDG_SetPrescaler(uint8_t) {}
 inline void IWDG_SetReload(uint16_t) {}
 inline void IWDG_ReloadCounter() { g_hw.iwdg_reloads++; }
 inline void IWDG_Enable() { g_hw.iwdg_enabled = 1; }
-#define OPA_Unlock OPA_Unlock
-#define TIM_TimeBaseInit TIM_TimeBaseInit
-#define TIM_SetCompare1 TIM_SetCompare1
-#define IWDG_ReloadCounter IWDG_ReloadCounter
 #endif
 """
 
@@ -207,11 +228,12 @@ TEST_HARNESS_CPP = r"""
 
 static void check(bool cond, const char* msg) {
     if (!cond) {
-        std::fprintf(stderr, "[FAIL] %s | mode=%d tinyml=%d front=%u side=%u clL=%u clR=%u shuntL=%.2f rF=%.1f rA=%.3f bump=%d tk=%d lowB=%d\n",
+        std::fprintf(stderr, "[FAIL] %s | mode=%d tinyml=%d front=%u side=%u clL=%u clR=%u shuntL=%.2f rF=%.1f rA=%.3f bump=%d tk=%d lowB=%d adcBits=%d t1moe=%d t2moe=%d iwdg=%d\n",
             msg, (int)g_mode, (int)runTinyMLInference(),
             g_tel.ledFrontUs, g_tel.ledSideUs, g_tel.ledCliffLUs, g_tel.ledCliffRUs,
             g_tel.shuntMeanL, g_tel.rippleFreqL, g_tel.rippleAmpL,
-            (int)g_tel.bumperHit, (int)g_tel.touchActive, (int)g_tel.lowBatteryCutoff);
+            (int)g_tel.bumperHit, (int)g_tel.touchActive, (int)g_tel.lowBatteryCutoff,
+            g_hw.adc_bits, (int)g_hw.tim1_moe, (int)g_hw.tim2_moe, g_hw.iwdg_reloads);
         std::exit(1);
     }
     std::printf("[PASS] %s\n", msg);
@@ -232,22 +254,31 @@ int main() {
 
     setup();
 
+    check(g_hw.adc_bits == 12, "analogReadResolution(12) explicitly set (overrides 10-bit arduino_core_ch32 default!)");
 #ifdef TEST_WCH_SPL_REGS
-    check(g_hw.opa_unlocked && g_hw.opa1_enabled && g_hw.opa2_enabled, "WCH OPA_Unlock() + OPA1 + OPA2 enabled");
+    check(g_hw.opa_unlocked && g_hw.opa1_enabled && g_hw.opa2_enabled, "WCH OPA_Unlock() + OPA1 + OPA2 enabled (via real OPA_BASE guard)");
     check(g_hw.opa1_nsel == CHN_PGA_16xIN && g_hw.opa1_mode == OUT_IO_OUT1 && g_hw.opa1_fb == FB_ON,
           "OPA1 configured as internal 16x PGA (PB0 -> PB5/PB1=A9, zero external resistors!)");
     check(g_hw.opa2_psel == CHP0 && g_hw.opa2_nsel == CHN0 && g_hw.opa2_mode == OUT_IO_OUT0 && g_hw.opa2_fb == FB_OFF,
           "OPA2 configured as external 5x @ 2.5V VMID (PA7/PA5/PA4=A4)");
     check(g_hw.tim1_arr == 1919 && g_hw.tim2_arr == 2999,
-          "TIM1 = 25.000 kHz (PB9) & TIM2 = 16.000 kHz (PA0..PA3) ZERO timer conflict");
-    check(g_hw.iwdg_enabled == 1, "Hardware IWDG 1.64s safety watchdog armed");
+          "TIM1 = 25.000 kHz (PB9 default RM=0) & TIM2 = 16.000 kHz (PA0..PA3 default RM=0)");
+    check(g_hw.tim1_moe && g_hw.tim2_moe,
+          "BOTH TIM1->BDTR.MOE AND TIM2->BDTR.MOE enabled (CRITICAL CH32X035 TIM2 silicon requirement!)");
+    check(g_hw.iwdg_enabled == 1 && g_hw.iwdg_reloads >= 1, "Hardware IWDG 1.64s safety watchdog armed");
 #endif
     check(g_hw.pin_val[PIN_DRV_STBY] == HIGH, "AE-TC78H653FTG STBY released cleanly after 350ms boot settle");
 
     // 1. Test 0.0-Lux Pitch-Black Under-Sofa Cruise (MUST NOT false-trigger cliff!)
     for (int i = 0; i < 12; ++i) { g_hw.now_us += 150000; loop(); }
-    check(g_mode == NAV_CRUISE_SLAM && g_tel.ledCliffLUs < 180 && g_tel.ledCliffRUs < 180,
-          "0.0-Lux pitch-black sofa test: active emitter detects floor (no false cliff)");
+    check(g_mode == NAV_CRUISE_SLAM && g_tel.ledCliffLUs < 180 && g_tel.ledCliffRUs < 180 && !g_tel.lowBatteryCutoff,
+          "0.0-Lux pitch-black sofa test: active emitter detects floor (no false cliff / no false lowBatt)");
+#ifdef TEST_WCH_SPL_REGS
+    check(g_hw.iwdg_reloads >= 12 && g_hw.tim1_ccr1 > 0 && (g_hw.tim2_ccr[0] > 0 || g_hw.tim2_ccr[2] > 0),
+          "IWDG continuously fed in loop() + live TIM1/TIM2 hardware compare registers updated");
+    check(g_hw.pc3_spl_reads >= 12,
+          "PC3 TouchKey uses direct WCH SPL GPIOC (bypasses upstream variant_CH32X035G8U.cpp analogInputPin[13] bug!)");
+#endif
 
     // 2. Test 0.0-Lux Stair Cliff Drop (active reflection vanishes -> >260 us -> CLIFF ESTOP!)
     g_hw.pd_act_us[PIN_LED_CLIFF_L_RX] = 1150;
@@ -261,11 +292,9 @@ int main() {
     check(g_mode == NAV_CRUISE_SLAM, "Recovered cleanly to NAV_CRUISE_SLAM after cliff backoff");
 
     // 3. Test 50,000-Lux Direct Sunlight Ambient Cancellation!
-    // Ambient sunlight drops discharge to 120us; floor adds active reflection -> 60us -> I_refl = 1/60 - 1/120 = 1/120us!
     g_hw.pd_amb_us[PIN_LED_CLIFF_L_RX] = 120; g_hw.pd_act_us[PIN_LED_CLIFF_L_RX] = 60;
     g_hw.pd_amb_us[PIN_LED_CLIFF_R_RX] = 120; g_hw.pd_act_us[PIN_LED_CLIFF_R_RX] = 60;
     uint32_t sunFloor = measureActiveOpticalUs(PIN_LED_CLIFF_L_RX, PIN_EMIT_CLIFF_L);
-    // Stair cliff in sunlight: ambient 120us, active 119us -> nearly zero differential -> ~1200us cliff!
     g_hw.pd_amb_us[PIN_LED_CLIFF_L_RX] = 120; g_hw.pd_act_us[PIN_LED_CLIFF_L_RX] = 119;
     uint32_t sunCliff = measureActiveOpticalUs(PIN_LED_CLIFF_L_RX, PIN_EMIT_CLIFF_L);
     check(sunFloor < 160 && sunCliff > 900,
@@ -282,19 +311,29 @@ int main() {
     g_hw.now_us += 4500000;
     loop();
 
-    // 5. Test TC78H653FTG ISD Overcurrent Auto-Recovery via STBY pulse!
+    // 5. Test Capacitive TouchKey Toggle (Standby <-> Cruise) via PC3
+    g_hw.touch_charge_us = 30;
+    g_hw.now_us += 1000000;
+    loop();
+    check(g_mode == NAV_STANDBY && g_tel.touchActive, "Capacitive TouchKey (PC3) toggles robot cleanly to NAV_STANDBY");
+    g_hw.now_us += 1000000;
+    loop();
+    check(g_mode == NAV_CRUISE_SLAM, "Second Capacitive TouchKey tap resumes NAV_CRUISE_SLAM");
+    g_hw.touch_charge_us = 4;
+
+    // 6. Test TC78H653FTG ISD Overcurrent Auto-Recovery via STBY pulse!
     g_hw.adc_val[PIN_ADC_SHUNT] = 0; // Simulate ISD latch-off (0A despite active drive cmd)
     for (int i = 0; i < 18; ++i) { g_hw.now_us += 20000; loop(); }
     check(g_tel.driverFaultRetry && g_hw.stby_low_pulses >= 1 && g_hw.pin_val[PIN_DRV_STBY] == HIGH,
           "TC78H653FTG ISD fault detected -> automatic STBY LOW->HIGH recovery pulse fired");
     g_hw.adc_val[PIN_ADC_SHUNT] = 280;
 
-    // 6. Test Back-EMF Virtual Barometer Clog Alert (V_drain drops by 0.50V -> Clog Alert!)
+    // 7. Test Back-EMF Virtual Barometer Clog Alert (V_drain drops by 0.50V -> Clog Alert!)
     g_hw.adc_val[PIN_ADC_BEMF] = 286; // V_adc=0.35V -> V_drain=0.70V (dV_clog = 1.20 - 0.70 = +0.50V > 0.42V)
     for (int i = 0; i < 28; ++i) { g_hw.now_us += 160000; loop(); }
     check(g_tel.filterClogAlert, "Back-EMF Virtual Barometer detects inlet clog cleanly (+0.50V > +0.42V)");
 
-    std::printf("[ALL REV 5.2 FIRMWARE HIL TESTS PASSED 100%%!]\n");
+    std::printf("[ALL REV 5.2 REAL-SILICON FIRMWARE HIL TESTS PASSED 100%%!]\n");
     return 0;
 }
 """

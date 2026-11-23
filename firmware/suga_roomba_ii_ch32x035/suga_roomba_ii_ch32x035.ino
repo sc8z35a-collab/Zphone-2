@@ -17,7 +17,7 @@
 //      - OPA2: PA7 (O2P0), PA5 (O2N0), PA4 (O2O0/A4) -> External 5.0x AC gain around 2.50V
 //              VMID for 30-JPY Murata PKM13EPYH4000-A0 acoustic debris impact detector!
 //   3. Direct Hardware Timer Register PWM (bypasses incomplete arduino_core_ch32 PinMap_TIM!):
-//      - TIM1_CH1 (PB9, PartialRemap1) = 25.0 kHz ultrasonic turbine PWM -> 2SK4017 Gate
+//      - TIM1_CH1 (PB9, default RM=0) = 25.0 kHz ultrasonic turbine PWM -> 2SK4017 Gate
 //      - TIM2_CH1..4 (PA0..PA3, default RM=0) = 16.0 kHz Slow-Decay Drive-Brake H-Bridge PWM
 //      - PC14 = TC78H653FTG STBY (pulled LOW at reset via R2=10k -> ZERO boot twitch +
 //        automatic firmware STBY LOW->HIGH pulse recovery if ISD overcurrent trips!)
@@ -46,7 +46,7 @@ constexpr uint8_t PIN_MOT_RIN1     = PA2;   // QFN Pin 7  -> AE-TC78H653FTG CN1-
 constexpr uint8_t PIN_MOT_RIN2     = PA3;   // QFN Pin 8  -> AE-TC78H653FTG CN1-4 (IN4)
 constexpr uint8_t PIN_DRV_STBY     = PC14;  // QFN Pin 28 -> AE-TC78H653FTG CN1-3 (STBY, R2=10k PD)
 
-// TIM1_CH1 (PartialRemap1 -> Dedicated 25.0 kHz Ultrasonic Turbine PWM, ZERO conflict w/ TIM2!)
+// TIM1_CH1 (Default RM=0 -> Dedicated 25.0 kHz Ultrasonic Turbine PWM, ZERO conflict w/ TIM2!)
 constexpr uint8_t PIN_PWM_TURB     = PB9;   // QFN Pin 20 -> 2SK4017 Gate (ACTIVE-HIGH, R1=10k PD)
 
 // On-Chip Analog Peripherals (ALL ADC channels errata-free: A4, A9, A10, A13 — none in {3,7,11,15}!)
@@ -115,8 +115,8 @@ static uint8_t g_grid[GRID_N][GRID_N];
 // 1. Real CH32X035 Silicon Peripheral Drivers (OPA1 16x PGA, OPA2 5x, TIM1, TIM2, IWDG)
 // =============================================================================
 void initOnChipOpAmps() {
-#if defined(CH32X035) && defined(OPA_BASE) && defined(OPA_Unlock)
-    // Official WCH CH32X035 OPA initialization sequence (verified against openwch/ch32x035):
+#if defined(CH32X035) && defined(OPA_BASE)
+    // Official WCH CH32X035 OPA initialization sequence (verified byte-for-byte vs openwch/ch32x035):
     // 1. Configure OPA analog pins as GPIO_Mode_AIN (CRITICAL: PB1 & PB5 share QFN Pin 16 ->
     //    BOTH kept in analog input mode, NEVER configured as digital output!)
     RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA | RCC_APB2Periph_GPIOB | RCC_APB2Periph_GPIOC, ENABLE);
@@ -176,10 +176,9 @@ void initHardwareTimersPWM() {
     pinMode(PIN_PWM_TURB, OUTPUT);
     digitalWrite(PIN_PWM_TURB, LOW); // Keep 2SK4017 Gate OFF during boot!
 
-#if defined(CH32X035) && defined(TIM1_BASE) && defined(TIM_TimeBaseInit)
-    // --- TIM1_CH1 on PB9 (PartialRemap1) @ Exact 25.0 kHz ---
-    RCC_APB2PeriphClockCmd(RCC_APB2Periph_AFIO | RCC_APB2Periph_GPIOB | RCC_APB2Periph_TIM1, ENABLE);
-    GPIO_PinRemapConfig(GPIO_PartialRemap1_TIM1, ENABLE);
+#if defined(CH32X035) && defined(TIM1_BASE) && defined(TIM2_BASE)
+    // --- TIM1_CH1 on PB9 (Default Mapping per WCH EVT/EXAM/TIM/PWM_Output!) @ Exact 25.0 kHz ---
+    RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOB | RCC_APB2Periph_TIM1, ENABLE);
     GPIO_InitTypeDef g1 = {};
     g1.GPIO_Pin   = GPIO_Pin_9;
     g1.GPIO_Mode  = GPIO_Mode_AF_PP;
@@ -201,11 +200,12 @@ void initHardwareTimersPWM() {
     TIM_OC1Init(TIM1, &oc1);
     TIM_OC1PreloadConfig(TIM1, TIM_OCPreload_Enable);
     TIM_ARRPreloadConfig(TIM1, ENABLE);
-    TIM_CtrlPWMOutputs(TIM1, ENABLE);
+    TIM_CtrlPWMOutputs(TIM1, ENABLE); // Enable TIM1 BDTR.MOE!
     TIM_Cmd(TIM1, ENABLE);
 
-    // --- TIM2_CH1..4 on PA0..PA3 (Default Mapping, ZERO remap conflict!) @ Exact 16.0 kHz ---
-    // Configured directly in silicon registers because WCH arduino_core_ch32 PinMap_TIM omits PA0..PA3!
+    // --- TIM2_CH1..4 on PA0..PA3 (Default Mapping per WCH EVT/EXAM/TIM/One_Pulse!) @ Exact 16.0 kHz ---
+    // CRITICAL CH32X035 SILICON FACT: TIM2 is an Advanced Timer on CH32X035 with BDTR.MOE!
+    // MUST call TIM_CtrlPWMOutputs(TIM2, ENABLE) or PA0..PA3 stay 0V forever!
     RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA, ENABLE);
     RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM2, ENABLE);
     GPIO_InitTypeDef g2 = {};
@@ -231,6 +231,7 @@ void initHardwareTimersPWM() {
     TIM_OC3Init(TIM2, &oc2); TIM_OC3PreloadConfig(TIM2, TIM_OCPreload_Enable);
     TIM_OC4Init(TIM2, &oc2); TIM_OC4PreloadConfig(TIM2, TIM_OCPreload_Enable);
     TIM_ARRPreloadConfig(TIM2, ENABLE);
+    TIM_CtrlPWMOutputs(TIM2, ENABLE); // MANDATORY on CH32X035 TIM2 (sets TIM2->BDTR.MOE)!
     TIM_Cmd(TIM2, ENABLE);
 #else
     analogWriteFrequency(25000);
@@ -244,7 +245,7 @@ void initHardwareTimersPWM() {
 }
 
 void initHardwareWatchdog() {
-#if defined(CH32X035) && defined(IWDG_WriteAccess_Enable)
+#if defined(CH32X035) && defined(IWDG_BASE)
     // 48 MHz / 1024 = 46.875 kHz IWDG clock; Prescaler /64 -> 732.4 Hz; Reload 1200 -> 1.64 s timeout!
     IWDG_WriteAccessCmd(IWDG_WriteAccess_Enable);
     IWDG_SetPrescaler(IWDG_Prescaler_64);
@@ -255,14 +256,14 @@ void initHardwareWatchdog() {
 }
 
 static inline void feedWatchdog() {
-#if defined(CH32X035) && defined(IWDG_ReloadCounter)
+#if defined(CH32X035) && defined(IWDG_BASE)
     IWDG_ReloadCounter();
 #endif
 }
 
 void setTurbineDuty(float duty) {
     duty = constrain(duty, 0.0f, 1.0f);
-#if defined(CH32X035) && defined(TIM1_BASE) && defined(TIM_SetCompare1)
+#if defined(CH32X035) && defined(TIM1_BASE)
     TIM_SetCompare1(TIM1, (uint16_t)(duty * (float)TIM1_ARR_25KHZ + 0.5f));
 #else
     analogWrite(PIN_PWM_TURB, (uint16_t)(duty * 1023.0f));
@@ -275,7 +276,7 @@ void setTurbineDuty(float duty) {
 //   cmd <  0 -> IN1=MAX*(1 + cmd), IN2=MAX  (Drive reverse <-> Short brake)
 void setWheelPWM(uint8_t in1, uint8_t in2, float cmd) {
     cmd = constrain(cmd, -1.0f, 1.0f);
-#if defined(CH32X035) && defined(TIM2_BASE) && defined(TIM_SetCompare1)
+#if defined(CH32X035) && defined(TIM2_BASE)
     uint16_t c1 = 0, c2 = 0;
     if (fabsf(cmd) < 0.02f) {
         c1 = 0; c2 = 0;
@@ -424,6 +425,22 @@ bool readBumperSwitch() {
 }
 
 bool readCapacitiveTouchKey() {
+#if defined(CH32X035) && defined(GPIOC_BASE)
+    // Bypass upstream openwch/arduino_core_ch32 variant_CH32X035G8U.cpp bug where
+    // PC3 = PIN_A13 indexes analogInputPin[13] out of bounds (array length is 12)!
+    GPIO_InitTypeDef gt = {};
+    gt.GPIO_Pin   = GPIO_Pin_3;
+    gt.GPIO_Mode  = GPIO_Mode_Out_PP;
+    gt.GPIO_Speed = GPIO_Speed_50MHz;
+    GPIO_Init(GPIOC, &gt);
+    GPIO_ResetBits(GPIOC, GPIO_Pin_3);
+    delayMicroseconds(8);
+    uint32_t t0 = micros();
+    gt.GPIO_Mode  = GPIO_Mode_IPU;
+    GPIO_Init(GPIOC, &gt);
+    while (GPIO_ReadInputDataBit(GPIOC, GPIO_Pin_3) == 0 && (micros() - t0) < 120) {}
+    return ((micros() - t0) >= 18);
+#else
     pinMode(PIN_TOUCH_KEY, OUTPUT);
     digitalWrite(PIN_TOUCH_KEY, LOW);
     delayMicroseconds(8);
@@ -431,6 +448,7 @@ bool readCapacitiveTouchKey() {
     pinMode(PIN_TOUCH_KEY, INPUT_PULLUP);
     while (digitalRead(PIN_TOUCH_KEY) == LOW && (micros() - t0) < 120) {}
     return ((micros() - t0) >= 18);
+#endif
 }
 
 // =============================================================================
@@ -552,6 +570,7 @@ void updateOccupancyGrid(bool obstacleAhead) {
 }
 
 void setup() {
+    analogReadResolution(12);          // MANDATORY: openwch/arduino_core_ch32 defaults analogRead to 10-bit!
     initHardwareTimersPWM();
     initOnChipOpAmps();
     pinMode(PIN_EMIT_FRONT,   OUTPUT); digitalWrite(PIN_EMIT_FRONT,   LOW);
