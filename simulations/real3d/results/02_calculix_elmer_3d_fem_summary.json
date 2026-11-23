@@ -1,69 +1,69 @@
 {
   "calculix_impeller_12100rpm": {
     "coarse": {
-      "max_disp_mm": 0.4749,
-      "max_vm_MPa": 5.7541,
-      "p995_vm_MPa": 4.9986,
+      "max_disp_mm": 0.22774,
+      "max_vm_MPa": 11.9592,
+      "p995_vm_MPa": 3.936,
       "freqs_Hz": [
-        325.9,
-        326.0,
-        386.3,
-        516.6,
-        516.7,
-        673.0
+        437.4,
+        440.7,
+        512.5,
+        527.0,
+        660.1,
+        661.2
       ],
-      "nodes": 12909,
-      "elements": 6342,
+      "nodes": 16672,
+      "elements": 8236,
       "eltype": "C3D10",
       "rpm": 12100.0
     },
     "fine": {
-      "max_disp_mm": 0.47821,
-      "max_vm_MPa": 6.4132,
-      "p995_vm_MPa": 5.0307,
+      "max_disp_mm": 0.22611,
+      "max_vm_MPa": 11.6694,
+      "p995_vm_MPa": 3.9819,
       "freqs_Hz": [
-        321.4,
-        321.7,
-        384.4,
-        516.4,
-        516.7,
-        594.6
+        437.9,
+        440.8,
+        512.3,
+        543.5,
+        661.2,
+        661.4
       ],
-      "nodes": 23159,
-      "elements": 11441,
+      "nodes": 27614,
+      "elements": 13786,
       "eltype": "C3D10",
       "rpm": 12100.0
     },
-    "disp_conv_pct": 0.69,
-    "f1_conv_pct": 1.4,
-    "p995_vm_conv_pct": 0.64,
-    "sf_vs_48MPa_yield": 7.5,
+    "disp_conv_pct": 0.72,
+    "f1_conv_pct": 0.11,
+    "p995_vm_conv_pct": 1.15,
+    "sf_vs_48MPa_yield": 4.1,
     "all_metrics_converged_under_5pct": true
   },
   "calculix_swing_arm_3p2N": {
     "coarse": {
-      "max_disp_mm": 0.02809,
-      "max_vm_MPa": 1.5201,
-      "p995_vm_MPa": 0.6641,
+      "max_disp_mm": 0.02793,
+      "max_vm_MPa": 1.4793,
+      "p995_vm_MPa": 0.6421,
       "freqs_Hz": [],
-      "nodes": 18964,
-      "elements": 9667,
+      "nodes": 21075,
+      "elements": 10826,
       "eltype": "C3D10",
       "preload_N": 3.2
     },
     "fine": {
-      "max_disp_mm": 0.02798,
-      "max_vm_MPa": 1.7721,
-      "p995_vm_MPa": 0.6642,
+      "max_disp_mm": 0.02823,
+      "max_vm_MPa": 1.7258,
+      "p995_vm_MPa": 0.6618,
       "freqs_Hz": [],
-      "nodes": 35082,
-      "elements": 18677,
+      "nodes": 38122,
+      "elements": 20460,
       "eltype": "C3D10",
       "preload_N": 3.2
     },
-    "disp_conv_pct": 0.39,
-    "p995_vm_conv_pct": 0.02,
-    "sf_vs_14MPa_creep": 7.9,
+    "disp_conv_pct": 1.06,
+    "p995_vm_conv_pct": 2.98,
+    "sf_vs_14MPa_creep": 8.1,
     "all_metrics_converged_under_5pct": true
   },
   "elmer_3d_helmholtz_acoustic": {

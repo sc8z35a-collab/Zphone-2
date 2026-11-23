@@ -1,40 +1,43 @@
 Category,Item,Vendor,Code,Qty,Unit_JPY_TaxInc,Subtotal_JPY,Mass_g,Engineering_Role
-SLA_Body,JLC3DP SLA 9600: 01_lower_chassis_unibody.stl (189.27 cm3/ea),JLC3DP (SLA 9600),01_lower_chassis_unibody.stl,1,1238,1238,217.7,"Main chassis, sealed under-volute duct, lower cyclone, smooth vaneless volute, Ø5.4mm silencer, battery/PCB mounts"
-SLA_Body,JLC3DP SLA 9600: 02_volute_lid_motor_mount.stl (20.37 cm3/ea),JLC3DP (SLA 9600),02_volute_lid_motor_mount.stl,1,174,174,23.4,Removable 4xM3 volute top lid + RS-385PH M3 split-clamp sleeve
-SLA_Body,JLC3DP SLA 9600: 03_cyclone_cap_downcomer.stl (11.22 cm3/ea),JLC3DP (SLA 9600),03_cyclone_cap_downcomer.stl,1,116,116,12.9,Removable 2xM3 cyclone top cap + coaxial vortex finder + clean-air return arch
-SLA_Body,JLC3DP SLA 9600: 04_removable_dust_cup.stl (7.95 cm3/ea),JLC3DP (SLA 9600),04_removable_dust_cup.stl,1,94,94,9.1,Top-lift cleanable dust cup with keyed tangential intake slot
-SLA_Body,JLC3DP SLA 9600: 05_semi_open_impeller.stl (10.69 cm3/ea),JLC3DP (SLA 9600),05_semi_open_impeller.stl,1,112,112,12.3,Ø76mm 9-blade semi-open backward-curved impeller (zero trapped SLA supports)
-SLA_Body,JLC3DP SLA 9600: 06_upper_aero_canopy.stl (99.47 cm3/ea),JLC3DP (SLA 9600),06_upper_aero_canopy.stl,1,672,672,114.4,Flush-mating 4xM3 canopy with central RS-385PH dome (Z=34..64/76mm)
+SLA_Body,JLC3DP SLA 9600: 01_lower_chassis_unibody.stl (192.94 cm3/ea),JLC3DP (SLA 9600),01_lower_chassis_unibody.stl,1,1260,1260,221.9,"Main chassis, captive M3 hex nut traps, sealed under-volute duct, vaneless volute, Ø5.4mm silencer, EVA groove, floating mouse sled window, optical baffles"
+SLA_Body,JLC3DP SLA 9600: 02_volute_lid_motor_mount.stl (20.56 cm3/ea),JLC3DP (SLA 9600),02_volute_lid_motor_mount.stl,1,174,174,23.6,Removable 4xM3 volute top lid + RS-385PH M3 split-clamp sleeve w/ captive M3 hex nut socket
+SLA_Body,JLC3DP SLA 9600: 03_cyclone_cap_downcomer.stl (11.29 cm3/ea),JLC3DP (SLA 9600),03_cyclone_cap_downcomer.stl,1,116,116,13.0,Removable 2xM3 cyclone top cap + coaxial vortex finder + clean-air return arch
+SLA_Body,JLC3DP SLA 9600: 04_removable_dust_cup.stl (8.11 cm3/ea),JLC3DP (SLA 9600),04_removable_dust_cup.stl,1,96,96,9.3,Top-lift cleanable dust cup w/ keyed tangential intake & 360-deg #16 rubber-band O-ring seal groove
+SLA_Body,JLC3DP SLA 9600: 05_semi_open_impeller.stl (12.73 cm3/ea),JLC3DP (SLA 9600),05_semi_open_impeller.stl,1,124,124,14.6,"Ø76mm 9-blade semi-open backward-curved impeller w/ 2.2mm stiffened backplate, Ø14mm hub & 2x opposing M3 set-screw bores"
+SLA_Body,JLC3DP SLA 9600: 06_upper_aero_canopy.stl (102.53 cm3/ea),JLC3DP (SLA 9600),06_upper_aero_canopy.stl,1,692,692,117.9,"Flush-mating 4xM3 canopy w/ RS-385PH dome, rear USB-ISP port & external SS-12D00G3 power switch panel"
 SLA_Body,JLC3DP SLA 9600: 07_front_bumper.stl (11.98 cm3/ea),JLC3DP (SLA 9600),07_front_bumper.stl,1,120,120,13.8,Guided floating D-front bumper with twin slide bars
 SLA_Body,JLC3DP SLA 9600: 08_drive_wheel_50mm.stl (17.62 cm3/ea),JLC3DP (SLA 9600),08_drive_wheel_50mm.stl,2,156,312,40.5,Ø48mm SLA wheel rim (Qty 2; +1mm rubber band -> Ø50mm wheel)
 SLA_Body,JLC3DP SLA 9600: 09_motor_swing_arm.stl (7.11 cm3/ea),JLC3DP (SLA 9600),09_motor_swing_arm.stl,2,90,180,16.4,Rigid M3-pivoted PWN10EB12CB motor swing-arm (Qty 2; rubber-band tensioned)
 SLA_Body,JLC3DP SLA 9600: 10_agitator_roller.stl (2.99 cm3/ea),JLC3DP (SLA 9600),10_agitator_roller.stl,1,64,64,3.4,104mm ribbed front floor agitator roller on Ø3mm bamboo axle
-MCU+Analog,"32bit RISC-V CH32X035G8U6 DIP30 Breakout (OPA x2, USB Host/ISP, TouchKey)",Akizuki Denshi,131018,1,290,290,4.8,Main MCU + On-Chip OPA1/OPA2 + Native 5V USB Host/ISP + TouchKey + 1.5ms Back-EMF ADC
-Suction,"DC Motor RS-385PH-4045 (6V 12100rpm 9.5W, Ø27.5x37.8mm, Ø2.3mm shaft)",Akizuki Denshi,106439,1,300,300,74.0,"Centrifugal Blower Motor (OpenFOAM 3D MRF vaneless verified: 737 Pa Op / 1,354 Pa Shutoff 6.0V / 1,606 Pa Turbo 6.6V)"
+MCU+Analog,"32bit RISC-V CH32X035G8U6 DIP30 Breakout AE-QFN28-DIP (300mil, OPA x2, USB-ISP/SWD, TouchKey)",Akizuki Denshi,131018,1,290,290,4.8,"Main MCU (verified Pin 0=GND, PC17=USB-ISP Boot, OPA1 internal 16x PGA, TIM1 PB9 25kHz + TIM2 PA0..3 16kHz)"
+Suction,"DC Motor RS-385PH-4045 (6V 12100rpm 9.5W, Ø27.5x37.8mm, Ø2.3mm shaft)",Akizuki Denshi,106439,1,300,300,74.0,Centrifugal Blower Motor (OpenFOAM 3D MRF vaneless verified + 2x opposing M3 hub lock)
 Drive,"Minebea DC Motor PWN10EB12CB (12V/6V, 25.1x20.0x14.9mm, Ø2.0mm shaft)",Akizuki Denshi,110024,2,100,200,42.0,"25.0:1 Rubber-Band Pivoted Swing-Arm Friction Drive (Zero gear noise, Zero SLA creep)"
-Driver,"Dual H-Bridge Module AE-TC78H653FTG (DIP16, 1.8-7.5V, 0.22R)",Akizuki Denshi,114746,1,200,200,3.2,Left/Right Friction Drive H-Bridge (1-Shunt TDM)
-Passives,"1/4W 10k-ohm ±1% Metal-Film Resistor Pack (100 pcs, ¥100 — ¥0 extra cost!)",Akizuki Denshi,113514,1,100,100,3.0,E1 Single-Value Network: OPA1/OPA2 Gain + Precision 1% Back-EMF Divider (R18/R19) -> <13mV p99 error!
-PCB,Double-Sided Plated Through-Hole Board AE-F-TH (or optional JLCPCB $2),Akizuki Denshi,112731,1,40,40,8.5,"59.69 x 55.88 mm Main Control PCB (31/31 nets, 0 DRC, mounts on 4x clear M3 standoffs)"
+Driver,"Dual H-Bridge Module AE-TC78H653FTG (300mil DIP16, 1.8-7.5V, 0.22R, STBY on PC14)",Akizuki Denshi,114746,1,200,200,3.2,"Left/Right Friction Drive H-Bridge (MODE=LOW, LARGE=LOW, STBY=PC14 auto-ISD recovery)"
+Passives,1/4W 10k-ohm ±1% Metal-Film Resistor Pack (100 pcs),Akizuki Denshi,113514,1,100,100,3.0,"OPA2 5x network, Precision 1% Back-EMF Divider (R18/R19 -> <13mV p99), STBY/GATE/BOOT pull resistors"
+Passives,1/4W 1k-ohm ±5% Carbon-Film Resistor Pack CF25J1KB (100 pcs),Akizuki Denshi,125102,1,100,100,2.0,4x Active 3mA Emitter LED current limiters (R12..R15) + MOSFET gate series damping
+Passives,"0.1uF 100V X7R Radial MLCC Capacitor Pack (10 pcs, 5mm pitch)",Akizuki Denshi,115927,1,100,100,1.2,Mandatory CH32X035 Pin-2 VDD bypass (C5) + VM HF bypass (C6) + 3x DC Motor brush EMI suppression (C7..C9)
+Sensors,3mm Red LED OSR5JA3Z74A (4x Active 3mA Emitters + 4x Reverse-Bias Photodiodes),Akizuki Denshi,111577,8,10,80,2.4,4x Paired Optical Wall (2) & Stair Cliff (2) Sensors — works in 0.0-Lux pitch-black & 50k-Lux sunlight!
+PCB,Double-Sided Plated Through-Hole Board AE-F-TH (or optional JLCPCB $2 Gerber),Akizuki Denshi,112731,1,40,40,8.5,"59.69 x 55.88 mm Rev 5.2 Control PCB (44/44 nets, 0 KiCad DRC violations, 4x M3 NPTH holes)"
 Safety,Resettable Polyfuse 3A MF-R300,Akizuki Denshi,112630,1,40,40,0.8,Overcurrent & Short-Circuit Auto-Resetting Breaker
-Sensors,3mm Red LED OSR5JA3Z74A (Used as 5V Reverse-Bias Photodiodes),Akizuki Denshi,111577,4,10,40,1.2,4x 5V Optical Wall (2) & Stair Cliff (2) Sensors (8.35x contrast verified)
-Passives,1uF 50V X7R Radial MLCC Capacitor,Akizuki Denshi,108150,2,20,40,0.6,5.0V Rail & 2.5V Virtual-Midpoint Decoupling
-Power,N-ch Power MOSFET 60V 5A 2SK4017(Q) (Direct 5V Gate Drive),Akizuki Denshi,107597,1,30,30,1.0,25kHz Ultrasonic Blower PWM Switch (Direct 5V Gate)
+Passives,1uF 50V X7R Radial MLCC Capacitor,Akizuki Denshi,108150,2,20,40,0.6,5.0V LDO Output & 2.5V Virtual-Midpoint Decoupling (C3/C4)
+Power,N-ch Power MOSFET 60V 5A 2SK4017(Q) (Direct 5V Gate Drive),Akizuki Denshi,107597,1,30,30,1.0,25kHz Ultrasonic Blower PWM Switch (Direct 5V TIM1 PB9 Gate)
 Power,Schottky Barrier Diode 40V 3A SB340LS,Akizuki Denshi,107788,1,30,30,1.1,Blower Inductive Flyback Clamp (0.113ms decay verified in ngspice 42)
 Sensors,Murata Piezo Sounder PKM13EPYH4000-A0 (Acoustic Mic Mode),Akizuki Denshi,104118,1,30,30,1.2,Intake-Ramp Acoustic Dirt-Impact Detector (Triggers 6.6V Dirt-Turbo)
-Power,5.0V 100mA LDO Regulator LP2950L-50-T92 (30V Max Vin),Akizuki Denshi,108750,1,20,20,0.4,Rock-Solid 5.000V Rail for CH32X035 & 5V USB Optical Mouse
+Power,"5.0V 100mA LDO Regulator LP2950L-50-T92 (Verified Pinout: 1=VOUT, 2=GND, 3=VIN)",Akizuki Denshi,108750,1,20,20,0.4,Rock-Solid 5.000V Rail for CH32X035 & 5V USB Optical Mouse
 Power,Rectifier Diode 1S4 (1A 40V Schottky),Akizuki Denshi,100127,1,20,20,0.5,Battery Startup-Sag Isolation Valve
-Power,470uF 16V Electrolytic Capacitor,Akizuki Denshi,108426,2,10,20,3.0,Main Bus Ripple Suppression & 5V Holdup Reservoir
-Power,Slide Switch SS-12D00G3,Akizuki Denshi,115707,1,20,20,0.8,Master Power Disconnect Switch
+Power,470uF 16V Electrolytic Capacitor,Akizuki Denshi,108426,2,10,20,3.0,Main Bus Ripple Suppression & 5V Holdup Reservoir (C1/C2)
+Power,Slide Switch SS-12D00G3,Akizuki Denshi,115707,1,20,20,0.8,External Rear-Right Canopy Panel Master Power Disconnect Switch
 Battery,Seria VOLCANO NZ AA NiMH Rechargeable Cell (1.2V 1300mAh),Seria (100-yen),VOLCANO-NZ,5,110,550,130.0,5S 6.0V (6.6-6.7V Fresh) Balanced Battery Pack (4 side + 1 rear)
-Donor5in1,Daiso Wired USB Optical Mouse (5-in-1 Super Donor),Daiso (100-yen),4550480354552,1,110,110,18.0,5V Optical Flow + 2x Bumper MicroSW + USB-ISP Flash Cable + 0.25R Bifilar Shunt
+Donor5in1,Daiso Wired USB Optical Mouse (5-in-1 Super Donor),Daiso (100-yen),4550480354552,1,110,110,18.0,5V Floating-Sled Optical Flow + 2x Bumper MicroSW + USB-ISP Cable + 0.10R Bifilar Shunt
 Filter,Daiso Fine Mesh Drain Net (Post-Cyclone Safety Screen),Daiso (100-yen),DRAIN-NET,1,110,110,1.0,Replaceable Fine Mesh Over Vortex Finder Exit
-Fasteners,Daiso M3 Steel Machine Screw & Nut Assortment Pack (M3x8..M3x26),Daiso (100-yen),DAISO-M3-PACK,1,110,110,12.0,"Unified M3 Fasteners: 4x Canopy, 4x Volute Lid, 1x RS-385 Clamp, 2x Cyclone Cap, 4x PCB, 2x Wheel Axles, 2x Swing-Arm Hinges"
+Fasteners,Daiso M3 Steel Machine Screw & Nut Assortment Pack (M3x5..M3x26),Daiso (100-yen),DAISO-M3-PACK,1,110,110,15.0,Unified M3 Fasteners + 11x Captive Steel Hex Nuts + 2x Opposing Balanced M3x5 Impeller Set-Screws (Zero resin stripping!)
 Caster,Daiso 16mm Glass Marbles Pack (Uses 1x Ø16.0mm Marble),Daiso (100-yen),DAISO-MARBLE16,1,110,110,5.5,Rear Low-Friction Omnidirectional Ball Caster (Snaps into Ø16.8mm hemispherical socket)
-Elastomer,Daiso Natural Rubber Bands Pack (#16/#18),Daiso (100-yen),DAISO-RUBBER,1,110,110,2.0,2x Tire Tread Rings (Ø48mm Rim -> Ø50mm Wheel) + 2x Swing-Arm Tension Preload Bands (Zero SLA creep!)
+Elastomer,Daiso Natural Rubber Bands Pack (#16/#18),Daiso (100-yen),DAISO-RUBBER,1,110,110,2.5,2x Tire Treads + 2x Swing-Arm Preload + 1x Dust-Cup O-Ring Seal + 1x Floating Mouse Sled Suspension
 Axle,Daiso Ø3.0mm Bamboo Skewer Pack (Cut 1x 114mm Axle),Daiso (100-yen),DAISO-BAMBOO3,1,110,110,2.0,Axle for 104mm Front Floor Agitator Roller (10_agitator_roller.stl)
+FloorSeal,Daiso Soft EVA Foam Weatherstrip (すきまテープ 4.5mm),Daiso (100-yen),DAISO-EVA-SEAL,1,110,110,1.5,Compliant Front Nozzle Floor Seal Lip (Seals hard floors + yields over 5.0mm steps!)
 Scrap,Upcycled 350ml Aluminum Can Scrap (Battery Contacts + Touch Pad),Upcycled Scrap,SCRAP-ALCAN,1,0,0,4.0,5x AA Spring Contacts + Ø22mm Top Capacitive TouchKey Pad
-Shipping,JLC3DP OCS Express International Shipping to Japan (~$7.50),JLC3DP / OCS,SHIP-OCS-JP,1,1125,1125,0.0,Honest air-courier shipping for ~464g 10-STL SLA parcel (4-5 days to Japan)
-SUBTOTAL_HW,All Electronics + 5xAA + Mechanical Hardware (Excl. 3D Print),Akizuki + 100-yen,-,-,-,2630,320.6,"Akizuki 1,420 JPY + 100-yen 1,210 JPY (Zero missing hardware!)"
-TOTAL_EXCL_SHIP,Rev 5.1 Full 10-STL Turnkey SLA Edition (Excl. Overseas Shipping),All Sources,-,-,-,5712,784.5,"HW 2630 JPY + 10-STL JLC3DP SLA 3082 JPY ($20.55, 403.4 cm3)"
-TOTAL_INCL_SHIP,Rev 5.1 Full 10-STL Turnkey SLA Edition (Incl. OCS Express Shipping),All Sources,-,-,-,6837,784.5,Full landed cost incl. $7.50 OCS Express shipping to Japan
-OPTION_HYBRID_3K,"Budget <= 3,000 JPY Hybrid Option (4 Core Fluid STLs + PP Shell, Excl. Ship)",Akizuki+100y+JLC3DP,-,-,-,3016,540.0,4 Core Fluid STLs (496 JPY) + PP Sheet (110 JPY) + HW (excl. household rubber/skewer)
+Shipping,JLC3DP OCS Express International Shipping to Japan (~$7.50),JLC3DP / OCS,SHIP-OCS-JP,1,1125,1125,0.0,Honest air-courier shipping for ~472g 10-STL SLA parcel (4-5 days to Japan)
+SUBTOTAL_HW,"All Electronics + 5xAA + Mechanical Hardware (Excl. 3D Print — UNDER ¥3,000!)",Akizuki + 100-yen,-,-,-,2980,329.9,"Akizuki 1,660 JPY + 100-yen 1,320 JPY = 2,980 JPY (100% Real-Hardware Zero-Defect BOM!)"
+TOTAL_EXCL_SHIP,Rev 5.2 Full 10-STL Turnkey SLA Edition (Excl. Overseas Shipping),All Sources,-,-,-,6118,804.4,"HW 2980 JPY + 10-STL JLC3DP SLA 3138 JPY ($20.92, 412.58 cm3)"
+TOTAL_INCL_SHIP,Rev 5.2 Full 10-STL Turnkey SLA Edition (Incl. OCS Express Shipping),All Sources,-,-,-,7243,804.4,Full landed cost incl. $7.50 OCS Express shipping to Japan
+OPTION_HYBRID_CORE,"Low-Cost Hybrid Option (4 Core Fluid STLs + PP Shell, Excl. Ship)",Akizuki+100y+JLC3DP,-,-,-,3380,560.0,4 Core Fluid STLs (510 JPY) + PP Sheet (110 JPY) + Rev 5.2 Zero-Defect HW (excl. household rubber/skewer)

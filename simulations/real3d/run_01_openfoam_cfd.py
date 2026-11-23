@@ -646,7 +646,7 @@ def main():
     assert max(c_op["mass_conservation_err_pct"], f_op["mass_conservation_err_pct"], f_sh6["mass_conservation_err_pct"]) < 0.5
 
     summary = {
-        "revision": "Rev 5.1 (OpenFOAM-Optimized Smooth Vaneless Volute Diffuser, ID=90.0mm)",
+        "revision": "Rev 5.2 (Smooth Vaneless Volute Diffuser ID=90.0mm + Ø13mm Dual-M3 Impeller Hub)",
         "solver": "OpenFOAM v2406 MPI (simpleFoam, kOmegaSST, linearUpwindV, MRFProperties on 05_semi_open_impeller.stl)",
         "rev51_op_1p8Ls_grid_independence": {
             "coarse": c_op, "fine": f_op,

@@ -1,4 +1,4 @@
-* Rev 5.0: 5S NiMH Sag Isolation (5.00V) + 2SK4017 PWM + 1.5ms Coast Back-EMF Barometer (L=450uH)
+* Rev 5.2: 5S NiMH Sag Isolation (5.00V + 1uF/0.1uF MLCC) + PB9 25kHz 2SK4017 + 1.5ms Coast Back-EMF (L=450uH)
 .model D_1S4 D(IS=1.5e-5 RS=0.09 N=1.06 BV=40)
 .model D_SB340 D(IS=2e-5 RS=0.045 N=1.05 BV=40)
 .model M_2SK4017 NMOS(VTO=1.9 KP=14.0 RD=0.022 RS=0.014 CBD=320p CBS=350p)
@@ -7,22 +7,24 @@
 V_BATT v_raw 0 DC 6.0
 R_ESR  v_raw vbat 0.20
 C_BULK vbat 0 470u IC=6.0
+C_VMHF vbat 0 0.1u IC=6.0 ; Rev 5.2 [115927] 0.1uF X7R HF bus bypass
 
-* Sag-Isolated 5.0V Rail (1S4 Schottky + 470uF Holdup + LP2950L-50-T92)
+* Sag-Isolated 5.0V Rail (1S4 Schottky + 470uF Holdup + LP2950L-50-T92 [1=OUT,2=GND,3=IN] + 1uF||0.1uF)
 D_ISO  vbat vldo_in D_1S4
 C_HOLD vldo_in 0 470u IC=5.75
 B_LDO  v5v 0 V = (V(vldo_in) > 5.38) ? 5.0 : ((V(vldo_in) > 0.38) ? (V(vldo_in) - 0.38) : 0)
 C_5V   v5v 0 1u IC=5.0
-R_MCU  v5v 0 140 ; 35.7mA (CH32X035 18mA + 5V USB Mouse 17.7mA)
+C_VDD  v5v 0 0.1u IC=5.0 ; Rev 5.2 [115927] 0.1uF X7R directly on AE-QFN28-DIP Pin 2 (VDD)
+R_MCU  v5v 0 130 ; 38.5mA (CH32X035 18mA + 5V USB Mouse 17.5mA + 3mA active LED emitter pulse)
 
-* Direct 5.0V 25kHz PWM with explicit 1.5ms PWM-OFF Coast Window (t = 5.0ms .. 6.5ms)!
+* Direct 5.0V TIM1 (PB9) 25kHz PWM with explicit 1.5ms PWM-OFF Coast Window (t = 5.0ms .. 6.5ms)!
 V_CLK  pwm_clk 0 PULSE(0 5.0 0.5m 60n 60n 35u 40u)
 V_WIN  pwm_win 0 PWL(0 0 0.49m 0 0.50m 1 4.999m 1 5.000m 0 6.499m 0 6.500m 1 10m 1)
-B_PWM  pwm_pa0 0 V = V(pwm_clk) * V(pwm_win)
-R_G    pwm_pa0 gate 100
+B_PWM  pwm_pb9 0 V = V(pwm_clk) * V(pwm_win)
+R_G    pwm_pb9 gate 100
 R_PD   gate 0 10k
 
-* RS-385PH-4045 Real Datasheet Parameters: Ra=0.40R (6V/15A), conservative L=450uH, BackEMF=4.65V @ 9,850rpm
+* RS-385PH-4045 Real Datasheet Parameters: Ra=0.40R (6V/15A), conservative L=450uH, BackEMF=4.65V @ 9,993rpm
 V_IMOT vbat mot_in DC 0 ; 0V ammeter for exact winding current I(V_IMOT)
 L_MOT  mot_in mot_mid 450u
 R_MOT  mot_mid mot_emf 0.400
@@ -30,7 +32,7 @@ V_EMF  mot_emf drain PWL(0 0 0.5m 0 4.0m 4.65 10m 4.65)
 D_FLY  drain vbat D_SB340
 M_FET  drain gate 0 0 M_2SK4017
 
-* Rev 5.0 0-JPY Back-EMF Virtual Barometer Divider (2x spare 10k E1 resistors -> CH32X035 PB2 ADC)
+* Rev 5.2 1% Metal-Film Back-EMF Virtual Barometer Divider (R18/R19=10k±1% -> CH32X035 PC0/A10)
 R_BEMF1 drain adc_bemf 10k
 R_BEMF2 adc_bemf 0 10k
 C_BEMF  adc_bemf 0 1n

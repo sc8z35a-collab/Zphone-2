@@ -1,5 +1,5 @@
 {
-  "revision": "Rev 5.1 Real-3D-Verified Smooth Vaneless Volute Edition",
+  "revision": "Rev 5.2 Real-Manufacturing Zero-Defect Edition",
   "envelope_mm": {
     "width_X": 216.0,
     "length_Y": 219.2,
@@ -7,44 +7,44 @@
     "main_deck_height_Z": 64.0,
     "center_motor_dome_Z": 75.6
   },
-  "total_mass_g": 765.9,
+  "total_mass_g": 776.4,
   "center_of_gravity_mm": {
     "x": 0.07,
-    "y": -10.29,
-    "z": 32.46
+    "y": -10.14,
+    "z": 32.41
   },
-  "drive_wheel_weight_fraction": 0.8433,
+  "drive_wheel_weight_fraction": 0.8448,
   "cog_inside_stability_triangle": true,
   "all_12_viz_watertight": true,
   "all_watertight": true,
-  "total_triangles": 42162,
+  "total_triangles": 47962,
   "jlc3dp_order_pack": {
     "zip_file": "cad/jlc3dp_order_pack/SugaRoomba2_Rev5_JLC3DP_Pack.zip",
     "material_recommended": "JLC3DP SLA 9600 Resin (Matte White, General Sanding, min wall >= 1.5mm)",
     "unique_stl_files": 10,
     "total_printed_pieces": 12,
-    "total_resin_volume_cm3": 403.4,
-    "total_resin_mass_g": 463.9,
-    "estimated_fab_usd_excl_ship": 20.55,
-    "estimated_fab_jpy_excl_ship": 3082,
+    "total_resin_volume_cm3": 412.58,
+    "total_resin_mass_g": 474.5,
+    "estimated_fab_usd_excl_ship": 20.92,
+    "estimated_fab_jpy_excl_ship": 3138,
     "estimated_ocs_shipping_usd": 7.5,
     "estimated_ocs_shipping_jpy": 1125,
-    "estimated_total_usd_incl_ship": 28.05,
-    "estimated_total_jpy_incl_ship": 4208,
+    "estimated_total_usd_incl_ship": 28.42,
+    "estimated_total_jpy_incl_ship": 4263,
     "all_10_prod_watertight": true,
     "all_10_single_body": true,
     "parts": [
       {
         "file": "01_lower_chassis_unibody.stl",
         "qty": 1,
-        "role": "Main chassis, sealed under-volute duct, lower cyclone, smooth vaneless volute, Ø5.4mm silencer, battery/PCB mounts",
+        "role": "Main chassis, captive M3 hex nut traps, sealed under-volute duct, vaneless volute, \u00d85.4mm silencer, EVA groove, floating mouse sled window, optical baffles",
         "watertight": true,
         "connected_bodies": 1,
-        "triangles": 16206,
-        "volume_each_cm3": 189.27,
-        "volume_total_cm3": 189.27,
-        "resin_mass_total_g": 217.7,
-        "est_usd_subtotal": 8.25,
+        "triangles": 19734,
+        "volume_each_cm3": 192.94,
+        "volume_total_cm3": 192.94,
+        "resin_mass_total_g": 221.9,
+        "est_usd_subtotal": 8.4,
         "dims_mm": [
           216.0,
           215.0,
@@ -54,13 +54,13 @@
       {
         "file": "02_volute_lid_motor_mount.stl",
         "qty": 1,
-        "role": "Removable 4xM3 volute top lid + RS-385PH M3 split-clamp sleeve",
+        "role": "Removable 4xM3 volute top lid + RS-385PH M3 split-clamp sleeve w/ captive M3 hex nut socket",
         "watertight": true,
         "connected_bodies": 1,
-        "triangles": 2472,
-        "volume_each_cm3": 20.37,
-        "volume_total_cm3": 20.37,
-        "resin_mass_total_g": 23.4,
+        "triangles": 2516,
+        "volume_each_cm3": 20.56,
+        "volume_total_cm3": 20.56,
+        "resin_mass_total_g": 23.6,
         "est_usd_subtotal": 1.16,
         "dims_mm": [
           94.0,
@@ -74,13 +74,13 @@
         "role": "Removable 2xM3 cyclone top cap + coaxial vortex finder + clean-air return arch",
         "watertight": true,
         "connected_bodies": 1,
-        "triangles": 1256,
-        "volume_each_cm3": 11.22,
-        "volume_total_cm3": 11.22,
-        "resin_mass_total_g": 12.9,
+        "triangles": 1272,
+        "volume_each_cm3": 11.29,
+        "volume_total_cm3": 11.29,
+        "resin_mass_total_g": 13.0,
         "est_usd_subtotal": 0.77,
         "dims_mm": [
-          69.0,
+          70.4,
           63.1,
           25.2
         ]
@@ -88,14 +88,14 @@
       {
         "file": "04_removable_dust_cup.stl",
         "qty": 1,
-        "role": "Top-lift cleanable dust cup with keyed tangential intake slot",
+        "role": "Top-lift cleanable dust cup w/ keyed tangential intake & 360-deg #16 rubber-band O-ring seal groove",
         "watertight": true,
         "connected_bodies": 1,
-        "triangles": 464,
-        "volume_each_cm3": 7.95,
-        "volume_total_cm3": 7.95,
-        "resin_mass_total_g": 9.1,
-        "est_usd_subtotal": 0.63,
+        "triangles": 1208,
+        "volume_each_cm3": 8.11,
+        "volume_total_cm3": 8.11,
+        "resin_mass_total_g": 9.3,
+        "est_usd_subtotal": 0.64,
         "dims_mm": [
           47.6,
           47.6,
@@ -105,14 +105,14 @@
       {
         "file": "05_semi_open_impeller.stl",
         "qty": 1,
-        "role": "Ø76mm 9-blade semi-open backward-curved impeller (zero trapped SLA supports)",
+        "role": "\u00d876mm 9-blade semi-open backward-curved impeller w/ 2.2mm stiffened backplate, \u00d814mm hub & 2x opposing M3 set-screw bores",
         "watertight": true,
         "connected_bodies": 1,
-        "triangles": 1872,
-        "volume_each_cm3": 10.69,
-        "volume_total_cm3": 10.69,
-        "resin_mass_total_g": 12.3,
-        "est_usd_subtotal": 0.75,
+        "triangles": 2136,
+        "volume_each_cm3": 12.73,
+        "volume_total_cm3": 12.73,
+        "resin_mass_total_g": 14.6,
+        "est_usd_subtotal": 0.83,
         "dims_mm": [
           76.0,
           76.0,
@@ -122,14 +122,14 @@
       {
         "file": "06_upper_aero_canopy.stl",
         "qty": 1,
-        "role": "Flush-mating 4xM3 canopy with central RS-385PH dome (Z=34..64/76mm)",
+        "role": "Flush-mating 4xM3 canopy w/ RS-385PH dome, rear USB-ISP port & external SS-12D00G3 power switch panel",
         "watertight": true,
         "connected_bodies": 1,
-        "triangles": 3740,
-        "volume_each_cm3": 99.47,
-        "volume_total_cm3": 99.47,
-        "resin_mass_total_g": 114.4,
-        "est_usd_subtotal": 4.48,
+        "triangles": 4192,
+        "volume_each_cm3": 102.53,
+        "volume_total_cm3": 102.53,
+        "resin_mass_total_g": 117.9,
+        "est_usd_subtotal": 4.61,
         "dims_mm": [
           216.0,
           215.0,
@@ -156,7 +156,7 @@
       {
         "file": "08_drive_wheel_50mm.stl",
         "qty": 2,
-        "role": "Ø48mm SLA wheel rim (Qty 2; +1mm rubber band -> Ø50mm wheel)",
+        "role": "\u00d848mm SLA wheel rim (Qty 2; +1mm rubber band -> \u00d850mm wheel)",
         "watertight": true,
         "connected_bodies": 1,
         "triangles": 1944,
@@ -190,7 +190,7 @@
       {
         "file": "10_agitator_roller.stl",
         "qty": 1,
-        "role": "104mm ribbed front floor agitator roller on Ø3mm bamboo axle",
+        "role": "104mm ribbed front floor agitator roller on \u00d83mm bamboo axle",
         "watertight": true,
         "connected_bodies": 1,
         "triangles": 496,
@@ -210,10 +210,10 @@
     {
       "step": 1,
       "id": "01_lower_monocoque_chassis",
-      "mass_g": 217.7,
-      "triangles": 16206,
+      "mass_g": 221.9,
+      "triangles": 19734,
       "watertight": true,
-      "volume_cm3": 189.27,
+      "volume_cm3": 192.94,
       "bounds_mm": [
         [
           -108.0,
@@ -232,18 +232,18 @@
         42.5
       ],
       "centroid_mm": [
-        0.06,
+        0.08,
         -5.78,
-        16.44
+        16.45
       ]
     },
     {
       "step": 2,
       "id": "02_upper_aero_shell",
-      "mass_g": 114.4,
-      "triangles": 3740,
+      "mass_g": 117.9,
+      "triangles": 4192,
       "watertight": true,
-      "volume_cm3": 99.47,
+      "volume_cm3": 102.53,
       "bounds_mm": [
         [
           -108.0,
@@ -262,18 +262,18 @@
         41.6
       ],
       "centroid_mm": [
-        -0.0,
-        5.64,
-        57.73
+        -0.03,
+        5.86,
+        57.44
       ]
     },
     {
       "step": 3,
       "id": "03_volute_blower_housing",
-      "mass_g": 97.4,
-      "triangles": 3076,
+      "mass_g": 97.6,
+      "triangles": 3120,
       "watertight": true,
-      "volume_cm3": 42.97,
+      "volume_cm3": 43.15,
       "bounds_mm": [
         [
           -47.0,
@@ -292,18 +292,18 @@
         53.8
       ],
       "centroid_mm": [
-        0.22,
-        -25.0,
-        38.75
+        0.24,
+        -25.01,
+        38.72
       ]
     },
     {
       "step": 4,
       "id": "04_logarithmic_impeller",
-      "mass_g": 12.3,
-      "triangles": 1872,
+      "mass_g": 14.6,
+      "triangles": 2136,
       "watertight": true,
-      "volume_cm3": 10.69,
+      "volume_cm3": 12.73,
       "bounds_mm": [
         [
           -38.0,
@@ -324,37 +324,37 @@
       "centroid_mm": [
         -0.0,
         -25.0,
-        22.71
+        22.59
       ]
     },
     {
       "step": 5,
       "id": "05_pet_cyclone_chamber",
-      "mass_g": 22.0,
-      "triangles": 1720,
+      "mass_g": 22.3,
+      "triangles": 2480,
       "watertight": true,
-      "volume_cm3": 19.18,
+      "volume_cm3": 19.4,
       "bounds_mm": [
         [
-          -34.5,
+          -35.2,
           21.2,
           7.5
         ],
         [
-          34.5,
+          35.2,
           84.3,
           47.2
         ]
       ],
       "dims_mm": [
-        69.0,
+        70.4,
         63.1,
         39.7
       ],
       "centroid_mm": [
-        -0.47,
-        53.95,
-        29.25
+        -0.46,
+        54.0,
+        29.29
       ]
     },
     {
@@ -453,7 +453,7 @@
       "mass_g": 18.5,
       "triangles": 444,
       "watertight": true,
-      "volume_cm3": 9.8,
+      "volume_cm3": 9.15,
       "bounds_mm": [
         [
           -29.84,
@@ -472,18 +472,18 @@
         12.1
       ],
       "centroid_mm": [
-        -0.72,
-        -68.44,
-        50.53
+        -1.56,
+        -69.48,
+        50.44
       ]
     },
     {
       "step": 10,
       "id": "10_sensor_array",
       "mass_g": 16.0,
-      "triangles": 3480,
+      "triangles": 4232,
       "watertight": true,
-      "volume_cm3": 4.72,
+      "volume_cm3": 4.87,
       "bounds_mm": [
         [
           -63.5,
@@ -502,9 +502,9 @@
         64.53
       ],
       "centroid_mm": [
-        2.58,
-        -37.82,
-        14.54
+        3.23,
+        -34.44,
+        14.6
       ]
     },
     {
@@ -532,7 +532,7 @@
         19.0
       ],
       "centroid_mm": [
-        0.0,
+        -0.0,
         100.05,
         20.51
       ]

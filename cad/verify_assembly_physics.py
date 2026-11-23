@@ -397,14 +397,15 @@ def test_4_assembly_and_bom_parity(comps):
     with open(bom_path, encoding="utf-8") as bf:
         for row in csv.DictReader(bf):
             bom_codes.add(row["Code"].strip())
-    req_hw_codes = {"106439", "110024", "131018", "114746", "VOLCANO-NZ", "4550480354552",
-                    "DAISO-M3-PACK", "DAISO-MARBLE16", "DAISO-RUBBER", "DAISO-BAMBOO3", "SCRAP-ALCAN"}
+    req_hw_codes = {"106439", "110024", "131018", "114746", "113514", "125102", "115927", "111577",
+                    "VOLCANO-NZ", "4550480354552", "DAISO-M3-PACK", "DAISO-MARBLE16",
+                    "DAISO-RUBBER", "DAISO-BAMBOO3", "DAISO-EVA-SEAL", "SCRAP-ALCAN"}
     missing_stls = [fn for fn in stl_files if fn not in bom_codes]
     missing_hw   = sorted(req_hw_codes - bom_codes)
     bom_ok = (len(missing_stls) == 0) and (len(missing_hw) == 0)
     print(f"\n  BOM <-> STL & Mechanical Hardware 100% Parity Check:")
     print(f"    [{'PASS' if not missing_stls else 'FAIL'}] All 10/10 JLC3DP STLs present in BOM_VERIFIED_2026.csv (missing={missing_stls})")
-    print(f"    [{'PASS' if not missing_hw else 'FAIL'}] All 11/11 core hardware/fastener/caster/axle/band codes present in BOM (missing={missing_hw})")
+    print(f"    [{'PASS' if not missing_hw else 'FAIL'}] All {len(req_hw_codes)}/{len(req_hw_codes)} core hardware/fastener/caster/axle/band/EVA/EMI codes present in BOM (missing={missing_hw})")
 
     passed = all_ok and stl_ok and bom_ok
     print(f"  => Assembly & BOM/STL Parity Result: {'ALL PASS' if passed else 'FAILED'}")
@@ -420,7 +421,7 @@ def main():
 
     overall = r1["passed"] and r2["passed"] and r3["passed"] and r4["passed"]
     report = {
-        "revision": "Rev 5.0 Production-Ready Real-Hardware",
+        "revision": "Rev 5.2 Real-Manufacturing Zero-Defect Edition",
         "overall_passed": overall,
         "test_1_boolean_interference": r1,
         "test_2_clearance_audit": r2,
@@ -431,7 +432,7 @@ def main():
         json.dump(report, f, indent=2)
 
     print("\n" + "=" * 84)
-    print(f"FINAL REV 5.0 AUTOMATED MECHANICAL AUDIT: {'100% ALL TESTS PASSED!' if overall else 'ISSUES DETECTED — FIX BEFORE RELEASE!'}")
+    print(f"FINAL REV 5.2 AUTOMATED MECHANICAL AUDIT: {'100% ALL TESTS PASSED!' if overall else 'ISSUES DETECTED — FIX BEFORE RELEASE!'}")
     print(f"Report saved -> {OUT_JSON}")
     print("=" * 84)
     sys.exit(0 if overall else 1)

@@ -1,5 +1,5 @@
 {
-  "revision": "Rev 5.0 Production-Ready (1.5ms Coast Back-EMF, RS-385PH L=450uH, Ra=0.40R)",
+  "revision": "Rev 5.2 Real-Manufacturing Zero-Defect (0.10R Shunt+16x OPA1, Active-Emitter 0-Lux LEDs, 1.5ms Back-EMF)",
   "power_isolation": {
     "vbat_min_sag_V": 4.99,
     "v5v_rail_min_V": 5.0,
@@ -20,9 +20,13 @@
     "bemf_measurement_error_mV": 0.0
   },
   "bifilar_shunt_opa1": {
-    "shunt_resistance_ohm": 0.25,
-    "ripple_peak_to_peak_mV": 116.0,
-    "wall_stall_jump_ratio": 2.67
+    "shunt_resistance_ohm": 0.1,
+    "opa1_internal_pga_gain": 16,
+    "effective_sensitivity_V_per_A": 1.6,
+    "shunt_peak_stall_mV": 39.8,
+    "tc78h653_shared_gnd_safe_under_150mV": true,
+    "ripple_peak_to_peak_mV": 56.3,
+    "wall_stall_jump_ratio": 2.59
   },
   "piezo_dirt_opa2": {
     "mid_rail_V": 2.5,
@@ -30,8 +34,16 @@
     "adc_saturation_free": true
   },
   "led_photodiode_5V": {
-    "floor_decay_us": 53.6,
-    "cliff_decay_us": 447.6,
-    "contrast_ratio": 8.35
+    "mode": "Paired Active 3.0mA Emitter + Reverse-Bias Photodiode (Differential Ambient Subtraction)",
+    "dark_0lux_floor_decay_us": 45.6,
+    "dark_0lux_cliff_decay_us": 763.6,
+    "dark_0lux_contrast_ratio": 16.75,
+    "sunlight_amb_only_us": 65.6,
+    "sunlight_active_us": 27.6,
+    "sunlight_subtracted_floor_us": 47.6,
+    "sunlight_cliff_contrast_ratio": 25.22,
+    "floor_decay_us": 45.6,
+    "cliff_decay_us": 763.6,
+    "contrast_ratio": 16.75
   }
 }

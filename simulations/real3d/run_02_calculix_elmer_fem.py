@@ -48,8 +48,8 @@ def stl_to_tet_mesh(stl_path, lc_min, lc_max, order=1):
     gmsh.option.setNumber("General.Terminal", 0)
     gmsh.model.add("part")
     gmsh.merge(stl_path)
-    # Classify sharp features (40 deg) and build closed surface loop -> 3D volume
-    gmsh.model.mesh.classifySurfaces(40.0 * math.pi / 180.0, True, False, 180.0 * math.pi / 180.0)
+    # forReparametrization=True splits non-simply-connected cross-bore surfaces cleanly!
+    gmsh.model.mesh.classifySurfaces(40.0 * math.pi / 180.0, True, True, 180.0 * math.pi / 180.0)
     gmsh.model.mesh.createGeometry()
     surfs = gmsh.model.getEntities(2)
     sl = gmsh.model.geo.addSurfaceLoop([s[1] for s in surfs])
@@ -61,7 +61,8 @@ def stl_to_tet_mesh(stl_path, lc_min, lc_max, order=1):
     gmsh.option.setNumber("Mesh.Algorithm3D", 1)  # Delaunay 3D
     gmsh.option.setNumber("Mesh.ElementOrder", order)
     if order == 2:
-        gmsh.option.setNumber("Mesh.SecondOrderLinear", 1)  # Straight-sided C3D10 -> strictly positive Jacobians on STL!
+        gmsh.option.setNumber("Mesh.SecondOrderLinear", 1)  # Straight-sided C3D10 -> strictly positive Jacobians!
+    gmsh.option.setNumber("Mesh.Optimize", 1)
     gmsh.model.mesh.generate(3)
 
     ntags, coords, _ = gmsh.model.mesh.getNodes()
@@ -154,8 +155,8 @@ def run_calculix_impeller(lc_min, lc_max, rpm=12100.0, run_modal=True, order=2):
     stl = os.path.join(JLC_DIR, "05_semi_open_impeller.stl")
     nodes, elems, eltype = stl_to_tet_mesh(stl, lc_min, lc_max, order=order)
 
-    # Identify shaft bore fixed nodes: centered at (0, -25.0), r <= 1.65 mm (Ø2.45mm bore + mesh tol)
-    bore_nodes = [nid for nid, p in nodes.items() if math.hypot(p[0], p[1] + 25.0) <= 1.65]
+    # Identify shaft bore fixed nodes: centered at (0, -25.0), true Ø2.45mm bore radius = 1.225mm (<= 1.28mm)
+    bore_nodes = [nid for nid, p in nodes.items() if math.hypot(p[0], p[1] + 25.0) <= 1.28]
     assert len(bore_nodes) >= 6, f"Too few hub bore nodes found: {len(bore_nodes)}"
 
     omega = rpm * 2.0 * math.pi / 60.0

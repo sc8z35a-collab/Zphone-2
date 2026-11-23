@@ -1,4 +1,4 @@
-* Rev 5.0: 30-JPY Murata PKM13EPYH4000 Piezo + CH32X035 On-Chip OPA2 (VMID = 2.50V)
+* Rev 5.2: 30-JPY Murata PKM13EPYH4000 Piezo + CH32X035 On-Chip OPA2 (PA7/PA5/PA4, 5x around VMID=2.50V)
 V_DD v5v 0 DC 5.0
 R_B1 v5v vmid 10k
 R_B2 vmid 0 10k
@@ -10,7 +10,7 @@ V_IMP2 n2 n1   SIN(0 0.36 4200 10m 380)
 C_PZ   n2 pz_in 18n
 R_PZ   pz_in vmid 20k
 
-* CH32X035 On-Chip OPA2 Non-Inverting AC Gain = 5.0x around VMID = 2.50V
+* CH32X035 On-Chip OPA2 Non-Inverting AC Gain = 5.0x around VMID = 2.50V (2x10k||=5k, 2x10k series=20k)
 R_G2   inv2 vmid 5k
 R_F2   adc_dirt inv2 20k
 B_OPA2 adc_dirt 0 V = 2.5 + 2.45 * tanh(2e3 * (V(pz_in) - V(inv2)))

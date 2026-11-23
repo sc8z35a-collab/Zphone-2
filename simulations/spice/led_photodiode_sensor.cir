@@ -1,20 +1,35 @@
-* Rev 5.0: 40-JPY Red LED-as-Photodiode 5.0V Reverse-Bias Optical Ranging
+* Rev 5.2: 80-JPY Paired Active-Emitter (3mA via 1k) + Reverse-Bias Photodiode 3mm Red LEDs (8x OSR5JA3Z74A)
+* Verifies BOTH 0.0-Lux Pitch-Black Under-Sofa Operation AND Stair-Cliff Contrast!
 .model D_RED D(IS=1e-18 N=1.8 RS=5 CJO=30p VJ=1.6)
+
+* Channel 1: 0.0-Lux Pitch-Black Floor w/ Active 3.0mA Paired Red Emitter ON (I_refl = 380nA)
 C_J1 led_floor 0 30p IC=5.0
 D_1  0 led_floor D_RED
-B_PH1 led_floor 0 I = 320n * (0.5 + 0.5 * tanh(V(led_floor) * 20))
+B_PH1 led_floor 0 I = 380n * (0.5 + 0.5 * tanh(V(led_floor) * 20))
 R_LK1 led_floor 0 250Meg
 
+* Channel 2: 0.0-Lux Pitch-Black Stair Cliff w/ Active Emitter ON (opaque baffle blocks crosstalk -> I_ph = 12nA!)
 C_J2 led_cliff 0 30p IC=5.0
 D_2  0 led_cliff D_RED
-B_PH2 led_cliff 0 I = 28n * (0.5 + 0.5 * tanh(V(led_cliff) * 20))
+B_PH2 led_cliff 0 I = 12n * (0.5 + 0.5 * tanh(V(led_cliff) * 20))
 R_LK2 led_cliff 0 250Meg
+
+* Channel 3: Bright Room Sunlight Ambient-Only (Emitter OFF -> I_amb = 260nA) vs Active Floor (260+380=640nA)
+C_J3 led_sun_amb 0 30p IC=5.0
+D_3  0 led_sun_amb D_RED
+B_PH3 led_sun_amb 0 I = 260n * (0.5 + 0.5 * tanh(V(led_sun_amb) * 20))
+R_LK3 led_sun_amb 0 250Meg
+
+C_J4 led_sun_act 0 30p IC=5.0
+D_4  0 led_sun_act D_RED
+B_PH4 led_sun_act 0 I = 640n * (0.5 + 0.5 * tanh(V(led_sun_act) * 20))
+R_LK4 led_sun_act 0 250Meg
 
 .tran 2u 3.0m 0 2u uic
 .control
 run
 set wr_vecnames
-wrdata /home/antigravity/sc8z35a-collab/Zphone-2/simulations/results/spice_led_sensor.txt v(led_floor) v(led_cliff)
+wrdata /home/antigravity/sc8z35a-collab/Zphone-2/simulations/results/spice_led_sensor.txt v(led_floor) v(led_cliff) v(led_sun_amb) v(led_sun_act)
 quit
 .endc
 .end

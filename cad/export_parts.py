@@ -29,12 +29,12 @@ for d in (STL_DIR, AUDIT_DIR, JLC_DIR, VIEWER_DIR):
 # 10 Independent JLC3DP SLA 9600 Resin Production STLs (NO runners, >=1.5-2.0mm walls!)
 # (scad_part_id, output_filename, order_qty, role)
 JLC_PARTS = [
-    ("jlc_01_lower_chassis_unibody",  "01_lower_chassis_unibody.stl",  1, "Main chassis, sealed under-volute duct, lower cyclone, smooth vaneless volute, Ø5.4mm silencer, battery/PCB mounts"),
-    ("jlc_02_volute_lid_motor_mount", "02_volute_lid_motor_mount.stl", 1, "Removable 4xM3 volute top lid + RS-385PH M3 split-clamp sleeve"),
+    ("jlc_01_lower_chassis_unibody",  "01_lower_chassis_unibody.stl",  1, "Main chassis, captive M3 hex nut traps, sealed under-volute duct, vaneless volute, Ø5.4mm silencer, EVA groove, floating mouse sled window, optical baffles"),
+    ("jlc_02_volute_lid_motor_mount", "02_volute_lid_motor_mount.stl", 1, "Removable 4xM3 volute top lid + RS-385PH M3 split-clamp sleeve w/ captive M3 hex nut socket"),
     ("jlc_03_cyclone_cap_downcomer",  "03_cyclone_cap_downcomer.stl",  1, "Removable 2xM3 cyclone top cap + coaxial vortex finder + clean-air return arch"),
-    ("jlc_04_removable_dust_cup",     "04_removable_dust_cup.stl",     1, "Top-lift cleanable dust cup with keyed tangential intake slot"),
-    ("jlc_05_semi_open_impeller",     "05_semi_open_impeller.stl",     1, "Ø76mm 9-blade semi-open backward-curved impeller (zero trapped SLA supports)"),
-    ("jlc_06_upper_aero_canopy",      "06_upper_aero_canopy.stl",      1, "Flush-mating 4xM3 canopy with central RS-385PH dome (Z=34..64/76mm)"),
+    ("jlc_04_removable_dust_cup",     "04_removable_dust_cup.stl",     1, "Top-lift cleanable dust cup w/ keyed tangential intake & 360-deg #16 rubber-band O-ring seal groove"),
+    ("jlc_05_semi_open_impeller",     "05_semi_open_impeller.stl",     1, "Ø76mm 9-blade semi-open backward-curved impeller w/ 2.2mm stiffened backplate, Ø14mm hub & 2x opposing M3 set-screw bores"),
+    ("jlc_06_upper_aero_canopy",      "06_upper_aero_canopy.stl",      1, "Flush-mating 4xM3 canopy w/ RS-385PH dome, rear USB-ISP port & external SS-12D00G3 power switch panel"),
     ("jlc_07_front_bumper",           "07_front_bumper.stl",           1, "Guided floating D-front bumper with twin slide bars"),
     ("jlc_08_drive_wheel_50mm",       "08_drive_wheel_50mm.stl",       2, "Ø48mm SLA wheel rim (Qty 2; +1mm rubber band -> Ø50mm wheel)"),
     ("jlc_09_motor_swing_arm",        "09_motor_swing_arm.stl",        2, "Rigid M3-pivoted PWN10EB12CB motor swing-arm (Qty 2; rubber-band tensioned)"),
@@ -208,7 +208,7 @@ def main():
     inside_triangle = (abs(cog[0]) < 15.0) and (-88.0 < cog[1] < 2.0)
 
     summary = {
-        "revision": "Rev 5.0 Production-Ready Real-Hardware",
+        "revision": "Rev 5.2 Real-Manufacturing Zero-Defect Edition",
         "envelope_mm": {
             "width_X": round(float(overall_dims[0]), 2),
             "length_Y": round(float(overall_dims[1]), 2),

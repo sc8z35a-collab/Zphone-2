@@ -1,14 +1,16 @@
-* Rev 5.0: 0-JPY 0.25R Salvaged Bifilar Copper Shunt + CH32X035 On-Chip OPA1 (Gain=13x E1 10k-only)
+* Rev 5.2: 0-JPY 0.10R Bifilar Copper Shunt + CH32X035 Internal 16x OPA1 PGA (PB0->PB5/A9, 1.60 V/A!)
+* Keeps V_shunt <= 0.15V @ 1.5A stall -> 100% safe for AE-TC78H653FTG shared logic/motor GND (-0.3V abs max)!
 V_DD v5v 0 DC 5.0
 
 * PWN10EB12CB Drive Motor Current @ 6.0V: Cruise 0.14A + 36mApp ripple -> Wall Stall 0.38A at t=30ms
 I_DRIVE 0 shunt_n PWL(0 0.14 29.8m 0.14 30.2m 0.38 60m 0.38)
 I_RIP   0 shunt_n SIN(0 0.018 165 0 0)
-R_SHUNT shunt_n 0 0.25 ; 0-JPY bifilar copper strand from salvaged Daiso mouse cable
+R_SHUNT shunt_n 0 0.10 ; Rev 5.2 0.10-ohm bifilar copper strand (40% of 0.25R -> 2.5x lower GND bounce!)
 
-* CH32X035 On-Chip OPA1 (5V Rail-to-Rail, E1 10k-only: Rf=30k, Rg=2.5k -> G=13x)
-R_G   inv_n 0 2.5k
-R_F   adc_shunt inv_n 30k
+* CH32X035 On-Chip OPA1 Internal 16x PGA (CHN_PGA_16xIN, FB_ON -> ZERO external resistors!)
+* Modeled as exact internal R_f/R_g = 15:1 feedback network around rail-to-rail OPA1 core
+R_G   inv_n 0 1k
+R_F   adc_shunt inv_n 15k
 B_OPA adc_shunt 0 V = 2.5 + 2.45 * tanh(2e3 * (V(shunt_n) - V(inv_n)))
 C_FILT adc_shunt 0 10n
 

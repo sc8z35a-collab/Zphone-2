@@ -1,5 +1,5 @@
 {
-  "revision": "Rev 5.1",
+  "revision": "Rev 5.2",
   "voxel_2level_convergence": {
     "coarse": {
       "pitch_mm": 1.0,
@@ -10,7 +10,7 @@
       "waypoints_connected": 13,
       "waypoints_total": 13,
       "bay_leaks": 0,
-      "sealed_air_vol_cm3": 155.06
+      "sealed_air_vol_cm3": 154.71
     },
     "fine": {
       "pitch_mm": 0.85,
@@ -21,9 +21,9 @@
       "waypoints_connected": 13,
       "waypoints_total": 13,
       "bay_leaks": 0,
-      "sealed_air_vol_cm3": 151.86
+      "sealed_air_vol_cm3": 151.55
     },
-    "air_volume_diff_pct": 2.11,
+    "air_volume_diff_pct": 2.09,
     "converged_under_5pct": true
   },
   "ngspice_monte_carlo_200": {

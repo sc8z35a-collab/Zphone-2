@@ -1,15 +1,15 @@
 {
-  "revision": "Rev 5.1",
+  "revision": "Rev 5.2",
   "solver": "MuJoCo 4.0.1 (3D Rigid-Body Contact, Coulomb Friction mu=0.82)",
-  "robot_mass_g": 766.5,
+  "robot_mass_g": 785.1,
   "ground_clearance_mm": 5.5,
   "convergence_2level": {
     "coarse_dt_ms": 2.0,
     "coarse_vx_ms": 0.2714,
-    "coarse_wheel_load_pct": 84.33,
+    "coarse_wheel_load_pct": 84.52,
     "fine_dt_ms": 0.5,
     "fine_vx_ms": 0.2714,
-    "fine_wheel_load_pct": 84.33,
+    "fine_wheel_load_pct": 84.52,
     "vx_diff_pct": 0.0,
     "wheel_load_diff_pct": 0.0,
     "converged_under_5pct": true
@@ -19,28 +19,28 @@
       "step_mm": 3.0,
       "ramp_deg": 90.0,
       "climbed": true,
-      "max_x_m": 0.9847,
+      "max_x_m": 0.9843,
       "final_z_mm": 2.95
     },
     {
       "step_mm": 4.0,
       "ramp_deg": 90.0,
       "climbed": true,
-      "max_x_m": 0.98,
+      "max_x_m": 0.9796,
       "final_z_mm": 3.95
     },
     {
       "step_mm": 5.0,
       "ramp_deg": 90.0,
       "climbed": true,
-      "max_x_m": 0.974,
+      "max_x_m": 0.9731,
       "final_z_mm": 4.95
     },
     {
       "step_mm": 6.0,
       "ramp_deg": 90.0,
       "climbed": false,
-      "max_x_m": 0.188,
+      "max_x_m": 0.1877,
       "final_z_mm": 0.19
     }
   ],
@@ -49,74 +49,74 @@
       "step_mm": 3.0,
       "ramp_deg": 20.0,
       "climbed": true,
-      "max_x_m": 1.054,
+      "max_x_m": 1.0538,
       "final_z_mm": 2.95
     },
     {
       "step_mm": 5.0,
       "ramp_deg": 20.0,
       "climbed": true,
-      "max_x_m": 1.048,
+      "max_x_m": 1.0481,
       "final_z_mm": 4.95
     },
     {
       "step_mm": 6.5,
       "ramp_deg": 20.0,
       "climbed": false,
-      "max_x_m": 0.2004,
+      "max_x_m": 0.2003,
       "final_z_mm": 0.43
     },
     {
       "step_mm": 8.0,
       "ramp_deg": 20.0,
       "climbed": false,
-      "max_x_m": 0.1988,
-      "final_z_mm": 0.37
+      "max_x_m": 0.1987,
+      "final_z_mm": 0.34
     }
   ],
   "step_5mm_90deg_and_20deg_passed": true,
   "slope_climb_sweep": [
     {
       "slope_deg": 10.0,
-      "steady_vx_ms": 0.2606,
+      "steady_vx_ms": 0.2587,
       "climbed": true,
       "peak_tau_mNm": 76.0
     },
     {
       "slope_deg": 15.0,
-      "steady_vx_ms": 0.2219,
+      "steady_vx_ms": 0.2191,
       "climbed": true,
       "peak_tau_mNm": 76.0
     },
     {
       "slope_deg": 20.0,
-      "steady_vx_ms": 0.1834,
+      "steady_vx_ms": 0.1797,
       "climbed": true,
       "peak_tau_mNm": 76.0
     },
     {
       "slope_deg": 22.0,
-      "steady_vx_ms": 0.1682,
+      "steady_vx_ms": 0.1641,
       "climbed": true,
       "peak_tau_mNm": 76.0
     },
     {
       "slope_deg": 25.0,
-      "steady_vx_ms": -0.0566,
+      "steady_vx_ms": -0.0895,
       "climbed": false,
       "peak_tau_mNm": 76.0
     },
     {
       "slope_deg": 30.0,
-      "steady_vx_ms": -1.1531,
+      "steady_vx_ms": -1.1487,
       "climbed": false,
       "peak_tau_mNm": 76.0
     }
   ],
   "wall_bumper_impact": {
-    "max_bumper_travel_mm": 2.302,
+    "max_bumper_travel_mm": 2.348,
     "microswitch_trigger_ms": 950.0,
-    "stall_torque_mNm": 65.75,
+    "stall_torque_mNm": 66.29,
     "under_rubber_slip_cap": true
   }
 }

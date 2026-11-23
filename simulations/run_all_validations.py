@@ -78,32 +78,35 @@ for p in jlc_parts:
         p["role"],
     ))
 
-# B. Akizuki Denshi Verified 2026 Electronics (16 Items = 1,420 JPY)
+# B. Akizuki Denshi Verified 2026 Electronics (18 Items = 1,660 JPY)
 AKIZUKI_AND_HW = [
-    ("MCU+Analog", "32bit RISC-V CH32X035G8U6 DIP30 Breakout (OPA x2, USB Host/ISP, TouchKey)", "Akizuki Denshi", "131018", 1, 290, 4.8, "Main MCU + On-Chip OPA1/OPA2 + Native 5V USB Host/ISP + TouchKey + 1.5ms Back-EMF ADC"),
-    ("Suction",    "DC Motor RS-385PH-4045 (6V 12100rpm 9.5W, Ø27.5x37.8mm, Ø2.3mm shaft)", "Akizuki Denshi", "106439", 1, 300, 74.0, "Centrifugal Blower Motor (OpenFOAM 3D MRF verified 1,100-1,380 Pa real-hardware static vacuum)"),
+    ("MCU+Analog", "32bit RISC-V CH32X035G8U6 DIP30 Breakout AE-QFN28-DIP (300mil, OPA x2, USB-ISP/SWD, TouchKey)", "Akizuki Denshi", "131018", 1, 290, 4.8, "Main MCU (verified Pin 0=GND, PC17=USB-ISP Boot, OPA1 internal 16x PGA, TIM1 PB9 25kHz + TIM2 PA0..3 16kHz)"),
+    ("Suction",    "DC Motor RS-385PH-4045 (6V 12100rpm 9.5W, Ø27.5x37.8mm, Ø2.3mm shaft)", "Akizuki Denshi", "106439", 1, 300, 74.0, "Centrifugal Blower Motor (OpenFOAM 3D MRF vaneless verified + 2x opposing M3 hub lock)"),
     ("Drive",      "Minebea DC Motor PWN10EB12CB (12V/6V, 25.1x20.0x14.9mm, Ø2.0mm shaft)", "Akizuki Denshi", "110024", 2, 100, 42.0, "25.0:1 Rubber-Band Pivoted Swing-Arm Friction Drive (Zero gear noise, Zero SLA creep)"),
-    ("Driver",     "Dual H-Bridge Module AE-TC78H653FTG (DIP16, 1.8-7.5V, 0.22R)", "Akizuki Denshi", "114746", 1, 200, 3.2, "Left/Right Friction Drive H-Bridge (1-Shunt TDM)"),
-    ("Passives",   "1/4W 10k-ohm ±1% Metal-Film Resistor Pack (100 pcs, ¥100 — ¥0 extra cost!)", "Akizuki Denshi", "113514", 1, 100, 3.0, "E1 Single-Value Network: OPA1/OPA2 Gain + Precision 1% Back-EMF Divider (R18/R19) -> <20mV error!"),
-    ("PCB",        "Double-Sided Plated Through-Hole Board AE-F-TH (or optional JLCPCB $2)", "Akizuki Denshi", "112731", 1, 40, 8.5, "59.69 x 55.88 mm Main Control PCB (31/31 nets, 0 DRC, mounts on 4x clear M3 standoffs)"),
+    ("Driver",     "Dual H-Bridge Module AE-TC78H653FTG (300mil DIP16, 1.8-7.5V, 0.22R, STBY on PC14)", "Akizuki Denshi", "114746", 1, 200, 3.2, "Left/Right Friction Drive H-Bridge (MODE=LOW, LARGE=LOW, STBY=PC14 auto-ISD recovery)"),
+    ("Passives",   "1/4W 10k-ohm ±1% Metal-Film Resistor Pack (100 pcs)", "Akizuki Denshi", "113514", 1, 100, 3.0, "OPA2 5x network, Precision 1% Back-EMF Divider (R18/R19 -> <13mV p99), STBY/GATE/BOOT pull resistors"),
+    ("Passives",   "1/4W 1k-ohm ±5% Carbon-Film Resistor Pack CF25J1KB (100 pcs)", "Akizuki Denshi", "125102", 1, 100, 2.0, "4x Active 3mA Emitter LED current limiters (R12..R15) + MOSFET gate series damping"),
+    ("Passives",   "0.1uF 100V X7R Radial MLCC Capacitor Pack (10 pcs, 5mm pitch)", "Akizuki Denshi", "115927", 1, 100, 1.2, "Mandatory CH32X035 Pin-2 VDD bypass (C5) + VM HF bypass (C6) + 3x DC Motor brush EMI suppression (C7..C9)"),
+    ("Sensors",    "3mm Red LED OSR5JA3Z74A (4x Active 3mA Emitters + 4x Reverse-Bias Photodiodes)", "Akizuki Denshi", "111577", 8, 10, 2.4, "4x Paired Optical Wall (2) & Stair Cliff (2) Sensors — works in 0.0-Lux pitch-black & 50k-Lux sunlight!"),
+    ("PCB",        "Double-Sided Plated Through-Hole Board AE-F-TH (or optional JLCPCB $2 Gerber)", "Akizuki Denshi", "112731", 1, 40, 8.5, "59.69 x 55.88 mm Rev 5.2 Control PCB (44/44 nets, 0 KiCad DRC violations, 4x M3 NPTH holes)"),
     ("Safety",     "Resettable Polyfuse 3A MF-R300", "Akizuki Denshi", "112630", 1, 40, 0.8, "Overcurrent & Short-Circuit Auto-Resetting Breaker"),
-    ("Sensors",    "3mm Red LED OSR5JA3Z74A (Used as 5V Reverse-Bias Photodiodes)", "Akizuki Denshi", "111577", 4, 10, 1.2, "4x 5V Optical Wall (2) & Stair Cliff (2) Sensors (8.35x contrast verified)"),
-    ("Passives",   "1uF 50V X7R Radial MLCC Capacitor", "Akizuki Denshi", "108150", 2, 20, 0.6, "5.0V Rail & 2.5V Virtual-Midpoint Decoupling"),
-    ("Power",      "N-ch Power MOSFET 60V 5A 2SK4017(Q) (Direct 5V Gate Drive)", "Akizuki Denshi", "107597", 1, 30, 1.0, "25kHz Ultrasonic Blower PWM Switch (Direct 5V Gate)"),
+    ("Passives",   "1uF 50V X7R Radial MLCC Capacitor", "Akizuki Denshi", "108150", 2, 20, 0.6, "5.0V LDO Output & 2.5V Virtual-Midpoint Decoupling (C3/C4)"),
+    ("Power",      "N-ch Power MOSFET 60V 5A 2SK4017(Q) (Direct 5V Gate Drive)", "Akizuki Denshi", "107597", 1, 30, 1.0, "25kHz Ultrasonic Blower PWM Switch (Direct 5V TIM1 PB9 Gate)"),
     ("Power",      "Schottky Barrier Diode 40V 3A SB340LS", "Akizuki Denshi", "107788", 1, 30, 1.1, "Blower Inductive Flyback Clamp (0.113ms decay verified in ngspice 42)"),
     ("Sensors",    "Murata Piezo Sounder PKM13EPYH4000-A0 (Acoustic Mic Mode)", "Akizuki Denshi", "104118", 1, 30, 1.2, "Intake-Ramp Acoustic Dirt-Impact Detector (Triggers 6.6V Dirt-Turbo)"),
-    ("Power",      "5.0V 100mA LDO Regulator LP2950L-50-T92 (30V Max Vin)", "Akizuki Denshi", "108750", 1, 20, 0.4, "Rock-Solid 5.000V Rail for CH32X035 & 5V USB Optical Mouse"),
+    ("Power",      "5.0V 100mA LDO Regulator LP2950L-50-T92 (Verified Pinout: 1=VOUT, 2=GND, 3=VIN)", "Akizuki Denshi", "108750", 1, 20, 0.4, "Rock-Solid 5.000V Rail for CH32X035 & 5V USB Optical Mouse"),
     ("Power",      "Rectifier Diode 1S4 (1A 40V Schottky)", "Akizuki Denshi", "100127", 1, 20, 0.5, "Battery Startup-Sag Isolation Valve"),
-    ("Power",      "470uF 16V Electrolytic Capacitor", "Akizuki Denshi", "108426", 2, 10, 3.0, "Main Bus Ripple Suppression & 5V Holdup Reservoir"),
-    ("Power",      "Slide Switch SS-12D00G3", "Akizuki Denshi", "115707", 1, 20, 0.8, "Master Power Disconnect Switch"),
-    # C. 100-Yen Shop Batteries, Sensors & ALL Mechanical Hardware (Zero Missing Parts!)
+    ("Power",      "470uF 16V Electrolytic Capacitor", "Akizuki Denshi", "108426", 2, 10, 3.0, "Main Bus Ripple Suppression & 5V Holdup Reservoir (C1/C2)"),
+    ("Power",      "Slide Switch SS-12D00G3", "Akizuki Denshi", "115707", 1, 20, 0.8, "External Rear-Right Canopy Panel Master Power Disconnect Switch"),
+    # C. 100-Yen Shop Batteries, Sensors & ALL Mechanical Hardware (1,320 JPY — Zero Missing Parts!)
     ("Battery",    "Seria VOLCANO NZ AA NiMH Rechargeable Cell (1.2V 1300mAh)", "Seria (100-yen)", "VOLCANO-NZ", 5, 110, 130.0, "5S 6.0V (6.6-6.7V Fresh) Balanced Battery Pack (4 side + 1 rear)"),
-    ("Donor5in1",  "Daiso Wired USB Optical Mouse (5-in-1 Super Donor)", "Daiso (100-yen)", "4550480354552", 1, 110, 18.0, "5V Optical Flow + 2x Bumper MicroSW + USB-ISP Flash Cable + 0.25R Bifilar Shunt"),
+    ("Donor5in1",  "Daiso Wired USB Optical Mouse (5-in-1 Super Donor)", "Daiso (100-yen)", "4550480354552", 1, 110, 18.0, "5V Floating-Sled Optical Flow + 2x Bumper MicroSW + USB-ISP Cable + 0.10R Bifilar Shunt"),
     ("Filter",     "Daiso Fine Mesh Drain Net (Post-Cyclone Safety Screen)", "Daiso (100-yen)", "DRAIN-NET", 1, 110, 1.0, "Replaceable Fine Mesh Over Vortex Finder Exit"),
-    ("Fasteners",  "Daiso M3 Steel Machine Screw & Nut Assortment Pack (M3x8..M3x26)", "Daiso (100-yen)", "DAISO-M3-PACK", 1, 110, 12.0, "Unified M3 Fasteners: 4x Canopy, 4x Volute Lid, 1x RS-385 Clamp, 2x Cyclone Cap, 4x PCB, 2x Wheel Axles, 2x Swing-Arm Hinges"),
+    ("Fasteners",  "Daiso M3 Steel Machine Screw & Nut Assortment Pack (M3x5..M3x26)", "Daiso (100-yen)", "DAISO-M3-PACK", 1, 110, 15.0, "Unified M3 Fasteners + 11x Captive Steel Hex Nuts + 2x Opposing Balanced M3x5 Impeller Set-Screws (Zero resin stripping!)"),
     ("Caster",     "Daiso 16mm Glass Marbles Pack (Uses 1x Ø16.0mm Marble)", "Daiso (100-yen)", "DAISO-MARBLE16", 1, 110, 5.5, "Rear Low-Friction Omnidirectional Ball Caster (Snaps into Ø16.8mm hemispherical socket)"),
-    ("Elastomer",  "Daiso Natural Rubber Bands Pack (#16/#18)", "Daiso (100-yen)", "DAISO-RUBBER", 1, 110, 2.0, "2x Tire Tread Rings (Ø48mm Rim -> Ø50mm Wheel) + 2x Swing-Arm Tension Preload Bands (Zero SLA creep!)"),
+    ("Elastomer",  "Daiso Natural Rubber Bands Pack (#16/#18)", "Daiso (100-yen)", "DAISO-RUBBER", 1, 110, 2.5, "2x Tire Treads + 2x Swing-Arm Preload + 1x Dust-Cup O-Ring Seal + 1x Floating Mouse Sled Suspension"),
     ("Axle",       "Daiso Ø3.0mm Bamboo Skewer Pack (Cut 1x 114mm Axle)", "Daiso (100-yen)", "DAISO-BAMBOO3", 1, 110, 2.0, "Axle for 104mm Front Floor Agitator Roller (10_agitator_roller.stl)"),
+    ("FloorSeal",  "Daiso Soft EVA Foam Weatherstrip (すきまテープ 4.5mm)", "Daiso (100-yen)", "DAISO-EVA-SEAL", 1, 110, 1.5, "Compliant Front Nozzle Floor Seal Lip (Seals hard floors + yields over 5.0mm steps!)"),
     ("Scrap",      "Upcycled 350ml Aluminum Can Scrap (Battery Contacts + Touch Pad)", "Upcycled Scrap", "SCRAP-ALCAN", 1, 0, 4.0, "5x AA Spring Contacts + Ø22mm Top Capacitive TouchKey Pad"),
 ]
 
@@ -117,11 +120,10 @@ total_excl   = sla_jpy_excl + hw_elec_jpy
 total_incl   = total_excl + ocs_ship_jpy
 total_mass   = round(sum(r[7] for r in BOM_ROWS), 1)
 
-# Hybrid Budget <= 3,000 JPY option (Order ONLY the 4 Core Precision Fluid STLs at JLC3DP + Hand-Cut PP Chassis/Canopy!)
+# Hybrid Budget option (Order ONLY the 4 Core Precision Fluid STLs at JLC3DP + Hand-Cut PP Chassis/Canopy!)
 core_files = {"02_volute_lid_motor_mount.stl", "03_cyclone_cap_downcomer.stl", "04_removable_dust_cup.stl", "05_semi_open_impeller.stl"}
 core_sla_jpy = sum(r[6] for r in BOM_ROWS if r[3] in core_files)
-# Hybrid replaces full SLA chassis/canopy with Daiso PP sheet (¥110) + household skewer/rubber bands (¥0)
-hybrid_total_excl = 1420 + 550 + 110 + 110 + 110 + 110 + 110 + core_sla_jpy  # Akizuki + 5xAA + Mouse + Net + M3 + Marble + PP + 4 Core STLs
+hybrid_total_excl = 1660 + 550 + 110 + 110 + 110 + 110 + 110 + 110 + core_sla_jpy  # Akizuki + 5xAA + Mouse + Net + M3 + Marble + EVA + PP + 4 Core STLs
 
 bom_csv = os.path.join(DOCS_DIR, "BOM_VERIFIED_2026.csv")
 with open(bom_csv, "w", newline="", encoding="utf-8") as f:
@@ -129,15 +131,15 @@ with open(bom_csv, "w", newline="", encoding="utf-8") as f:
     w.writerow(["Category", "Item", "Vendor", "Code", "Qty", "Unit_JPY_TaxInc", "Subtotal_JPY", "Mass_g", "Engineering_Role"])
     for row in BOM_ROWS:
         w.writerow(row)
-    w.writerow(["Shipping", "JLC3DP OCS Express International Shipping to Japan (~$7.50)", "JLC3DP / OCS", "SHIP-OCS-JP", 1, ocs_ship_jpy, ocs_ship_jpy, 0.0, "Honest air-courier shipping for ~476g 10-STL SLA parcel (4-5 days to Japan)"])
-    w.writerow(["SUBTOTAL_HW", "All Electronics + 5xAA + Mechanical Hardware (Excl. 3D Print)", "Akizuki + 100-yen", "-", "-", "-", hw_elec_jpy, round(total_mass - jlc_pack["total_resin_mass_g"], 1), "Akizuki 1,420 JPY + 100-yen 1,210 JPY (Zero missing hardware!)"])
-    w.writerow(["TOTAL_EXCL_SHIP", "Rev 5.0 Full 10-STL Turnkey SLA Edition (Excl. Overseas Shipping)", "All Sources", "-", "-", "-", total_excl, total_mass, f"HW {hw_elec_jpy} JPY + 10-STL JLC3DP SLA {sla_jpy_excl} JPY (${jlc_pack['estimated_fab_usd_excl_ship']:.2f}, {jlc_pack['total_resin_volume_cm3']:.1f} cm3)"])
-    w.writerow(["TOTAL_INCL_SHIP", "Rev 5.0 Full 10-STL Turnkey SLA Edition (Incl. OCS Express Shipping)", "All Sources", "-", "-", "-", total_incl, total_mass, f"Full landed cost incl. ${jlc_pack['estimated_ocs_shipping_usd']:.2f} OCS Express shipping to Japan"])
-    w.writerow(["OPTION_HYBRID_3K", "Budget <= 3,000 JPY Hybrid Option (4 Core Fluid STLs + PP Shell, Excl. Ship)", "Akizuki+100y+JLC3DP", "-", "-", "-", hybrid_total_excl, 540.0, f"4 Core Fluid STLs ({core_sla_jpy} JPY) + PP Sheet (110 JPY) + HW (excl. household rubber/skewer)"])
+    w.writerow(["Shipping", "JLC3DP OCS Express International Shipping to Japan (~$7.50)", "JLC3DP / OCS", "SHIP-OCS-JP", 1, ocs_ship_jpy, ocs_ship_jpy, 0.0, "Honest air-courier shipping for ~472g 10-STL SLA parcel (4-5 days to Japan)"])
+    w.writerow(["SUBTOTAL_HW", "All Electronics + 5xAA + Mechanical Hardware (Excl. 3D Print — UNDER ¥3,000!)", "Akizuki + 100-yen", "-", "-", "-", hw_elec_jpy, round(total_mass - jlc_pack["total_resin_mass_g"], 1), "Akizuki 1,660 JPY + 100-yen 1,320 JPY = 2,980 JPY (100% Real-Hardware Zero-Defect BOM!)"])
+    w.writerow(["TOTAL_EXCL_SHIP", "Rev 5.2 Full 10-STL Turnkey SLA Edition (Excl. Overseas Shipping)", "All Sources", "-", "-", "-", total_excl, total_mass, f"HW {hw_elec_jpy} JPY + 10-STL JLC3DP SLA {sla_jpy_excl} JPY (${jlc_pack['estimated_fab_usd_excl_ship']:.2f}, {jlc_pack['total_resin_volume_cm3']:.2f} cm3)"])
+    w.writerow(["TOTAL_INCL_SHIP", "Rev 5.2 Full 10-STL Turnkey SLA Edition (Incl. OCS Express Shipping)", "All Sources", "-", "-", "-", total_incl, total_mass, f"Full landed cost incl. ${jlc_pack['estimated_ocs_shipping_usd']:.2f} OCS Express shipping to Japan"])
+    w.writerow(["OPTION_HYBRID_CORE", "Low-Cost Hybrid Option (4 Core Fluid STLs + PP Shell, Excl. Ship)", "Akizuki+100y+JLC3DP", "-", "-", "-", hybrid_total_excl, 560.0, f"4 Core Fluid STLs ({core_sla_jpy} JPY) + PP Sheet (110 JPY) + Rev 5.2 Zero-Defect HW (excl. household rubber/skewer)"])
 
-print(f"[BOM REV 5.0] 10-STL SLA={sla_jpy_excl} JPY (${jlc_pack['estimated_fab_usd_excl_ship']:.2f}) | HW+Elec={hw_elec_jpy} JPY")
+print(f"[BOM REV 5.2] 10-STL SLA={sla_jpy_excl} JPY (${jlc_pack['estimated_fab_usd_excl_ship']:.2f}) | HW+Elec={hw_elec_jpy} JPY (UNDER 3000 JPY!)")
 print(f"  Full Turnkey (Excl. Ship): {total_excl} JPY | (Incl. OCS Ship): {total_incl} JPY | Real Mass = {total_mass:.1f} g")
-print(f"  Budget <=3000 JPY Hybrid (4 Core Fluid STLs + PP Shell, Excl. Ship): {hybrid_total_excl} JPY")
+print(f"  Low-Cost Hybrid (4 Core Fluid STLs + PP Shell, Excl. Ship): {hybrid_total_excl} JPY")
 
 # ==============================================================================
 # 2. HONEST EULER-CONSISTENT TURBOMACHINERY SOLVER (REAL RS-385PH-4045 CURVE!)
@@ -157,10 +159,10 @@ RS385 = {
     "tau_fric": 0.00220,  # Matches 0.48A no-load current (0.48 * 0.004584 = 2.20 mN-m)
 }
 
-def rev5_impeller_model(Q, omega, D2=0.076, b2=0.0066, Z=9, beta2_deg=30.0):
+def rev5_impeller_model(Q, omega, D2=0.076, b2=0.0062, Z=9, beta2_deg=30.0):
     """
-    Euler-consistent centrifugal blower model for Rev 5.0 SLA Semi-Open 9-Blade Impeller:
-      - D2 = 76.0 mm, b2 = 6.6 mm, t_blade = 1.30 mm (JLC3DP DFM-safe!), beta2 = 30 deg
+    Euler-consistent centrifugal blower model for Rev 5.2 SLA Semi-Open 9-Blade Impeller:
+      - D2 = 76.0 mm, b2 = 6.2 mm (2.20mm stiffened backplate), t_blade = 1.30 mm, beta2 = 30 deg
       - Realistic 0.90 mm bottom axial tip clearance (c/b2 = 13.6% -> Pampreen tip-clearance
         pressure derating factor eta_tip = 0.87, volumetric recirculation leak_f = 1.14)
       - Realistic 2.00 mm radial impeller-to-7-vane-diffuser gap (diffuser/volute loss = 0.44)

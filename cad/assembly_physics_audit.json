@@ -1,5 +1,5 @@
 {
-  "revision": "Rev 5.0 Production-Ready Real-Hardware",
+  "revision": "Rev 5.2 Real-Manufacturing Zero-Defect Edition",
   "overall_passed": true,
   "test_1_boolean_interference": {
     "pairs_checked": 105,
@@ -68,7 +68,7 @@
       {
         "category": "Rotating",
         "interface": "Drive Wheels <-> Upper Canopy Interior",
-        "measured_mm": 5.52,
+        "measured_mm": 5.53,
         "min_required_mm": 2.0,
         "passed": true,
         "note": "Wheel top 50.0 vs Canopy 62.0"
@@ -183,7 +183,7 @@
     "passed": true,
     "voxel_pitch_mm": 1.5,
     "floor_leak_columns": 0,
-    "visited_air_vol_cm3": 138.2,
+    "visited_air_vol_cm3": 137.9,
     "waypoints": [
       {
         "stage": "01_Front_Floor_Nozzle",

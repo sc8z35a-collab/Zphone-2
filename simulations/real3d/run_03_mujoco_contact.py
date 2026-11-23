@@ -25,16 +25,16 @@ ROOT    = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file
 OUT_DIR = os.path.join(ROOT, "simulations", "real3d", "results")
 os.makedirs(OUT_DIR, exist_ok=True)
 
-# Exact Rev 5.1 Real-Hardware Mechanical Constants (from cad_verification.json & Akizuki datasheets)
-TOTAL_MASS_KG    = 0.7665   # 766.5 g real compiled Rev 5.1 SLA + HW mass
+# Exact Rev 5.2 Real-Hardware Mechanical Constants (from cad_verification.json + captive nuts & EVA seal lip)
+TOTAL_MASS_KG    = 0.7851   # 785.1 g conservative Rev 5.2 SLA (472.3 g) + full installed HW mass
 WHEEL_R          = 0.0250   # Ø50.0 mm (Ø48mm SLA rim + 1mm Daiso rubber band)
 WHEEL_W          = 0.0120   # 12.0 mm width
 WHEEL_X_FWD      = 0.0060   # +6.0 mm forward of origin
 WHEEL_Y_HALF     = 0.0880   # 176.0 mm track (±88.0 mm)
 MARBLE_R         = 0.0080   # Ø16.0 mm rear glass marble
 MARBLE_X_FWD     = -0.0980  # -98.0 mm rear of origin
-COG_X_FWD        = -0.01030 # Exact Rev 5.1 CAD CoG Y = -10.30 mm -> 84.33% load on drive wheels!
-COG_Z            = 0.03244  # Exact Rev 5.1 CAD CoG Z = 32.44 mm
+COG_X_FWD        = -0.01010 # Exact Rev 5.2 CAD CoG Y = -10.10 mm -> 84.5% load on drive wheels!
+COG_Z            = 0.03244  # Exact Rev 5.2 CAD CoG Z = 32.44 mm
 
 # Real Akizuki [110024] PWN10EB12CB @ 6.0V with 25.0:1 friction drive & 85% contact eff
 OMEGA_WHEEL_NL   = (3440.0 / 25.0) * 2.0 * math.pi / 60.0  # 14.410 rad/s (0.360 m/s no-load)
@@ -290,7 +290,7 @@ def main():
     assert r_wall["max_bumper_mm"] >= 0.80, "Floating bumper failed to depress microswitch!"
 
     summary = {
-        "revision": "Rev 5.1",
+        "revision": "Rev 5.2",
         "solver": f"MuJoCo {mujoco.__version__} (3D Rigid-Body Contact, Coulomb Friction mu=0.82)",
         "robot_mass_g": round(TOTAL_MASS_KG * 1000.0, 1),
         "ground_clearance_mm": 5.5,

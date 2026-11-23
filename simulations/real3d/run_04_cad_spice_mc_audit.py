@@ -290,7 +290,7 @@ def main():
     assert zero_drc and zero_unconn and zero_fp, "KiCad DRC must have LITERAL 0 violations!"
 
     summary = {
-        "revision": "Rev 5.1",
+        "revision": "Rev 5.2",
         "voxel_2level_convergence": {
             "coarse": v_coarse, "fine": v_fine,
             "air_volume_diff_pct": round(vol_diff_pct, 2),
