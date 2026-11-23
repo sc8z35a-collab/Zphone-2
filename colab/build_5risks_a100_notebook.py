@@ -530,22 +530,24 @@ def parse_c_scalar(name):
     m = re.search(rf"{name}\s*=\s*([+-]?\d+)", tinyml_h)
     return int(m.group(1))
 
-W1 = torch.tensor(parse_c_array("TML_W1"), device=DEVICE, dtype=torch.int64).view(24, 12)
+W1_f64 = torch.tensor(parse_c_array("TML_W1"), device=DEVICE, dtype=torch.float64).view(24, 12)
 B1 = torch.tensor(parse_c_array("TML_B1"), device=DEVICE, dtype=torch.int64)
 M1_Q16 = parse_c_scalar("TML_M1_Q16")
-W2 = torch.tensor(parse_c_array("TML_W2"), device=DEVICE, dtype=torch.int64).view(16, 24)
+W2_f64 = torch.tensor(parse_c_array("TML_W2"), device=DEVICE, dtype=torch.float64).view(16, 24)
 B2 = torch.tensor(parse_c_array("TML_B2"), device=DEVICE, dtype=torch.int64)
 M2_Q16 = parse_c_scalar("TML_M2_Q16")
-W3 = torch.tensor(parse_c_array("TML_W3"), device=DEVICE, dtype=torch.int64).view(6, 16)
+W3_f64 = torch.tensor(parse_c_array("TML_W3"), device=DEVICE, dtype=torch.float64).view(6, 16)
 B3 = torch.tensor(parse_c_array("TML_B3"), device=DEVICE, dtype=torch.int64)
 
 def run_exact_int8_tinyml(feat_q7):
-    # Exact bit-for-bit Q16 fixed-point arithmetic matching suga_tinyml_predict() in C!
-    a1 = torch.clamp((feat_q7.to(torch.int64) @ W1.T) + B1, min=0)
+    # Bit-for-bit exact Q16 fixed-point arithmetic matching suga_tinyml_predict() in C!
+    # Uses A100 FP64 Tensor Cores for matmul (53-bit exact integer mantissa >> max acc 3.9e5;
+    # avoids PyTorch CUDA limitation where addmm_cuda does not support int64/Long!).
+    a1 = torch.clamp((feat_q7.to(torch.float64) @ W1_f64.T).to(torch.int64) + B1, min=0)
     h1 = torch.clamp((a1 * M1_Q16 + 32768) >> 16, max=127)
-    a2 = torch.clamp((h1 @ W2.T) + B2, min=0)
+    a2 = torch.clamp((h1.to(torch.float64) @ W2_f64.T).to(torch.int64) + B2, min=0)
     h2 = torch.clamp((a2 * M2_Q16 + 32768) >> 16, max=127)
-    logits = (h2 @ W3.T) + B3
+    logits = (h2.to(torch.float64) @ W3_f64.T).to(torch.int64) + B3
     return torch.argmax(logits, dim=1)
 
 N_SH = N_SHUNT_MC
