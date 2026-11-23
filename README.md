@@ -18,17 +18,19 @@
 1. **🖱️ ブラウザで今すぐグルグル回せる「文字ゼロ」ライブ 3D CAD ビューア（Rev 5.2 実機モデル）**  
    → 🌐 **ライブ版（GitHub Pages）**：[**https://sc8z35a-collab.github.io/Zphone-2/**](https://sc8z35a-collab.github.io/Zphone-2/)  
    → 💻 **ローカル版**：[`index.html`](index.html) または [`cad-viewer/index.html`](cad-viewer/index.html)
-2. **🏭 3Dプリント業者（JLC3DP）独立 10 パーツ＆JLCPCB 0-DRC 基板の同梱発注パック＆マニュアル**  
-   → 📦 **【これ 1 個で全部入り】オールインワン同梱 ZIP（10 STL＋0-DRC ガーバー＋PDF/STEP＋FW＋BOM＋ガイド全 24 点）**：[`release/SugaRoomba2_Rev5_2_AllInOne_Bundle.zip`](release/SugaRoomba2_Rev5_2_AllInOne_Bundle.zip)  
+2. **🏭 3Dプリント業者（JLC3DP）独立 10 パーツ＆JLCPCB 0-DRC 基板＆ビルド済バイナリの同梱発注パック**  
+   → 📦 **【これ 1 個で全部入り】オールインワン同梱 ZIP（10 STL＋0-DRC ガーバー＋実機ビルド済 `.bin/.hex/.elf`＋FW＋BOM＋ガイド全 29 点）**：[`release/SugaRoomba2_Rev5_2_AllInOne_Bundle.zip`](release/SugaRoomba2_Rev5_2_AllInOne_Bundle.zip)  
+   → ⚡ **【コンパイル不要】CH32X035G8U6 実機 RISC-V ビルド済バイナリ（Flash 48.8% / RAM 26.0%・`wchisp flash` 一発書込）**：[`firmware/prebuilt/suga_roomba_ii_rev5_3_ch32x035.bin`](firmware/prebuilt/suga_roomba_ii_rev5_3_ch32x035.bin) / [`.hex`](firmware/prebuilt/suga_roomba_ii_rev5_3_ch32x035.hex) / [`SHA256SUMS.txt`](firmware/prebuilt/SHA256SUMS.txt)  
    → 📖 注文画面クリック順マニュアル：[`docs/VENDOR_ORDERING_GUIDE.md`](docs/VENDOR_ORDERING_GUIDE.md)  
    → 📦 JLC3DP 単体 ZIP：[`cad/jlc3dp_order_pack/SugaRoomba2_Rev5_JLC3DP_Pack.zip`](cad/jlc3dp_order_pack/SugaRoomba2_Rev5_JLC3DP_Pack.zip) ／ JLCPCB 単体ガーバー ZIP（`0 DRC`）：[`kicad/outputs/SugaRoomba2_Rev5_JLCPCB_Gerbers.zip`](kicad/outputs/SugaRoomba2_Rev5_JLCPCB_Gerbers.zip)
-3. **📖 初心者でも M3 ドライバー 1 本で確実に組める完全組立ガイド（本体ハード ¥2,980 欠品ゼロ部品表つき）**  
+3. **📖 初心者でも M3 ドライバー 1 本で確実に組める完全組立ガイド（本体ハード ¥2,980 欠品ゼロ部品表＋POST LED診断表つき）**  
    → [`docs/BEGINNER_ASSEMBLY_GUIDE.md`](docs/BEGINNER_ASSEMBLY_GUIDE.md) / [`docs/BOM_VERIFIED_2026.csv`](docs/BOM_VERIFIED_2026.csv)
-4. **🚀 Google Colab A100 実 3D 物理シミュレーション＆実機検証ラボ（環境分離・4 フェーズ構成）**  
-   1D 近似を廃止し、実 3D ソルバー（**OpenFOAM v2406 / Autodesk XLB+Warp / CalculiX 2.21 / Elmer FEM / j-Wave / MuJoCo+MJX / Genesis / Ngspice 42 200回MC / KiCad CLI**）を **Google Drive 永続化・ヘッドレス描画・2 段階収束（`< 5%`）** 付きでワンクリック再現できます：
+4. **🚀 Google Colab Pro A100 実 3D 物理シミュレーション＆現実 5 大リスク極限検証ラボ（ワンクリック実行）**  
+   1D 近似を廃止し、実 3D ソルバー（**OpenFOAM v2406 / Autodesk XLB+Warp / CalculiX 2.21 / Elmer FEM / j-Wave / MuJoCo+MJX / Genesis / Ngspice 42 / KiCad CLI / PlatformIO CH32V**）を **Google Drive 永続化・ヘッドレス描画・2 段階収束（`< 5%`）** 付きでワンクリック再現できます：
 
    | Phase | 対象カテゴリ（環境分離） | 導入ソルバー（GPU 高速探索＋CPU 最終検証） | Google Colab A100 ワンクリック起動 |
    |---|---|---|---|
+   | **★ Phase 5 (NEW)** | **現実 5 大リスク極限検証＆実バイナリ証明** | **実 PlatformIO CH32V ビルド＆逆アセンブリ監査** ＋ **A100 FP64 65,536台 USBFS マウス融合** ＋ **100万世界 自動校正/INT8 TinyML** ＋ **4,096世界 SLA公差/20万ローター** ＋ **Ngspice/10万基板 POST FMEA** | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/sc8z35a-collab/Zphone-2/blob/main/colab/05_RealWorld_5Risks_A100_Extreme_Verification.ipynb) |
    | **Phase 1** | **流体 CFD・回転翼・混相流** | **OpenFOAM v2406 MPI** (`simpleFoam`+MRF+`kOmegaSST`) + **Autodesk XLB / NVIDIA Warp GPU** + PyFR | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/sc8z35a-collab/Zphone-2/blob/main/colab/01_Fluid_CFD_OpenFOAM_XLB_A100.ipynb) |
    | **Phase 2** | **構造 FEM・固有振動・3D 音響** | **CalculiX 2.21 (`C3D10`)** + **Elmer FEM (`p:2 HelmholtzSolver`)** + **j-Wave GPU** | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/sc8z35a-collab/Zphone-2/blob/main/colab/02_Struct_Acoustic_FEM_CalculiX_Elmer_A100.ipynb) |
    | **Phase 3** | **摩擦接触・段差/登坂・粉体 MPM・RL** | **MuJoCo 4.x** + **MuJoCo MJX (A100 1,024 並列)** + **Genesis GPU MPM 粉体清掃** | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/sc8z35a-collab/Zphone-2/blob/main/colab/03_Robotics_MuJoCo_MJX_Genesis_A100.ipynb) |
@@ -152,19 +154,27 @@ Zphone-2/
 │   ├── spice/*.cir                             # 4種のSPICEネットリスト
 │   └── results/                                # 基準検証グラフPNG・JSON（01〜05 & colab_01〜03）
 ├── colab/
-│   ├── 01_Fluid_CFD_OpenFOAM_XLB_A100.ipynb          # Phase 1: OpenFOAM v2406 + Autodesk XLB/Warp GPU LBM + PyFR
-│   ├── 02_Struct_Acoustic_FEM_CalculiX_Elmer_A100.ipynb # Phase 2: CalculiX C3D10 + Elmer p:2 3D音響 + j-Wave GPU
-│   ├── 03_Robotics_MuJoCo_MJX_Genesis_A100.ipynb     # Phase 3: MuJoCo + MJX 1,024並列GPU + Genesis MPM粉体清掃
-│   ├── 04_CAD_Circuit_KiCad_Audit_A100.ipynb         # Phase 4: 0.01mm干渉 + 2段階ボクセル + Ngspice 200回MC + KiCad CLI
-│   ├── build_a100_notebooks.py                       # 上記4本のA100ノートブック自動生成＆AST構文検証スクリプト
-│   ├── SugaRoomba2_AI_CFD_RL_Lab.ipynb               # TinyML 952B INT8 学習＆80mmソファ下SLAMノートブック
-│   └── build_notebook.py                             # TinyML/SLAMノートブック生成スクリプト
+│   ├── 05_RealWorld_5Risks_A100_Extreme_Verification.ipynb # ★Phase 5: 現実5大リスク A100 GPU極限検証＋実CH32X035ビルド＆逆アセンブリ監査
+│   ├── build_5risks_a100_notebook.py                       # Phase 5 A100 ノートブック自動生成＆AST構文検証スクリプト
+│   ├── 01_Fluid_CFD_OpenFOAM_XLB_A100.ipynb                # Phase 1: OpenFOAM v2406 + Autodesk XLB/Warp GPU LBM + PyFR
+│   ├── 02_Struct_Acoustic_FEM_CalculiX_Elmer_A100.ipynb    # Phase 2: CalculiX C3D10 + Elmer p:2 3D音響 + j-Wave GPU
+│   ├── 03_Robotics_MuJoCo_MJX_Genesis_A100.ipynb           # Phase 3: MuJoCo + MJX 1,024並列GPU + Genesis MPM粉体清掃
+│   ├── 04_CAD_Circuit_KiCad_Audit_A100.ipynb               # Phase 4: 0.01mm干渉 + 2段階ボクセル + Ngspice 200回MC + KiCad CLI
+│   ├── build_a100_notebooks.py                             # Phase 1〜4 A100ノートブック自動生成スクリプト
+│   ├── SugaRoomba2_AI_CFD_RL_Lab.ipynb                     # TinyML 952B INT8 学習＆80mmソファ下SLAMノートブック
+│   └── build_notebook.py                                   # TinyML/SLAMノートブック生成スクリプト
 ├── firmware/
-│   ├── suga_roomba_ii_ch32x035/                # 【Rev 5.2 標準】CH32X035G8U6 48MHz RISC-V 実シリコン完全準拠ファームウェア
-│   │   ├── suga_roomba_ii_ch32x035.ino         # OPA_Unlock+16×PGA・TIM1 25kHz/TIM2 16kHz・STBY自動復帰・0 Lux差分光学・IWDG・TinyML SLAM
+│   ├── prebuilt/                               # ★【実機RISC-V GCCビルド済】コンパイル不要一発書込バイナリ
+│   │   ├── suga_roomba_ii_rev5_3_ch32x035.bin  # CH32X035G8U6 実バイナリ (Flash 48.8% / RAM 26.0%・wchisp flash直書込)
+│   │   ├── suga_roomba_ii_rev5_3_ch32x035.hex  # Intel HEX フォーマット
+│   │   ├── suga_roomba_ii_rev5_3_ch32x035.elf  # 逆アセンブリ検証済 ELF
+│   │   └── SHA256SUMS.txt                      # SHA-256 チェックサム
+│   ├── suga_roomba_ii_ch32x035/                # 【Rev 5.3 標準】CH32X035G8U6 48MHz RISC-V 実シリコン完全準拠ファームウェア
+│   │   ├── suga_roomba_ii_ch32x035.ino         # OPA_Unlock+16×PGA・TIM1/2 BDTR.MOE・safeMicros・自動床色/シャント校正・POST・TinyML SLAM
+│   │   ├── usb_host_mouse.h                    # CH32X035 実ハードウェア USBFS Host Boot-Protocol HID 光学マウスドライバ
 │   │   ├── suga_roomba_tinyml.h                # Colab学習済 952B Calibrated INT8 Cヘッダ
 │   │   └── platformio.ini                      # wchisp USB-ISP (JP_BOOT PC17) & WCH-LinkE SWD 両対応設定
-│   ├── verify_firmware_hil.py                  # Host Arduino & WCH SPL レジスタ両ターゲット -Werror ビルド＋13項目 HIL 監査
+│   ├── verify_firmware_hil.py                  # Host Arduino & WCH SPL レジスタ両ターゲット -Werror ビルド＋11シナリオ HIL 監査
 │   └── suga_roomba_ii_rp2040/                  # レガシー RP2040 互換コード
 └── docs/
     ├── BOM_VERIFIED_2026.csv                   # 欠品ゼロ完全部品表（本体ハード ¥2,980 + 10 STL + OCS送料別/込両記）

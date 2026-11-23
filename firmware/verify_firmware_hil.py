@@ -63,9 +63,19 @@ struct MockHW {
     int      adc_bits = 10; // openwch/arduino_core_ch32 defaults analogRead() to 10-bit!
     int      iwdg_enabled = 0, iwdg_reloads = 0;
     int      pc3_spl_reads = 0;
+    bool     usb_mouse_attached = false;
+    int16_t  usb_mouse_dx = 0, usb_mouse_dy = 0;
     uint32_t touch_charge_us = 4;
 };
 static MockHW g_hw;
+
+#define MOCK_USB_MOUSE_HOOK
+inline bool mockUsbMousePoll(int16_t *outDx, int16_t *outDy) {
+    if (!g_hw.usb_mouse_attached) { *outDx = 0; *outDy = 0; return false; }
+    *outDx = g_hw.usb_mouse_dx;
+    *outDy = g_hw.usb_mouse_dy;
+    return true;
+}
 
 inline uint32_t micros() { return g_hw.now_us; }
 inline uint32_t millis() { return g_hw.now_us / 1000U; }
@@ -228,23 +238,22 @@ TEST_HARNESS_CPP = r"""
 
 static void check(bool cond, const char* msg) {
     if (!cond) {
-        std::fprintf(stderr, "[FAIL] %s | mode=%d tinyml=%d front=%u side=%u clL=%u clR=%u shuntL=%.2f rF=%.1f rA=%.3f bump=%d tk=%d lowB=%d adcBits=%d t1moe=%d t2moe=%d iwdg=%d\n",
+        std::fprintf(stderr, "[FAIL] %s | mode=%d tinyml=%d front=%u side=%u clL=%u clR=%u thrL=%u shuntL=%.2f gCorr=%.2f slip=%.2f post=0x%02x lowB=%d\n",
             msg, (int)g_mode, (int)runTinyMLInference(),
             g_tel.ledFrontUs, g_tel.ledSideUs, g_tel.ledCliffLUs, g_tel.ledCliffRUs,
-            g_tel.shuntMeanL, g_tel.rippleFreqL, g_tel.rippleAmpL,
-            (int)g_tel.bumperHit, (int)g_tel.touchActive, (int)g_tel.lowBatteryCutoff,
-            g_hw.adc_bits, (int)g_hw.tim1_moe, (int)g_hw.tim2_moe, g_hw.iwdg_reloads);
+            g_cliffThreshL, g_tel.shuntMeanL, g_shuntGainCorr, g_tel.wheelSlipRatio,
+            (unsigned)g_tel.postFaultMask, (int)g_tel.lowBatteryCutoff);
         std::exit(1);
     }
     std::printf("[PASS] %s\n", msg);
 }
 
 int main() {
-    // Default safe sensor state: floor present, no wall, no bumper, mid-rail piezo, normal current
+    // Healthy boot state: MOSFET OFF (V_drain = Vbat 6.0V -> V_adc = 3.0V), STBY=LOW (0A -> V_shunt=0V), OPA2 VMID=2.5V
     g_hw.pin_val[PIN_BUMP_SW] = HIGH;
-    g_hw.adc_val[PIN_ADC_SHUNT] = 280; // ~0.34V (0.21A normal cruise on 0.10R x 16x PGA)
-    g_hw.adc_val[PIN_ADC_DIRT]  = 2048; // 2.50V clean floor
-    g_hw.adc_val[PIN_ADC_BEMF]  = 491;  // V_adc=0.60V -> V_drain=1.20V (Vbat 6.0V - Vbemf 4.8V)
+    g_hw.adc_val[PIN_ADC_SHUNT] = 15;   // ~0.02V idle (0A with H-bridge in STBY!)
+    g_hw.adc_val[PIN_ADC_DIRT]  = 2048; // 2.50V clean OPA2 VMID
+    g_hw.adc_val[PIN_ADC_BEMF]  = 2457; // V_adc=3.00V -> V_drain=6.00V (MOSFET OFF, turbine intact!)
 
     // 0.0-Lux Pitch-Black Under-Sofa Dark-Room Environment!
     g_hw.pd_amb_us[PIN_LED_FRONT_RX]   = 1200; g_hw.pd_act_us[PIN_LED_FRONT_RX]   = 800; // Open ahead
@@ -255,6 +264,10 @@ int main() {
     setup();
 
     check(g_hw.adc_bits == 12, "analogReadResolution(12) explicitly set (overrides 10-bit arduino_core_ch32 default!)");
+    check(g_tel.postFaultMask == POST_OK && g_turbineAllowed && g_driveAllowed && g_piezoEnabled,
+          "Hardware Power-On Self-Test (POST) PASSED cleanly (0 faults)");
+    check(g_cliffThreshL >= 290 && g_cliffThreshL <= 330,
+          "Startup floor auto-calibration locked adaptive threshold cleanly on nominal wood floor");
 #ifdef TEST_WCH_SPL_REGS
     check(g_hw.opa_unlocked && g_hw.opa1_enabled && g_hw.opa2_enabled, "WCH OPA_Unlock() + OPA1 + OPA2 enabled (via real OPA_BASE guard)");
     check(g_hw.opa1_nsel == CHN_PGA_16xIN && g_hw.opa1_mode == OUT_IO_OUT1 && g_hw.opa1_fb == FB_ON,
@@ -269,6 +282,10 @@ int main() {
 #endif
     check(g_hw.pin_val[PIN_DRV_STBY] == HIGH, "AE-TC78H653FTG STBY released cleanly after 350ms boot settle");
 
+    // Transition to normal cruise motor currents & running turbine Back-EMF
+    g_hw.adc_val[PIN_ADC_SHUNT] = 280;  // ~0.34V (0.21A normal cruise on 0.10R x 16x PGA)
+    g_hw.adc_val[PIN_ADC_BEMF]  = 491;  // V_adc=0.60V -> V_drain=1.20V (Vbat 6.0V - Vbemf 4.8V)
+
     // 1. Test 0.0-Lux Pitch-Black Under-Sofa Cruise (MUST NOT false-trigger cliff!)
     for (int i = 0; i < 12; ++i) { g_hw.now_us += 150000; loop(); }
     check(g_mode == NAV_CRUISE_SLAM && g_tel.ledCliffLUs < 180 && g_tel.ledCliffRUs < 180 && !g_tel.lowBatteryCutoff,
@@ -280,12 +297,11 @@ int main() {
           "PC3 TouchKey uses direct WCH SPL GPIOC (bypasses upstream variant_CH32X035G8U.cpp analogInputPin[13] bug!)");
 #endif
 
-    // 2. Test 0.0-Lux Stair Cliff Drop (active reflection vanishes -> >260 us -> CLIFF ESTOP!)
+    // 2. Test 0.0-Lux Stair Cliff Drop (active reflection vanishes -> >g_cliffThresh -> CLIFF ESTOP!)
     g_hw.pd_act_us[PIN_LED_CLIFF_L_RX] = 1150;
     loop();
     check(g_mode == NAV_CLIFF_ESTOP && g_tel.ledCliffLUs >= 1000,
           "0.0-Lux stair cliff drop: active reflection disappears -> instant NAV_CLIFF_ESTOP");
-    // Restore floor and clear cliff timer
     g_hw.pd_act_us[PIN_LED_CLIFF_L_RX] = 140;
     g_hw.now_us += 1200000;
     loop();
@@ -332,8 +348,57 @@ int main() {
     g_hw.adc_val[PIN_ADC_BEMF] = 286; // V_adc=0.35V -> V_drain=0.70V (dV_clog = 1.20 - 0.70 = +0.50V > 0.42V)
     for (int i = 0; i < 28; ++i) { g_hw.now_us += 160000; loop(); }
     check(g_tel.filterClogAlert, "Back-EMF Virtual Barometer detects inlet clog cleanly (+0.50V > +0.42V)");
+    g_hw.adc_val[PIN_ADC_BEMF] = 491;
 
-    std::printf("[ALL REV 5.2 REAL-SILICON FIRMWARE HIL TESTS PASSED 100%%!]\n");
+    // 8. Test CH32X035 USBFS Optical Mouse Odometry Fusion & Rubber-Band Wheel-Slip Recovery!
+    g_hw.usb_mouse_attached = true;
+    g_hw.usb_mouse_dx = 0;
+    g_hw.usb_mouse_dy = 95; // ~3.02 mm/cycle matching healthy forward cruise
+    for (int i = 0; i < 6; ++i) { g_hw.now_us += 15000; loop(); }
+    check(g_tel.usbMouseLive && !g_tel.wheelSlipDetected,
+          "USBFS Optical Mouse fusion active: normal rolling traction reports zero slip");
+    g_hw.usb_mouse_dy = 2; // Simulate severe rubber-band slip / wheel-lifted stall (>90% slip!)
+    for (int i = 0; i < 12; ++i) { g_hw.now_us += 15000; loop(); }
+    check(g_tel.wheelSlipDetected && g_mode == NAV_UNJAM_REVERSE,
+          "USBFS Optical Mouse catches severe rubber-band slip (>82%) -> auto NAV_UNJAM_REVERSE!");
+    g_hw.usb_mouse_attached = false;
+    g_hw.now_us += 1000000;
+    loop();
+
+    // 9. Test Floor-Adaptive Auto-Calibration: Matte Black Carpet (340 us) vs Glossy White Tile (55 us) vs Mid-Air Guard!
+    g_hw.pd_act_us[PIN_LED_CLIFF_L_RX] = 340; g_hw.pd_act_us[PIN_LED_CLIFF_R_RX] = 350;
+    calibrateFloorOpticalBaseline();
+    check(g_cliffThreshL >= 700 && g_cliffThreshL <= 760,
+          "Auto-cal adapts cleanly to Matte Black Carpet (340us -> thresh ~731us, ZERO false cliffs!)");
+    g_hw.pd_act_us[PIN_LED_CLIFF_L_RX] = 55; g_hw.pd_act_us[PIN_LED_CLIFF_R_RX] = 60;
+    calibrateFloorOpticalBaseline();
+    check(g_cliffThreshL == 190 && g_cliffThreshR == 190,
+          "Auto-cal adapts cleanly to Glossy White Tile (55us -> tight 190us cliff safety floor!)");
+    g_hw.pd_act_us[PIN_LED_CLIFF_L_RX] = 1150; g_hw.pd_act_us[PIN_LED_CLIFF_R_RX] = 1150;
+    calibrateFloorOpticalBaseline();
+    check(g_cliffThreshL == 260 && g_cliffThreshR == 260,
+          "Mid-air power-on guard preserves conservative 260us cliff threshold");
+
+    // 10. Test ±40% Homemade Shunt Wire Resistance Auto-Normalization (0.14-Ohm wire -> +40% V_shunt!)
+    g_shuntCalCount = 0; g_shuntCruiseAvg = 0.0f; g_shuntGainCorr = 1.0f;
+    g_hw.pd_act_us[PIN_LED_CLIFF_L_RX] = 140; g_hw.pd_act_us[PIN_LED_CLIFF_R_RX] = 145;
+    g_hw.adc_val[PIN_ADC_SHUNT] = 392; // +40% higher voltage (~0.48V) from thicker/longer homemade wire!
+    g_mode = NAV_CRUISE_SLAM; g_cmdL = 0.72f; g_cmdR = 0.72f;
+    for (int i = 0; i < 10; ++i) { g_hw.now_us += 15000; loop(); }
+    check(g_shuntGainCorr > 0.48f && g_shuntGainCorr < 0.62f,
+          "Online ±40% shunt auto-normalization converges cleanly onto 0.260V TinyML center (g_shuntGainCorr ~0.54)");
+
+    // 11. Test Hardware POST Fault-Injection (Shorted 2SK4017 + Shorted H-Bridge + Bad OPA2 VMID)!
+    g_turbineAllowed = true; g_driveAllowed = true; g_piezoEnabled = true;
+    g_hw.adc_val[PIN_ADC_BEMF]  = 40;   // V_drain=0.10V -> shorted 2SK4017 / open turbine!
+    g_hw.adc_val[PIN_ADC_SHUNT] = 900;  // V_shunt=1.10V at STBY=LOW -> shorted H-bridge / OPA1 bridge!
+    g_hw.adc_val[PIN_ADC_DIRT]  = 120;  // V_piezo=0.15V -> broken OPA2 VMID divider!
+    uint8_t faultMask = runPowerOnSelfTest();
+    check(faultMask == (POST_ERR_MOSFET_OR_OPEN_TURB | POST_ERR_SHUNT_OR_HBRIDGE_FAULT | POST_WARN_PIEZO_VMID_DEGRADED)
+          && !g_turbineAllowed && !g_driveAllowed && !g_piezoEnabled,
+          "Hardware POST catches ALL 3 solder/MOSFET/VMID faults & safely locks out motors!");
+
+    std::printf("[ALL REV 5.3 REAL-SILICON FIRMWARE HIL TESTS PASSED 100%%!]\n");
     return 0;
 }
 """
