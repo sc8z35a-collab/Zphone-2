@@ -350,13 +350,22 @@ int main() {
     check(g_tel.filterClogAlert, "Back-EMF Virtual Barometer detects inlet clog cleanly (+0.50V > +0.42V)");
     g_hw.adc_val[PIN_ADC_BEMF] = 491;
 
-    // 8. Test CH32X035 USBFS Optical Mouse Odometry Fusion & Rubber-Band Wheel-Slip Recovery!
+    // 8. Test CH32X035 USBFS 2-Axis Self-Calibrating Optical-Gyro Fusion & Slip Recovery!
     g_hw.usb_mouse_attached = true;
-    g_hw.usb_mouse_dx = 0;
-    g_hw.usb_mouse_dy = 95; // ~3.02 mm/cycle matching healthy forward cruise
-    for (int i = 0; i < 6; ++i) { g_hw.now_us += 15000; loop(); }
+    // Inject crooked mouse (+0.0436 rad = +2.50 deg) AND +3.0% wheel diameter mismatch (delta=+0.03):
+    //   Straight: u=3.00mm, v=(78/176)*0.03*3.00=+0.0399mm -> dy=3.00mm (95 cnt), dx=-3.00*0.0436+0.0399=-0.091mm (-3 cnt)
+    //   Turn    : u=(176/(4*78))*0.03*2.00=+0.0338mm, v=2.00mm -> dx=2.00mm (63 cnt), dy=+0.0338+2.00*0.0436=+0.121mm (+4 cnt)
+    g_hw.usb_mouse_dx = -3;
+    g_hw.usb_mouse_dy = 95;
+    for (int i = 0; i < 10; ++i) { g_hw.now_us += 15000; loop(); }
     check(g_tel.usbMouseLive && !g_tel.wheelSlipDetected,
-          "USBFS Optical Mouse fusion active: normal rolling traction reports zero slip");
+          "USBFS 2-Axis Optical Mouse: straight cruise tracks traction cleanly");
+    g_hw.usb_mouse_dx = 63;
+    g_hw.usb_mouse_dy = 4;
+    for (int i = 0; i < 6; ++i) { g_hw.now_us += 15000; sampleAnalogAndOpticalSensors(-0.55f, +0.55f); }
+    check(g_mouseCalLocked && fabsf(g_mouseMountAngleRad - 0.0436f) < 0.006f && fabsf(g_wheelDiaMismatch - 0.03f) < 0.01f,
+          "USBFS 2x2 Analytical Optical-Gyro solves BOTH crooked mount (+2.5 deg) & +3% wheel mismatch!");
+    g_hw.usb_mouse_dx = 0;
     g_hw.usb_mouse_dy = 2; // Simulate severe rubber-band slip / wheel-lifted stall (>90% slip!)
     for (int i = 0; i < 12; ++i) { g_hw.now_us += 15000; loop(); }
     check(g_tel.wheelSlipDetected && g_mode == NAV_UNJAM_REVERSE,

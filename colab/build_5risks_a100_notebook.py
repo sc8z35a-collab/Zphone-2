@@ -249,9 +249,10 @@ torch.manual_seed(20260503)
 B = N_SLAM_ROBOTS
 T = N_SLAM_STEPS
 dt = 0.01  # 100 Hz control & USBFS HID Interrupt IN polling loop!
-WHEEL_TRACK_MM = 176.0
-CRUISE_MM_S    = 271.4
-MM_PER_COUNT   = 25.4 / 800.0  # 800 CPI Daiso optical mouse
+WHEEL_TRACK_MM     = 176.0
+CRUISE_MM_S        = 271.4
+MM_PER_COUNT       = 25.4 / 800.0  # 800 CPI Daiso optical mouse
+MOUSE_LEVER_ARM_MM = 78.0          # Exact CAD offset: WHEEL_Y(+6.0) - MOUSE_Y(-72.0) = 78.0mm!
 
 with torch.no_grad():
     # Per-robot randomized real-world manufacturing & floor conditions (FP64 on A100!)
@@ -259,10 +260,12 @@ with torch.no_grad():
     wheel_dia_err_R = 1.0 + torch.empty(B, device=DEVICE, dtype=torch.float64).uniform_(-0.025, 0.025)
     mouse_cpi_scale = 1.0 + torch.empty(B, device=DEVICE, dtype=torch.float64).uniform_(-0.04, 0.04)
     mouse_yaw_mis   = torch.empty(B, device=DEVICE, dtype=torch.float64).uniform_(-0.044, 0.044)  # ±2.5 deg mount error
+    cos_mis = torch.cos(mouse_yaw_mis)
+    sin_mis = torch.sin(mouse_yaw_mis)
     base_slip       = torch.empty(B, device=DEVICE, dtype=torch.float64).uniform_(0.02, 0.35)     # normal rubber slip
     drop_prob       = torch.empty(B, device=DEVICE, dtype=torch.float64).uniform_(0.005, 0.045)   # glossy tile USB drops
 
-    # True robot pose vs Dead-Reckoning-Only vs Rev 5.3 USBFS Optical Mouse Fused pose
+    # True robot pose vs Dead-Reckoning-Only vs Rev 5.3.1 USBFS 2-Axis Optical-Gyro Fused pose
     x_true = torch.zeros(B, device=DEVICE, dtype=torch.float64)
     y_true = torch.zeros(B, device=DEVICE, dtype=torch.float64)
     th_true = torch.zeros(B, device=DEVICE, dtype=torch.float64)
@@ -279,6 +282,20 @@ with torch.no_grad():
     slip_streak = torch.zeros(B, device=DEVICE, dtype=torch.int32)
     slip_caught = torch.zeros(B, device=DEVICE, dtype=torch.bool)
     stall_injected = torch.zeros(B, device=DEVICE, dtype=torch.bool)
+
+    # Exact 2x2 Closed-Form Analytical Decoupling of (mouse_yaw_mis alpha, wheel_dia_mismatch delta):
+    #   r_turn     = dy/dx = +tan(alpha) + (W / 4L) * delta   (during in-place turn)
+    #   r_straight = dx/dy = -tan(alpha) + (L / W)  * delta   (during straight cruise)
+    #   -> delta = (r_turn + r_straight) / (W/(4L) + L/W),  alpha = atan(r_turn - (W/(4L))*delta)
+    K_TURN = WHEEL_TRACK_MM / (4.0 * MOUSE_LEVER_ARM_MM)
+    K_STR  = MOUSE_LEVER_ARM_MM / WHEEL_TRACK_MM
+    K_SUM  = K_TURN + K_STR
+    sum_dy_turn = torch.zeros(B, device=DEVICE, dtype=torch.float64)
+    sum_dx_turn = torch.zeros(B, device=DEVICE, dtype=torch.float64)
+    sum_dx_str  = torch.zeros(B, device=DEVICE, dtype=torch.float64)
+    sum_dy_str  = torch.zeros(B, device=DEVICE, dtype=torch.float64)
+    alpha_hat   = torch.zeros(B, device=DEVICE, dtype=torch.float64)
+    delta_hat   = torch.zeros(B, device=DEVICE, dtype=torch.float64)
 
     # Save 3 representative trajectories for plotting
     hist_true_x, hist_true_y = [], []
@@ -314,35 +331,67 @@ with torch.no_grad():
         eff_cmdL = torch.where((slip_streak >= 5) & (cmdL > 0.5), torch.full_like(base_slip, 0.84), torch.full_like(base_slip, cmdL))
         eff_cmdR = torch.where((slip_streak >= 5) & (cmdR > 0.5), torch.full_like(base_slip, 0.84), torch.full_like(base_slip, cmdR))
 
-        # True ground physics
+        # True ground physics (midpoint RK2 integration!)
         vL_true = eff_cmdL * CRUISE_MM_S * wheel_dia_err_L * (1.0 - slip_L)
         vR_true = eff_cmdR * CRUISE_MM_S * wheel_dia_err_R * (1.0 - slip_R)
-        ds_true = 0.5 * (vL_true + vR_true) * dt
+        ds_true  = 0.5 * (vL_true + vR_true) * dt
         dth_true = ((vR_true - vL_true) / WHEEL_TRACK_MM) * dt
+        mid_th_true = th_true + 0.5 * dth_true
         th_true += dth_true
-        x_true  += ds_true * torch.cos(th_true)
-        y_true  += ds_true * torch.sin(th_true)
+        x_true  += ds_true * torch.cos(mid_th_true)
+        y_true  += ds_true * torch.sin(mid_th_true)
 
         # Commanded wheel dead-reckoning kinematics
         vL_cmd = eff_cmdL * CRUISE_MM_S
         vR_cmd = eff_cmdR * CRUISE_MM_S
-        ds_whl = 0.5 * (vL_cmd + vR_cmd) * dt
+        ds_whl  = 0.5 * (vL_cmd + vR_cmd) * dt
         dth_whl = ((vR_cmd - vL_cmd) / WHEEL_TRACK_MM) * dt
+        mid_th_dr = th_dr + 0.5 * dth_whl
         th_dr += dth_whl
-        x_dr  += ds_whl * torch.cos(th_dr)
-        y_dr  += ds_whl * torch.sin(th_dr)
+        x_dr  += ds_whl * torch.cos(mid_th_dr)
+        y_dr  += ds_whl * torch.sin(mid_th_dr)
 
-        # Real CH32X035 USBFS Optical Mouse Boot-Protocol HID Report (int8 quantized @ 800 CPI + drops)
-        dy_ideal_cnt = (ds_true * torch.cos(mouse_yaw_mis) / MM_PER_COUNT) * mouse_cpi_scale
-        quant_cnt = torch.clamp(torch.round(dy_ideal_cnt + torch.randn(B, device=DEVICE, dtype=torch.float64) * 0.6), -127.0, 127.0)
-        pkt_ok = torch.rand(B, device=DEVICE, dtype=torch.float64) > drop_prob
-        ds_mouse = torch.where(pkt_ok, quant_cnt * MM_PER_COUNT, ds_whl)
+        # Real CH32X035 USBFS 2-Axis Optical Mouse Boot-Protocol HID Report (dx, dy @ L=78.0mm, ±2.5 deg mount error!)
+        v_lat_true   = MOUSE_LEVER_ARM_MM * dth_true
+        dy_sens_mm   = ds_true * cos_mis + v_lat_true * sin_mis
+        dx_sens_mm   = -ds_true * sin_mis + v_lat_true * cos_mis
+        dy_cnt       = torch.clamp(torch.round((dy_sens_mm / MM_PER_COUNT) * mouse_cpi_scale + torch.randn(B, device=DEVICE, dtype=torch.float64) * 0.5), -127.0, 127.0)
+        dx_cnt       = torch.clamp(torch.round((dx_sens_mm / MM_PER_COUNT) * mouse_cpi_scale + torch.randn(B, device=DEVICE, dtype=torch.float64) * 0.5), -127.0, 127.0)
+        pkt_ok       = torch.rand(B, device=DEVICE, dtype=torch.float64) > drop_prob
+        dy_raw_mm    = dy_cnt * MM_PER_COUNT
+        dx_raw_mm    = dx_cnt * MM_PER_COUNT
 
-        # Exact Rev 5.3 Firmware Complementary Fusion (0.82 * mouse + 0.18 * wheel) & Slip Detector
-        ds_fused = 0.82 * ds_mouse + 0.18 * ds_whl
-        th_fus += dth_whl
-        x_fus  += ds_fused * torch.cos(th_fus)
-        y_fus  += ds_fused * torch.sin(th_fus)
+        # Online 2x2 Analytical Decoupling update (identical to Rev 5.3.1 CH32X035 firmware!)
+        if cmdL * cmdR < -0.1:
+            sgn = 1.0 if cmdR > cmdL else -1.0
+            sum_dy_turn += torch.where(pkt_ok, sgn * dy_raw_mm, torch.zeros_like(dy_raw_mm))
+            sum_dx_turn += torch.where(pkt_ok, sgn * dx_raw_mm, torch.zeros_like(dx_raw_mm))
+        elif cmdL > 0.5 and cmdR > 0.5 and abs(cmdR - cmdL) < 0.05:
+            sum_dx_str  += torch.where(pkt_ok, dx_raw_mm, torch.zeros_like(dx_raw_mm))
+            sum_dy_str  += torch.where(pkt_ok, dy_raw_mm, torch.zeros_like(dy_raw_mm))
+
+        both_ready = (sum_dx_turn > 5.0) & (sum_dy_str > 20.0)
+        r_turn     = sum_dy_turn / torch.clamp(sum_dx_turn, min=1.0)
+        r_str      = sum_dx_str  / torch.clamp(sum_dy_str,  min=1.0)
+        delta_est  = (r_turn + r_str) / K_SUM
+        tan_a_est  = r_turn - K_TURN * delta_est
+        alpha_hat  = torch.where(both_ready, torch.clamp(torch.atan(tan_a_est), -0.18, 0.18), alpha_hat)
+        delta_hat  = torch.where(both_ready, delta_est, delta_hat)
+
+        # De-rotate sensor frame by solved mount angle alpha_hat -> exact (ds, dtheta) optical gyro!
+        ca, sa     = torch.cos(alpha_hat), torch.sin(alpha_hat)
+        u_hat      = dy_raw_mm * ca - dx_raw_mm * sa
+        v_hat      = dy_raw_mm * sa + dx_raw_mm * ca
+        ds_mouse   = torch.where(pkt_ok, u_hat, ds_whl)
+        dth_mouse  = torch.where(pkt_ok, v_hat / MOUSE_LEVER_ARM_MM, dth_whl)
+
+        use_full_gyro = both_ready | (torch.abs(dth_whl) > 0.004)
+        ds_fused      = 0.95 * ds_mouse + 0.05 * ds_whl
+        dth_fused     = torch.where(use_full_gyro, 0.98 * dth_mouse + 0.02 * dth_whl, dth_whl)
+        mid_th_fus    = th_fus + 0.5 * dth_fused
+        th_fus       += dth_fused
+        x_fus        += ds_fused * torch.cos(mid_th_fus)
+        y_fus        += ds_fused * torch.sin(mid_th_fus)
 
         cruise_mask = (torch.abs(ds_whl) > 0.6) & ((eff_cmdL * eff_cmdR) > 0.25)
         inst_slip = torch.clamp(1.0 - torch.abs(ds_mouse) / torch.clamp(torch.abs(ds_whl), min=0.5), 0.0, 1.0)
@@ -358,6 +407,7 @@ with torch.no_grad():
     err_dr  = torch.sqrt((x_dr  - x_true)**2 + (y_dr  - y_true)**2).cpu().numpy()
     err_fus = torch.sqrt((x_fus - x_true)**2 + (y_fus - y_true)**2).cpu().numpy()
     slip_recall = float((slip_caught & stall_injected).sum().item()) / max(1, int(stall_injected.sum().item()))
+    mount_cal_err_deg = float(np.degrees(torch.abs(alpha_hat - mouse_yaw_mis).mean().item()))
 
 elapsed_s = time.time() - t0
 rmse_dr_mm  = float(np.sqrt(np.mean(err_dr**2)))
@@ -389,12 +439,14 @@ SUMMARY["risks"]["risk2_usbfs_optical_mouse_fusion"] = {
     "rmse_dead_reckoning_mm": round(rmse_dr_mm, 1),
     "rmse_usbfs_mouse_fused_mm": round(rmse_fus_mm, 1),
     "drift_reduction_factor": round(gain_x, 2),
+    "solved_mount_angle_err_deg": round(mount_cal_err_deg, 4),
     "severe_slip_stall_detection_rate": round(100.0 * slip_recall, 3),
     "runtime_sec": round(elapsed_s, 2),
     "plot": p2,
 }
 print(f"[RISK #2 SOLVED in {elapsed_s:.2f}s] {B:,} robots x {T:,} steps ({B*T/1e6:.1f}M steps)")
-print(f"  Dead-Reckoning RMSE: {rmse_dr_mm:.1f} mm  -->  USBFS Optical Mouse Fused RMSE: {rmse_fus_mm:.1f} mm ({gain_x:.2f}x cleaner!)")
+print(f"  Dead-Reckoning RMSE: {rmse_dr_mm:.1f} mm  -->  USBFS 2-Axis Self-Cal Optical-Gyro RMSE: {rmse_fus_mm:.1f} mm ({gain_x:.2f}x cleaner!)")
+print(f"  Online 2x2 Solved Mouse Mount-Angle Residual Error: {mount_cal_err_deg:.4f} deg (from ±2.50 deg initial error!)")
 print(f"  Severe Rubber-Band Slip-Stall Catch Rate: {100.0*slip_recall:.3f}%")
 assert gain_x >= 1.8 and slip_recall >= 0.99
 '''
