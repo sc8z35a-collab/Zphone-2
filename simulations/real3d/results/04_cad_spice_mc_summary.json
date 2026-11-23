@@ -1,39 +1,45 @@
 {
+  "revision": "Rev 5.1",
   "voxel_2level_convergence": {
     "coarse": {
-      "pitch_mm": 1.5,
-      "grid_voxels": 362934,
-      "floor_sealed_cols": 1107,
-      "floor_total_cols": 1107,
+      "pitch_mm": 1.0,
+      "grid_voxels": 1215396,
+      "floor_sealed_cols": 2501,
+      "floor_total_cols": 2501,
       "floor_leaks": 0,
       "waypoints_connected": 13,
       "waypoints_total": 13,
       "bay_leaks": 0,
-      "sealed_air_vol_cm3": 145.88
+      "sealed_air_vol_cm3": 155.06
     },
     "fine": {
-      "pitch_mm": 1.15,
-      "grid_voxels": 780528,
-      "floor_sealed_cols": 1768,
-      "floor_total_cols": 1768,
+      "pitch_mm": 0.85,
+      "grid_voxels": 1944441,
+      "floor_sealed_cols": 3337,
+      "floor_total_cols": 3337,
       "floor_leaks": 0,
       "waypoints_connected": 13,
       "waypoints_total": 13,
       "bay_leaks": 0,
-      "sealed_air_vol_cm3": 151.29
+      "sealed_air_vol_cm3": 151.86
     },
-    "air_volume_diff_pct": 3.58,
+    "air_volume_diff_pct": 2.11,
     "converged_under_5pct": true
   },
   "ngspice_monte_carlo_200": {
     "n_runs": 200,
+    "r18_r19_tolerance_pct": 1.0,
     "v5v_min_worst_V": 5.0,
-    "adc_bemf_max_worst_V": 3.45,
+    "adc_bemf_max_worst_V": 3.467,
     "drain_clamp_worst_V": 6.9,
-    "settled_winding_current_worst_mA": 0.0517,
-    "bemf_error_median_mV": 229.7,
-    "bemf_error_p99_mV": 698.9,
+    "settled_winding_current_worst_mA": 0.0346,
+    "bemf_error_median_mV": 3.85,
+    "bemf_error_p99_mV": 12.96,
+    "fw_calibrated_clog_error_p99_mV": 5.41,
+    "clog_signal_to_error_snr": 114.5,
     "all_corners_passed": true
   },
-  "kicad_drc_zero_unconnected": true
+  "kicad_drc_zero_violations": true,
+  "kicad_drc_zero_unconnected": true,
+  "kicad_drc_zero_footprint_errors": true
 }

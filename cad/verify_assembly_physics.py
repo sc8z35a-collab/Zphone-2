@@ -167,15 +167,15 @@ def test_2_clearance_audit(comps):
     d_pcb_can  = min_mesh_distance(pcb, can)
     d_sns_chs  = min_mesh_distance(sns, chs)
 
-    # Exact radial distance from diffuser inner tips (R=40.05) to impeller outer rim (imp_r_max=38.00)
-    imp_radial_to_diffuser = 40.05 - imp_r_max
+    # Exact radial distance from smooth vaneless volute wall (R=45.00) to impeller outer rim (imp_r_max=38.00)
+    imp_radial_to_diffuser = 45.00 - imp_r_max
     imp_axial_bot = imp_z0 - 15.30
     imp_axial_top = lid_z0 - imp_z1
     m385_lugs_to_canopy_in = 74.00 - m385_z1  # canopy inner dome roof = 74.00mm
 
     rows = [
         # (Category, Interface, Measured_mm, Spec_Min_mm, Note)
-        ("Rotating", "Impeller Outer Rim <-> Diffuser Vanes (Radial)", imp_radial_to_diffuser, 1.50, f"Imp R={imp_r_max:.2f} vs Diff R=40.05"),
+        ("Rotating", "Impeller Outer Rim <-> Vaneless Volute Wall (Radial)", imp_radial_to_diffuser, 1.50, f"Imp R={imp_r_max:.2f} vs Volute R=45.00 (Vaneless)"),
         ("Rotating", "Impeller Blades Bottom <-> Volute Floor (Axial)", imp_axial_bot,         0.80, f"Imp Z0={imp_z0:.2f} vs Floor 15.30"),
         ("Rotating", "Impeller Backplate Top <-> Volute Lid (Axial)",   imp_axial_top,         0.80, f"Lid Z0={lid_z0:.2f} vs Imp Z1={imp_z1:.2f}"),
         ("Rotating", "Impeller <-> Chassis Overall 3D Min Dist",        d_imp_chs,             0.80, "Exact BVH 3D surface min"),
@@ -271,28 +271,30 @@ def test_3_voxel_airflow_flood_fill(comps):
     # First: Direct Floor-Bypass Solid-Barrier Check beneath Blower & Under-Volute Plenum!
     bx_mask = (xs >= -20.0) & (xs <= 20.0)
     by_mask = (ys >= -45.0) & (ys <= 15.0)
-    bz_floor = (zs >= 3.5) & (zs <= 5.2)
+    bz_floor = (zs >= 5.5) & (zs <= 7.1)
     floor_slab = solid[np.ix_(bx_mask, by_mask, bz_floor)]
     floor_column_sealed = np.any(floor_slab, axis=2)
     floor_leak_cols = int(np.sum(~floor_column_sealed))
     print(f"  [FLOOR BYPASS CHECK] Under-blower/plenum solid columns: {floor_column_sealed.size - floor_leak_cols}/{floor_column_sealed.size} sealed (leaks = {floor_leak_cols})")
 
-    # Strictly-internal BFS mask (seals ambient exterior at floor mouth & rear exhaust exits)
+    # Strictly-internal BFS mask (seals ambient exterior at floor mouth & curved rear exhaust exits)
     allowed_air = ~solid.copy()
-    allowed_air[:, :, zs <= 4.8] = False
+    allowed_air[:, :, zs <= 6.8] = False
     allowed_air[:, :, zs >= 47.2] = False
-    allowed_air[:, ys <= -109.5, :] = False
+    XX, YY = np.meshgrid(xs, ys, indexing="ij")
+    outside_rear_hull = (YY < -60.0) & ((XX ** 2 + (YY + 14.0) ** 2) >= 94.0 ** 2)
+    allowed_air[outside_rear_hull, :] = False
     allowed_air[:, ys >= 98.5, :] = False
 
     waypoints = [
-        ("01_Front_Floor_Nozzle",     (  0.0,  87.5,  7.0)),
+        ("01_Front_Floor_Nozzle",     (  0.0,  87.5,  9.0)),
         ("02_Intake_Ramp_Mid",        ( 14.0,  78.0, 22.0)),
         ("03_Cyclone_Tangential_In",  ( 16.0,  66.0, 23.0)),
         ("04_Cyclone_Dust_Chamber",   (  0.0,  58.0, 14.0)),
         ("05_Vortex_Finder_Core",     (  0.0,  58.0, 30.0)),
         ("06_Overhead_Return_Arch",   (  0.0,  40.0, 41.0)),
         ("07_Vertical_Downcomer",     (  0.0,  26.5, 22.0)),
-        ("08_Sealed_UnderVolute_Duct",(  0.0,   0.0,  9.5)),
+        ("08_Sealed_UnderVolute_Duct",(  0.0,   0.0, 10.2)),
         ("09_Blower_Coaxial_Eye",     (  0.0, -25.0, 14.5)),
         ("10_Volute_Impeller_Room",   ( 24.0, -25.0, 20.5)),
         ("11_Rear_Exhaust_Collector", (  0.0, -76.0, 20.5)),
@@ -303,7 +305,7 @@ def test_3_voxel_airflow_flood_fill(comps):
     leak_probes = [
         ("Leak_Battery_Bay_Left",  (-50.0, -48.0, 38.0)),
         ("Leak_Battery_Bay_Right", ( 50.0, -48.0, 38.0)),
-        ("Leak_Mouse_Sensor_Bay",  (  0.0, -72.0,  8.5)),
+        ("Leak_Mouse_Sensor_Bay",  (  0.0, -72.0, 10.0)),
     ]
 
     seed = pt_to_idx(waypoints[0][1])

@@ -81,10 +81,10 @@ for p in jlc_parts:
 # B. Akizuki Denshi Verified 2026 Electronics (16 Items = 1,420 JPY)
 AKIZUKI_AND_HW = [
     ("MCU+Analog", "32bit RISC-V CH32X035G8U6 DIP30 Breakout (OPA x2, USB Host/ISP, TouchKey)", "Akizuki Denshi", "131018", 1, 290, 4.8, "Main MCU + On-Chip OPA1/OPA2 + Native 5V USB Host/ISP + TouchKey + 1.5ms Back-EMF ADC"),
-    ("Suction",    "DC Motor RS-385PH-4045 (6V 12100rpm 9.5W, Ø27.5x37.8mm, Ø2.3mm shaft)", "Akizuki Denshi", "106439", 1, 300, 74.0, "Centrifugal Blower Motor (1,280-1,550 Pa honest real-hardware static vacuum)"),
+    ("Suction",    "DC Motor RS-385PH-4045 (6V 12100rpm 9.5W, Ø27.5x37.8mm, Ø2.3mm shaft)", "Akizuki Denshi", "106439", 1, 300, 74.0, "Centrifugal Blower Motor (OpenFOAM 3D MRF verified 1,100-1,380 Pa real-hardware static vacuum)"),
     ("Drive",      "Minebea DC Motor PWN10EB12CB (12V/6V, 25.1x20.0x14.9mm, Ø2.0mm shaft)", "Akizuki Denshi", "110024", 2, 100, 42.0, "25.0:1 Rubber-Band Pivoted Swing-Arm Friction Drive (Zero gear noise, Zero SLA creep)"),
     ("Driver",     "Dual H-Bridge Module AE-TC78H653FTG (DIP16, 1.8-7.5V, 0.22R)", "Akizuki Denshi", "114746", 1, 200, 3.2, "Left/Right Friction Drive H-Bridge (1-Shunt TDM)"),
-    ("Passives",   "1/4W 10k-ohm Carbon Resistor Pack RD25S 10K (100 pcs)", "Akizuki Denshi", "125103", 1, 100, 3.0, "E1 Single-Value Network: OPA1/OPA2 Gain + 0-JPY Back-EMF Divider (R18/R19)"),
+    ("Passives",   "1/4W 10k-ohm ±1% Metal-Film Resistor Pack (100 pcs, ¥100 — ¥0 extra cost!)", "Akizuki Denshi", "113514", 1, 100, 3.0, "E1 Single-Value Network: OPA1/OPA2 Gain + Precision 1% Back-EMF Divider (R18/R19) -> <20mV error!"),
     ("PCB",        "Double-Sided Plated Through-Hole Board AE-F-TH (or optional JLCPCB $2)", "Akizuki Denshi", "112731", 1, 40, 8.5, "59.69 x 55.88 mm Main Control PCB (31/31 nets, 0 DRC, mounts on 4x clear M3 standoffs)"),
     ("Safety",     "Resettable Polyfuse 3A MF-R300", "Akizuki Denshi", "112630", 1, 40, 0.8, "Overcurrent & Short-Circuit Auto-Resetting Breaker"),
     ("Sensors",    "3mm Red LED OSR5JA3Z74A (Used as 5V Reverse-Bias Photodiodes)", "Akizuki Denshi", "111577", 4, 10, 1.2, "4x 5V Optical Wall (2) & Stair Cliff (2) Sensors (8.35x contrast verified)"),

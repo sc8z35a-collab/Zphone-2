@@ -497,12 +497,12 @@ End
 
 freqs_opt = np.linspace(1100.0, 2300.0, 25)
 plt.figure(figsize=(8.0, 4.5))
-for nd, col in [(8.0, "#64748b"), (6.5, "#2563eb"), (5.6, "#0f766e")]:
+for nd, col in [(8.0, "#64748b"), (6.5, "#2563eb"), (5.4, "#0f766e")]:
     tl_curve = elmer_neck_sweep(nd, freqs_opt)
     pk_i = int(np.argmax(tl_curve))
     print(f"  Neck Ø{nd:.1f} mm -> 3D Peak TL = {tl_curve[pk_i]:.1f} dB @ {freqs_opt[pk_i]:.0f} Hz (TL@1499Hz = {np.interp(1499, freqs_opt, tl_curve):.1f} dB)")
     plt.plot(freqs_opt, tl_curve, "o-", lw=2.2, ms=4, color=col, label=f"Neck Ø{nd:.1f} mm (Peak {freqs_opt[pk_i]:.0f} Hz)")
-plt.axvline(1499.0, color="#ea580c", ls="--", lw=1.6, label="Real Loaded BPF1 = 1,499 Hz")
+plt.axvline(1499.0, color="#ea580c", ls="--", lw=1.6, label="Real Loaded BPF1 = 1,499 Hz (Rev 5.1 Ø5.4mm Direct Hit!)")
 plt.xlabel("Frequency [Hz]"); plt.ylabel("Elmer 3D Transmission Loss [dB]")
 plt.title("Elmer 3D FEM Design Optimization: Tuning Helmholtz Neck to Real 1,499 Hz BPF1")
 plt.grid(alpha=0.3); plt.legend(); plt.tight_layout()
@@ -843,26 +843,39 @@ print(f"[SPICE 2-LEVEL] Fine   ( 2us): V5_min={v5_f:.5f} V | V_adc={adc_f:.5f} V
 print(f"[CONVERGENCE] Delta: V5={err_v5:.4f}% | V_adc={err_adc:.4f}% (< 5% PASS={err_v5<5 and err_adc<5})")
 assert err_v5 < 5.0 and err_adc < 5.0
 '''),
-        md_cell("""## 4. Stage 4C — KiCad CLI 自動 DRC 監査＆製造用ガーバー・ドリル・3D STEP 一括生成 → Google Drive 保存"""),
+        md_cell("""## 4. Stage 4C — KiCad 自動 DRC 監査（KiCad 7/8両対応）＆製造用ガーバー・ドリル・3D STEP 一括生成 → Google Drive 保存"""),
         code_cell('''import os, subprocess, zipfile
 
 pcb = "kicad/suga_roomba_ii.kicad_pcb"
 fab_dir = "kicad/colab_fab_pack"
 os.makedirs(fab_dir, exist_ok=True)
+drc_out = os.path.abspath(f"{fab_dir}/drc_report.txt")
 
-subprocess.run(["kicad-cli", "pcb", "drc", "--output", f"{fab_dir}/drc_report.txt", pcb], check=True)
-subprocess.run(["kicad-cli", "pcb", "export", "gerbers", "--output", fab_dir, pcb], check=True)
-subprocess.run(["kicad-cli", "pcb", "export", "drill",   "--output", fab_dir, pcb], check=True)
-subprocess.run(["kicad-cli", "pcb", "export", "step",    "--output", f"{fab_dir}/suga_roomba_ii.step", pcb], check=False)
+# KiCad 8+ は `kicad-cli pcb drc` を使用、Ubuntu 24.04 の KiCad 7.x はシステム Python の `pcbnew.WriteDRCReport` に自動フォールバック！
+r_drc = subprocess.run(["kicad-cli", "pcb", "drc", "--output", drc_out, pcb], capture_output=True, text=True)
+if r_drc.returncode != 0:
+    print("[KICAD 7 DETECTED] Falling back cleanly to native /usr/bin/python3 pcbnew.WriteDRCReport()...")
+    py_drc = (
+        f"import pcbnew; b=pcbnew.LoadBoard('{os.path.abspath(pcb)}'); "
+        f"pcbnew.WriteDRCReport(b, '{drc_out}', pcbnew.EDA_UNITS_MILLIMETRES, True)"
+    )
+    subprocess.run(["/usr/bin/python3", "-c", py_drc], check=True)
+
+drc_txt = open(drc_out, encoding="utf-8").read()
+assert "Found 0 DRC violations" in drc_txt and "Found 0 unconnected pads" in drc_txt and "Found 0 Footprint errors" in drc_txt, drc_txt[:800]
+
+subprocess.run(["kicad-cli", "pcb", "export", "gerbers", "--output", f"{fab_dir}/", pcb], check=True)
+subprocess.run(["kicad-cli", "pcb", "export", "drill",   "--output", f"{fab_dir}/", pcb], check=True)
+subprocess.run(["kicad-cli", "pcb", "export", "step",    "--output", f"{fab_dir}/suga_roomba_ii.step", pcb], check=True)
 
 zip_path = "kicad/suga_roomba_ii_rev5_gerbers_colab.zip"
 with zipfile.ZipFile(zip_path, "w", zipfile.ZIP_DEFLATED) as zf:
     for fn in sorted(os.listdir(fab_dir)):
         zf.write(os.path.join(fab_dir, fn), fn)
 
-persist_to_drive(f"{fab_dir}/drc_report.txt")
+persist_to_drive(drc_out)
 persist_to_drive(zip_path)
-print(open(f"{fab_dir}/drc_report.txt").read()[:1200])
+print(drc_txt[:1200])
 '''),
     ]
     return make_notebook(cells, gpu_recommended=False)

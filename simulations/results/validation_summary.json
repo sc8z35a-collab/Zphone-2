@@ -2,15 +2,15 @@
   "revision": "Rev 5.0 Production-Ready Real-Hardware",
   "honest_cost_jpy": {
     "electronics_and_hw_jpy": 2630,
-    "jlc3dp_10stl_fab_jpy_excl_ship": 3153,
-    "jlc3dp_10stl_fab_usd_excl_ship": 21.02,
+    "jlc3dp_10stl_fab_jpy_excl_ship": 3082,
+    "jlc3dp_10stl_fab_usd_excl_ship": 20.55,
     "jlc3dp_ocs_ship_jpy": 1125,
     "jlc3dp_ocs_ship_usd": 7.5,
-    "full_turnkey_total_jpy_excl_ship": 5783,
-    "full_turnkey_total_jpy_incl_ship": 6908,
-    "hybrid_4core_stl_plus_pp_jpy_excl_ship": 3020
+    "full_turnkey_total_jpy_excl_ship": 5712,
+    "full_turnkey_total_jpy_incl_ship": 6837,
+    "hybrid_4core_stl_plus_pp_jpy_excl_ship": 3016
   },
-  "real_mass_g": 797.5,
+  "real_mass_g": 784.5,
   "envelope_mm": {
     "width_X": 216.0,
     "length_Y": 219.2,
@@ -188,7 +188,7 @@
     "wheel_stall_torque_mNm": 71.2,
     "slip_safety_ratio": 1.07,
     "max_step_climb_mm": 7.5,
-    "max_slope_deg": 34.6
+    "max_slope_deg": 35.3
   },
   "helmholtz_silencer": {
     "tuned_bpf1_Hz": 1499.0,

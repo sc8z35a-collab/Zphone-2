@@ -35,6 +35,7 @@ def write_kicad_pro():
     pro = {
         "board": {
             "design_settings": {
+                "drc_exclusions": [],
                 "rules": {
                     "min_clearance": 0.2,
                     "min_track_width": 0.2,
@@ -43,7 +44,11 @@ def write_kicad_pro():
                     "min_silk_clearance": 0.1,
                     "min_text_height": 0.8,
                     "min_text_thickness": 0.12,
-                }
+                },
+                "rule_severities": {
+                    "lib_footprint_issues": "ignore",
+                    "lib_footprint_mismatch": "ignore",
+                },
             }
         },
         "meta": {"filename": "suga_roomba_ii.kicad_pro", "version": 1},

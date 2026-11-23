@@ -29,7 +29,7 @@ for d in (STL_DIR, AUDIT_DIR, JLC_DIR, VIEWER_DIR):
 # 10 Independent JLC3DP SLA 9600 Resin Production STLs (NO runners, >=1.5-2.0mm walls!)
 # (scad_part_id, output_filename, order_qty, role)
 JLC_PARTS = [
-    ("jlc_01_lower_chassis_unibody",  "01_lower_chassis_unibody.stl",  1, "Main chassis, sealed under-volute duct, lower cyclone, volute+7 vanes, silencer, battery/PCB mounts"),
+    ("jlc_01_lower_chassis_unibody",  "01_lower_chassis_unibody.stl",  1, "Main chassis, sealed under-volute duct, lower cyclone, smooth vaneless volute, Ø5.4mm silencer, battery/PCB mounts"),
     ("jlc_02_volute_lid_motor_mount", "02_volute_lid_motor_mount.stl", 1, "Removable 4xM3 volute top lid + RS-385PH M3 split-clamp sleeve"),
     ("jlc_03_cyclone_cap_downcomer",  "03_cyclone_cap_downcomer.stl",  1, "Removable 2xM3 cyclone top cap + coaxial vortex finder + clean-air return arch"),
     ("jlc_04_removable_dust_cup",     "04_removable_dust_cup.stl",     1, "Top-lift cleanable dust cup with keyed tangential intake slot"),

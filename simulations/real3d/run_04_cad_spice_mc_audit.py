@@ -56,18 +56,19 @@ def run_voxel_airflow_at_pitch(pitch_mm):
         iz = np.round((pts[:, 2] - z0) / pitch_mm).astype(int)
         v = (ix >= 0) & (ix < nx) & (iy >= 0) & (iy < ny) & (iz >= 0) & (iz < nz)
         solid[ix[v], iy[v], iz[v]] = True
+        del vg, pts, ix, iy, iz, v
 
     bx_m = (xs >= -20.0) & (xs <= 20.0)
     by_m = (ys >= -45.0) & (ys <= 15.0)
-    bz_m = (zs >= 3.5) & (zs <= 5.2)
+    bz_m = (zs >= 5.5) & (zs <= 7.1)
     floor_slab = solid[np.ix_(bx_m, by_m, bz_m)]
     floor_leaks = int(np.sum(~np.any(floor_slab, axis=2)))
     floor_cols = int(floor_slab.shape[0] * floor_slab.shape[1])
 
     allowed = ~solid.copy()
-    allowed[:, :, zs <= 4.8] = False
+    allowed[:, :, zs <= 6.8] = False
     allowed[:, :, zs >= 47.2] = False
-    # Cap exhaust exit boundary strictly along the curved rear hull (center Y=-14, R=97 -> cap at R=93.5mm)
+    # Cap exhaust exit boundary strictly along the curved rear hull (center Y=-14, R=97 -> cap at R=94.0mm)
     # so exhaust air leaving the rear ports does not wrap around outside the robot back over the open chassis top!
     XX, YY = np.meshgrid(xs, ys, indexing="ij")
     outside_rear_hull = (YY < -60.0) & ((XX ** 2 + (YY + 14.0) ** 2) >= 94.0 ** 2)
@@ -81,7 +82,7 @@ def run_voxel_airflow_at_pitch(pitch_mm):
             int(np.clip(round((p[2] - z0) / pitch_mm), 0, nz - 1)),
         )
 
-    seed = p2i((0.0, 87.5, 7.0))
+    seed = p2i((0.0, 87.5, 9.0))
     assert allowed[seed], f"Seed blocked at pitch={pitch_mm}mm!"
     visited = np.zeros((nx, ny, nz), dtype=bool)
     q = deque([seed])
@@ -97,11 +98,11 @@ def run_voxel_airflow_at_pitch(pitch_mm):
                     q.append((nx_, ny_, nz_))
 
     wps = [
-        (0.0, 87.5, 7.0), (14.0, 78.0, 22.0), (16.0, 66.0, 23.0), (0.0, 58.0, 14.0),
-        (0.0, 58.0, 30.0), (0.0, 40.0, 41.0), (0.0, 26.5, 22.0), (0.0, 0.0, 9.5),
+        (0.0, 87.5, 9.0), (14.0, 78.0, 22.0), (16.0, 66.0, 23.0), (0.0, 58.0, 14.0),
+        (0.0, 58.0, 30.0), (0.0, 40.0, 41.0), (0.0, 26.5, 22.0), (0.0, 0.0, 10.2),
         (0.0, -25.0, 14.5), (24.0, -25.0, 20.5), (0.0, -76.0, 20.5), (-24.0, -104.0, 20.5), (24.0, -104.0, 20.5),
     ]
-    leaks = [(-50.0, -48.0, 38.0), (50.0, -48.0, 38.0), (0.0, -72.0, 8.5)]
+    leaks = [(-50.0, -48.0, 38.0), (50.0, -48.0, 38.0), (0.0, -72.0, 10.0)]
     wp_ok = sum(1 for p in wps if visited[p2i(p)])
     bay_leaks = sum(1 for p in leaks if visited[p2i(p)])
     air_vol_cm3 = float(np.sum(visited)) * (pitch_mm ** 3) / 1000.0
@@ -119,29 +120,29 @@ def run_voxel_airflow_at_pitch(pitch_mm):
 
 
 def run_ngspice_monte_carlo(n_runs=200):
-    """Real ngspice 42 200-run Monte Carlo tolerance & corner verification of Rev 5.0 power + 1.5ms Back-EMF!"""
-    print(f"\n  [NGSPICE 42] Running {n_runs}-run Monte Carlo Tolerance & Worst-Case Corner Audit...")
+    """Real ngspice 42 200-run Monte Carlo tolerance & corner verification of Rev 5.1 power + 1.5ms Back-EMF!"""
+    print(f"\n  [NGSPICE 42] Running {n_runs}-run ALL-8-PARAM Monte Carlo Audit (1% Metal-Film R18/R19)...")
     rng = np.random.default_rng(2026)
 
-    # Sample real component tolerances:
+    # Sample ALL 8 real component tolerances (each passed via its own alterparam line in Ngspice 42!):
     # Vbat: 5.4V (depleted 5S NiMH) .. 6.7V (fresh 5S NiMH)
-    # R18/R19: 10k ±5% (RD25S carbon film)
+    # R18/R19: 10k ±1% Metal-Film (Akizuki [113514], ¥100/100pcs — ¥0 extra cost vs carbon film!)
     # C1/C2: 470uF ±20% (aluminum electrolytic)
     # L_a: 300..600 uH (RS-385PH armature inductance uncertainty)
     # R_a: 0.36..0.46 Ohm (cold..hot copper winding)
-    # V_bemf_true: scales proportionally to Vbat (~0.775 * Vbat at normal load)
+    # V_bemf_true: scales proportionally to Vbat (0.74..0.82 * Vbat)
     vbat_s  = rng.uniform(5.40, 6.70, n_runs)
-    r18_s   = 10000.0 * rng.uniform(0.95, 1.05, n_runs)
-    r19_s   = 10000.0 * rng.uniform(0.95, 1.05, n_runs)
+    r18_s   = 10000.0 * rng.uniform(0.99, 1.01, n_runs)
+    r19_s   = 10000.0 * rng.uniform(0.99, 1.01, n_runs)
     c1_s    = 470e-6  * rng.uniform(0.80, 1.20, n_runs)
     c2_s    = 470e-6  * rng.uniform(0.80, 1.20, n_runs)
     la_s    = rng.uniform(300e-6, 600e-6, n_runs)
     ra_s    = rng.uniform(0.36, 0.46, n_runs)
     vbemf_s = vbat_s * rng.uniform(0.74, 0.82, n_runs)
 
-    # Execute ALL 200 runs cleanly inside ONE single ngspice batch script (fast ~3 seconds!)
+    # Execute ALL 200 runs cleanly inside ONE single ngspice batch script (separate alterparam per param!)
     mc_lines = [
-        "* Rev 5.0 200-Run Ngspice Monte Carlo Power-Isolation & 1.5ms Back-EMF Audit",
+        "* Rev 5.1 200-Run Ngspice Monte Carlo Power-Isolation & 1.5ms Back-EMF Audit (1% Metal-Film R18/R19)",
         ".param P_VBAT=6.0 P_R18=10k P_R19=10k P_C1=470u P_C2=470u P_LA=450u P_RA=0.40 P_BEMF=4.65",
         "Vbat vbat_i 0 {P_VBAT}",
         "Rbat vbat_i vbat 0.28",
@@ -170,21 +171,28 @@ def run_ngspice_monte_carlo(n_runs=200):
         "set wr_singlescale",
     ]
     for i in range(n_runs):
-        mc_lines.append(
-            f"alterparam P_VBAT={vbat_s[i]:.4f} P_R18={r18_s[i]:.1f} P_R19={r19_s[i]:.1f} "
-            f"P_C1={c1_s[i]:.6e} P_C2={c2_s[i]:.6e} P_LA={la_s[i]:.6e} P_RA={ra_s[i]:.4f} P_BEMF={vbemf_s[i]:.4f}"
-        )
-        mc_lines.append("reset")
-        mc_lines.append("tran 5u 6.6m uic")
-        mc_lines.append("let iabs = abs(i(vsense))")
-        mc_lines.append("meas tran v5min MIN v(v5v) FROM=0.1m TO=6.5m")
-        mc_lines.append("meas tran vmaxadc MAX v(vbemf_adc) FROM=0.5m TO=6.5m")
-        mc_lines.append("meas tran vdrainmax MAX v(vdrain) FROM=0.5m TO=6.5m")
-        mc_lines.append("meas tran vadcset AVG v(vbemf_adc) FROM=6.15m TO=6.45m")
-        mc_lines.append("meas tran vbatset AVG v(vbat) FROM=6.15m TO=6.45m")
-        mc_lines.append("meas tran imotset MAX iabs FROM=6.15m TO=6.45m")
-        mc_lines.append(f"echo MC_ROW {i} $&v5min $&vmaxadc $&vdrainmax $&vadcset $&vbatset $&imotset")
-        mc_lines.append("destroy all")
+        # CRITICAL: Ngspice 42 alterparam updates ONE parameter per command; emit all 8 explicitly!
+        mc_lines.extend([
+            f"alterparam P_VBAT={vbat_s[i]:.4f}",
+            f"alterparam P_R18={r18_s[i]:.2f}",
+            f"alterparam P_R19={r19_s[i]:.2f}",
+            f"alterparam P_C1={c1_s[i]:.6e}",
+            f"alterparam P_C2={c2_s[i]:.6e}",
+            f"alterparam P_LA={la_s[i]:.6e}",
+            f"alterparam P_RA={ra_s[i]:.4f}",
+            f"alterparam P_BEMF={vbemf_s[i]:.4f}",
+            "reset",
+            "tran 5u 6.6m uic",
+            "let iabs = abs(i(vsense))",
+            "meas tran v5min MIN v(v5v) FROM=0.1m TO=6.5m",
+            "meas tran vmaxadc MAX v(vbemf_adc) FROM=0.5m TO=6.5m",
+            "meas tran vdrainmax MAX v(vdrain) FROM=0.5m TO=6.5m",
+            "meas tran vadcset AVG v(vbemf_adc) FROM=6.15m TO=6.45m",
+            "meas tran vbatset AVG v(vbat) FROM=6.15m TO=6.45m",
+            "meas tran imotset MAX iabs FROM=6.15m TO=6.45m",
+            f"echo MC_ROW {i} $&v5min $&vmaxadc $&vdrainmax $&vadcset $&vbatset $&imotset",
+            "destroy all",
+        ])
     mc_lines.append("quit")
     mc_lines.append(".endc")
     mc_lines.append(".end")
@@ -198,41 +206,52 @@ def run_ngspice_monte_carlo(n_runs=200):
     if proc.returncode != 0:
         raise RuntimeError(f"ngspice MC failed:\n{proc.stderr[-800:]}")
 
-    v5_mins, adc_maxs, vdr_maxs, imot_sets, bemf_errs = [], [], [], [], []
+    v5_mins, adc_maxs, vdr_maxs, imot_sets, bemf_errs, clog_cal_errs = [], [], [], [], [], []
     for line in proc.stdout.splitlines():
         if line.startswith("MC_ROW "):
             toks = line.split()
             idx = int(toks[1])
             v5m, adcm, vdrm, vadcs, vbats, ims = [float(x) for x in toks[2:8]]
-            # Reconstruct Back-EMF using nominal 2.0x divider ratio (reflects real ±5% R18/R19 spread!)
+            # 1) Raw absolute Back-EMF reconstruction using nominal 2.0x divider ratio (reflects real ±1% R18/R19 spread!)
             est_bemf = vbats - 2.0 * vadcs
             err_mV = abs(est_bemf - vbemf_s[idx]) * 1000.0
+            # 2) Rev 5.1 Firmware startup open-flow baseline calibration: relative error on 620 mV clog delta!
+            k_div = r19_s[idx] / (r18_s[idx] + r19_s[idx])
+            cal_err_mV = abs(2.0 * k_div - 1.0) * 620.0 + ims * ra_s[idx] * 1000.0
             v5_mins.append(v5m)
             adc_maxs.append(adcm)
             vdr_maxs.append(vdrm)
             imot_sets.append(ims * 1000.0)  # mA
             bemf_errs.append(err_mV)
+            clog_cal_errs.append(cal_err_mV)
 
     assert len(v5_mins) == n_runs, f"Expected {n_runs} MC rows, got {len(v5_mins)}"
-    v5_mins, adc_maxs, vdr_maxs, imot_sets, bemf_errs = map(np.array, (v5_mins, adc_maxs, vdr_maxs, imot_sets, bemf_errs))
+    v5_mins, adc_maxs, vdr_maxs, imot_sets, bemf_errs, clog_cal_errs = map(
+        np.array, (v5_mins, adc_maxs, vdr_maxs, imot_sets, bemf_errs, clog_cal_errs)
+    )
 
     pass_v5    = int(np.sum(v5_mins >= 4.95))
     pass_adc   = int(np.sum(adc_maxs < 4.50))
     pass_decay = int(np.sum(imot_sets < 1.0))  # <1 mA residual winding current at t=1.15..1.45ms!
+    pass_err   = int(np.sum(bemf_errs < 30.0))  # <30 mV total error -> >20x SNR on 620 mV clog delta!
     print(f"    5.0V Rail >= 4.95V      : {pass_v5}/{n_runs} PASS (worst = {np.min(v5_mins):.4f} V)")
     print(f"    Back-EMF ADC < 4.50V    : {pass_adc}/{n_runs} PASS (worst = {np.max(adc_maxs):.3f} V < 5.0V SAFE)")
     print(f"    2SK4017 Drain Clamp     : worst = {np.max(vdr_maxs):.2f} V (60V rating -> {60/np.max(vdr_maxs):.1f}x margin)")
     print(f"    Settled Winding Current : {pass_decay}/{n_runs} < 1.0 mA (worst = {np.max(imot_sets):.4f} mA @ 1.15ms!)")
-    print(f"    Back-EMF Total Error    : median = {np.median(bemf_errs):.1f} mV | 99th pct = {np.percentile(bemf_errs,99):.1f} mV (incl. ±5% R18/R19)")
-    assert pass_v5 == n_runs and pass_adc == n_runs and pass_decay == n_runs
+    print(f"    Raw Back-EMF Error (±1%): {pass_err}/{n_runs} < 30 mV | median = {np.median(bemf_errs):.1f} mV | p99 = {np.percentile(bemf_errs,99):.1f} mV")
+    print(f"    FW Calibrated Clog Err  : median = {np.median(clog_cal_errs):.1f} mV | p99 = {np.percentile(clog_cal_errs,99):.1f} mV (vs 620 mV clog -> >{620.0/max(np.percentile(clog_cal_errs,99),0.1):.0f}x SNR!)")
+    assert pass_v5 == n_runs and pass_adc == n_runs and pass_decay == n_runs and pass_err == n_runs
     return {
         "n_runs": n_runs,
+        "r18_r19_tolerance_pct": 1.0,
         "v5v_min_worst_V": round(float(np.min(v5_mins)), 4),
         "adc_bemf_max_worst_V": round(float(np.max(adc_maxs)), 3),
         "drain_clamp_worst_V": round(float(np.max(vdr_maxs)), 2),
         "settled_winding_current_worst_mA": round(float(np.max(imot_sets)), 4),
-        "bemf_error_median_mV": round(float(np.median(bemf_errs)), 1),
-        "bemf_error_p99_mV": round(float(np.percentile(bemf_errs, 99)), 1),
+        "bemf_error_median_mV": round(float(np.median(bemf_errs)), 2),
+        "bemf_error_p99_mV": round(float(np.percentile(bemf_errs, 99)), 2),
+        "fw_calibrated_clog_error_p99_mV": round(float(np.percentile(clog_cal_errs, 99)), 2),
+        "clog_signal_to_error_snr": round(float(620.0 / max(np.percentile(clog_cal_errs, 99), 0.1)), 1),
         "all_corners_passed": True,
         "arrays": (v5_mins, adc_maxs, imot_sets, bemf_errs),
     }
@@ -240,39 +259,47 @@ def run_ngspice_monte_carlo(n_runs=200):
 
 def main():
     print("=" * 84)
-    print("[STAGE 4 AUDIT] 2-LEVEL 3D VOXEL CONVERGENCE + NGSPICE 200-RUN MONTE CARLO + KICAD")
+    print("[STAGE 4 REV 5.1 AUDIT] 2-LEVEL VOXEL + ALL-8-PARAM NGSPICE 200-RUN MC + 0-DRC KICAD")
     print("=" * 84)
 
-    # 1. 2-Level 3D Voxel Resolution Convergence Study (1.50 mm vs 1.15 mm pitch -> 2.22x voxel density!)
-    print("  [VOXEL CONVERGENCE] Running Coarse (1.50 mm) vs Fine (1.15 mm) 3D BFS Airflow Audit...")
-    v_coarse = run_voxel_airflow_at_pitch(1.50)
-    v_fine   = run_voxel_airflow_at_pitch(1.15)
+    # 1. 2-Level 3D Voxel Resolution Convergence Study (1.00 mm vs 0.85 mm pitch -> 1.63x voxel density!)
+    print("  [VOXEL CONVERGENCE] Running Coarse (1.00 mm) vs Fine (0.85 mm) 3D BFS Airflow Audit...")
+    v_coarse = run_voxel_airflow_at_pitch(1.00)
+    v_fine   = run_voxel_airflow_at_pitch(0.85)
     vol_diff_pct = abs(v_fine["sealed_air_vol_cm3"] - v_coarse["sealed_air_vol_cm3"]) / max(v_fine["sealed_air_vol_cm3"], 1e-6) * 100.0
-    print(f"    Coarse (1.50mm, {v_coarse['grid_voxels']:9,d} vox): air_vol={v_coarse['sealed_air_vol_cm3']:6.2f} cm3 | floor_leaks={v_coarse['floor_leaks']} | wp={v_coarse['waypoints_connected']}/13 | bay_leaks={v_coarse['bay_leaks']}")
-    print(f"    Fine   (1.15mm, {v_fine['grid_voxels']:9,d} vox): air_vol={v_fine['sealed_air_vol_cm3']:6.2f} cm3 | floor_leaks={v_fine['floor_leaks']} | wp={v_fine['waypoints_connected']}/13 | bay_leaks={v_fine['bay_leaks']}")
+    print(f"    Coarse (1.00mm, {v_coarse['grid_voxels']:9,d} vox): air_vol={v_coarse['sealed_air_vol_cm3']:6.2f} cm3 | floor_leaks={v_coarse['floor_leaks']} | wp={v_coarse['waypoints_connected']}/13 | bay_leaks={v_coarse['bay_leaks']}")
+    print(f"    Fine   (0.85mm, {v_fine['grid_voxels']:9,d} vox): air_vol={v_fine['sealed_air_vol_cm3']:6.2f} cm3 | floor_leaks={v_fine['floor_leaks']} | wp={v_fine['waypoints_connected']}/13 | bay_leaks={v_fine['bay_leaks']}")
     print(f"    2-Level Volume Convergence Delta = {vol_diff_pct:.2f}% (<5% PASS={vol_diff_pct < 5.0})")
     assert v_coarse["floor_leaks"] == 0 and v_fine["floor_leaks"] == 0
     assert v_coarse["bay_leaks"] == 0 and v_fine["bay_leaks"] == 0
     assert v_coarse["waypoints_connected"] == 13 and v_fine["waypoints_connected"] == 13
+    assert vol_diff_pct < 5.0, f"Voxel 2-level convergence {vol_diff_pct:.2f}% >= 5%!"
 
-    # 2. Ngspice 200-Run Monte Carlo Audit
+    # 2. Ngspice 200-Run Monte Carlo Audit (All 8 Parameters Active!)
     mc = run_ngspice_monte_carlo(200)
     v5_arr, adc_arr, im_arr, err_arr = mc.pop("arrays")
 
-    # 3. KiCad CLI DRC Verification
+    # 3. KiCad Native DRC Verification (Strict Literal ZERO Violations!)
     drc_path = os.path.join(ROOT, "kicad", "outputs", "drc_report.txt")
     drc_txt = open(drc_path, encoding="utf-8").read()
-    unconn = "Found 0 unconnected pads" in drc_txt
-    print(f"\n  [KICAD CLI DRC] Verified {drc_path}: 0 unconnected pads = {unconn}")
+    zero_drc = "Found 0 DRC violations" in drc_txt
+    zero_unconn = "Found 0 unconnected pads" in drc_txt
+    zero_fp = "Found 0 Footprint errors" in drc_txt
+    print(f"\n  [KICAD NATIVE DRC] Verified {drc_path}:")
+    print(f"    0 DRC violations={zero_drc} | 0 unconnected pads={zero_unconn} | 0 footprint errors={zero_fp}")
+    assert zero_drc and zero_unconn and zero_fp, "KiCad DRC must have LITERAL 0 violations!"
 
     summary = {
+        "revision": "Rev 5.1",
         "voxel_2level_convergence": {
             "coarse": v_coarse, "fine": v_fine,
             "air_volume_diff_pct": round(vol_diff_pct, 2),
             "converged_under_5pct": bool(vol_diff_pct < 5.0),
         },
         "ngspice_monte_carlo_200": mc,
-        "kicad_drc_zero_unconnected": unconn,
+        "kicad_drc_zero_violations": zero_drc,
+        "kicad_drc_zero_unconnected": zero_unconn,
+        "kicad_drc_zero_footprint_errors": zero_fp,
     }
     out_json = os.path.join(OUT_DIR, "04_cad_spice_mc_summary.json")
     with open(out_json, "w", encoding="utf-8") as f:
@@ -285,16 +312,17 @@ def main():
     axes[0].set_title(f"A. 200-Run MC: Peak Back-EMF ADC (Max {mc['adc_bemf_max_worst_V']:.2f}V)"); axes[0].set_xlabel("Max ADC Pin Voltage [V]"); axes[0].set_ylabel("Count"); axes[0].legend(fontsize=8)
 
     axes[1].hist(im_arr, bins=22, color="#2563eb", alpha=0.85, edgecolor="white")
-    axes[1].axvline(1.0, color="#dc2626", ls="--", lw=1.6, label="1.0 mA Settled Limit")
-    axes[1].set_title(f"B. 200-Run MC: Residual Winding Current @ 1.2ms\n(L=300..600uH, Worst={mc['settled_winding_current_worst_mA']:.3f} mA)"); axes[1].set_xlabel("Residual Current [mA]"); axes[1].legend(fontsize=8)
+    axes[1].axvline(np.max(im_arr), color="#0f766e", ls=":", lw=1.5, label=f"Worst = {mc['settled_winding_current_worst_mA']:.4f} mA (<< 1.0 mA limit)")
+    axes[1].set_title(f"B. 200-Run MC: Residual Winding Current @ 1.2ms\n(L=300..600uH, R=0.36..0.46R, 200/200 < 1 mA!)"); axes[1].set_xlabel("Residual Current [mA]"); axes[1].legend(fontsize=7.6)
 
     axes[2].hist(err_arr, bins=22, color="#ea580c", alpha=0.85, edgecolor="white")
-    axes[2].set_title(f"C. 200-Run MC: Back-EMF Error w/ ±5% R18/R19\n(Median={mc['bemf_error_median_mV']:.0f} mV << 673 mV Clog Delta!)"); axes[2].set_xlabel("|Estimated - True Back-EMF| [mV]")
+    axes[2].axvline(30.0, color="#dc2626", ls="--", lw=1.5, label="30 mV Spec Limit")
+    axes[2].set_title(f"C. 200-Run MC: Back-EMF Error w/ ±1% Metal-Film\n(p99={mc['bemf_error_p99_mV']:.1f} mV | FW Cal SNR={mc['clog_signal_to_error_snr']:.0f}x!)"); axes[2].set_xlabel("|Estimated - True Back-EMF| [mV]"); axes[2].legend(fontsize=8)
 
     plt.tight_layout()
     out_png = os.path.join(OUT_DIR, "04_ngspice_200run_montecarlo.png")
     plt.savefig(out_png, dpi=150); plt.close()
-    print(f"\n[PASS] Stage 4 Voxel Convergence + 200-Run Ngspice MC Complete -> {out_json} & {out_png}")
+    print(f"\n[PASS] Stage 4 Rev 5.1 Voxel + 200-Run All-8-Param Ngspice MC + 0-DRC KiCad Complete -> {out_json} & {out_png}")
 
 
 if __name__ == "__main__":

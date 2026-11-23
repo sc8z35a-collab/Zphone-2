@@ -1,45 +1,47 @@
 {
+  "revision": "Rev 5.1",
   "solver": "MuJoCo 4.0.1 (3D Rigid-Body Contact, Coulomb Friction mu=0.82)",
-  "robot_mass_g": 797.5,
+  "robot_mass_g": 766.5,
+  "ground_clearance_mm": 5.5,
   "convergence_2level": {
     "coarse_dt_ms": 2.0,
     "coarse_vx_ms": 0.2714,
-    "coarse_wheel_load_pct": 84.66,
+    "coarse_wheel_load_pct": 84.33,
     "fine_dt_ms": 0.5,
     "fine_vx_ms": 0.2714,
-    "fine_wheel_load_pct": 84.66,
+    "fine_wheel_load_pct": 84.33,
     "vx_diff_pct": 0.0,
     "wheel_load_diff_pct": 0.0,
     "converged_under_5pct": true
   },
   "sharp_90deg_step_sweep": [
     {
-      "step_mm": 2.0,
-      "ramp_deg": 90.0,
-      "climbed": true,
-      "max_x_m": 0.9886,
-      "final_z_mm": 1.95
-    },
-    {
       "step_mm": 3.0,
       "ramp_deg": 90.0,
       "climbed": true,
-      "max_x_m": 0.9841,
+      "max_x_m": 0.9847,
       "final_z_mm": 2.95
     },
     {
       "step_mm": 4.0,
       "ramp_deg": 90.0,
-      "climbed": false,
-      "max_x_m": 0.1877,
-      "final_z_mm": 0.19
+      "climbed": true,
+      "max_x_m": 0.98,
+      "final_z_mm": 3.95
+    },
+    {
+      "step_mm": 5.0,
+      "ramp_deg": 90.0,
+      "climbed": true,
+      "max_x_m": 0.974,
+      "final_z_mm": 4.95
     },
     {
       "step_mm": 6.0,
       "ramp_deg": 90.0,
       "climbed": false,
-      "max_x_m": 0.1803,
-      "final_z_mm": -0.0
+      "max_x_m": 0.188,
+      "final_z_mm": 0.19
     }
   ],
   "beveled_20deg_threshold_sweep": [
@@ -47,73 +49,74 @@
       "step_mm": 3.0,
       "ramp_deg": 20.0,
       "climbed": true,
-      "max_x_m": 1.0535,
+      "max_x_m": 1.054,
       "final_z_mm": 2.95
     },
     {
       "step_mm": 5.0,
       "ramp_deg": 20.0,
-      "climbed": false,
-      "max_x_m": 0.1945,
-      "final_z_mm": 0.67
+      "climbed": true,
+      "max_x_m": 1.048,
+      "final_z_mm": 4.95
     },
     {
-      "step_mm": 7.5,
+      "step_mm": 6.5,
       "ramp_deg": 20.0,
       "climbed": false,
-      "max_x_m": 0.1933,
-      "final_z_mm": 0.36
+      "max_x_m": 0.2004,
+      "final_z_mm": 0.43
     },
     {
-      "step_mm": 10.0,
+      "step_mm": 8.0,
       "ramp_deg": 20.0,
       "climbed": false,
-      "max_x_m": 0.1933,
-      "final_z_mm": 0.36
+      "max_x_m": 0.1988,
+      "final_z_mm": 0.37
     }
   ],
+  "step_5mm_90deg_and_20deg_passed": true,
   "slope_climb_sweep": [
     {
       "slope_deg": 10.0,
-      "steady_vx_ms": 0.2574,
+      "steady_vx_ms": 0.2606,
       "climbed": true,
       "peak_tau_mNm": 76.0
     },
     {
       "slope_deg": 15.0,
-      "steady_vx_ms": 0.2172,
+      "steady_vx_ms": 0.2219,
       "climbed": true,
       "peak_tau_mNm": 76.0
     },
     {
       "slope_deg": 20.0,
-      "steady_vx_ms": 0.1772,
+      "steady_vx_ms": 0.1834,
       "climbed": true,
       "peak_tau_mNm": 76.0
     },
     {
       "slope_deg": 22.0,
-      "steady_vx_ms": 0.1613,
+      "steady_vx_ms": 0.1682,
       "climbed": true,
       "peak_tau_mNm": 76.0
     },
     {
       "slope_deg": 25.0,
-      "steady_vx_ms": -0.0768,
+      "steady_vx_ms": -0.0566,
       "climbed": false,
       "peak_tau_mNm": 76.0
     },
     {
       "slope_deg": 30.0,
-      "steady_vx_ms": -1.1086,
+      "steady_vx_ms": -1.1531,
       "climbed": false,
       "peak_tau_mNm": 76.0
     }
   ],
   "wall_bumper_impact": {
-    "max_bumper_travel_mm": 2.377,
+    "max_bumper_travel_mm": 2.302,
     "microswitch_trigger_ms": 950.0,
-    "stall_torque_mNm": 65.1,
+    "stall_torque_mNm": 65.75,
     "under_rubber_slip_cap": true
   }
 }

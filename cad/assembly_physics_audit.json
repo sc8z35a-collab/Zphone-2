@@ -11,11 +11,11 @@
     "entries": [
       {
         "category": "Rotating",
-        "interface": "Impeller Outer Rim <-> Diffuser Vanes (Radial)",
-        "measured_mm": 2.05,
+        "interface": "Impeller Outer Rim <-> Vaneless Volute Wall (Radial)",
+        "measured_mm": 7.0,
         "min_required_mm": 1.5,
         "passed": true,
-        "note": "Imp R=38.00 vs Diff R=40.05"
+        "note": "Imp R=38.00 vs Volute R=45.00 (Vaneless)"
       },
       {
         "category": "Rotating",
@@ -87,7 +87,7 @@
         "measured_mm": 0.4,
         "min_required_mm": 0.3,
         "passed": true,
-        "note": "Cup OD 47.6 in ID 48.4, Z0=5.60"
+        "note": "Cup OD 47.6 in ID 48.4, Z0=7.50"
       },
       {
         "category": "Sliding",
@@ -183,14 +183,14 @@
     "passed": true,
     "voxel_pitch_mm": 1.5,
     "floor_leak_columns": 0,
-    "visited_air_vol_cm3": 146.7,
+    "visited_air_vol_cm3": 138.2,
     "waypoints": [
       {
         "stage": "01_Front_Floor_Nozzle",
         "coord_mm": [
           0.0,
           87.5,
-          7.0
+          9.0
         ],
         "open_air": true,
         "reached": true
@@ -260,7 +260,7 @@
         "coord_mm": [
           0.0,
           0.0,
-          9.5
+          10.2
         ],
         "open_air": true,
         "reached": true
@@ -340,7 +340,7 @@
         "coord_mm": [
           0.0,
           -72.0,
-          8.5
+          10.0
         ],
         "sealed": true
       }
